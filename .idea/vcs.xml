@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../extraprojects/vulkan/first" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../extraprojects/vulkan/first/external/sds" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../flow1/uge2-network/NetworkDemo" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../flow2/uge5-jbdc/dat2-sportsclub" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../flow3/uge10-11-cupcake/cupcake" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../flow3/uge8-lifehack/lifehack_spring_2024" vcs="Git" />
+  </component>
+</project>
