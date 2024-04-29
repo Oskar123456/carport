@@ -5,6 +5,8 @@ import carport.config.ThymeleafConfig;
 import carport.controllers.CupcakeController;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
+import io.javalin.http.staticfiles.Location;
+
 
 public class Main
 {
@@ -23,6 +25,7 @@ public class Main
             config.staticFiles.add("/public");
             config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
         }).start(7070);
+
 
         // Routing
         CupcakeController.addRoutes(jav, connectionPool);
