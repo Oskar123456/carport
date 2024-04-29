@@ -122,3 +122,30 @@ skal besvare følgende spørgsmål.
 4. Hvad kan vi gøre.
 5. Virkede tiltag.
 6. Hvad har ændret sig.
+
+### Noter fra info møde d. 29 maj: 
+1. OBS!! Skal afleveres d. 24 maj på WISE flow
+2. Mødes med underviser en gang om ugen
+3. Skær ting i små bidder, så det er bliver håndgribeligt
+4. Der skal laves en beregningsmotor i Java
+5. Hellere lave lidt, men lave det virkelig godt!
+6. Husk at tiltænke at spær, rem og brædder har en vis længde, så når det er på specialmål skal man have de rigtige antal, så man senere som kunde kan skære til og få de rigtige mål
+7. Lad vær med at blive forblændet af styklistens længde, start med rem, spær og brædder
+8. Vi skal KUN lave med fladt tag
+9. Vi skal lave noget der ligner deres eksisterende “byg-selv-carporte”
+10. Vi behøver ikke en indkøbskurv
+11. Måske bestillingsflow med 2-3 steps (sider)
+12. Giv en ordre en ordrestatus (admin kan ændre status)
+13. Kunde kan første se stykliste når ordrestatus er ændret til betalt
+14. Tegning kan ses så snart oplysninger er tastet ind
+15. FOG er dygtigere til at vejlede (deres speciale)
+16. Vi behøver ikke lave belastningsberegning
+17. Det vigtigste er PDF’ens mål, brug dem som guideline! (maks 3,10 mellem hver stolpe. Nice to have; kan ændres)
+18. Lad vær med at gå op i millimeter
+19. Vindbånd sidder på rem’en
+20. Man kan godt bestille at man vil have skur på, men det behøver ikke vises på tegningen (kan være en US langt nede på listen: nice to have)
+21. Mandag d. 29 maj: Lav først domænemodel (den virkelige verden)
+22. ER-diagram (den virtuelle verden), laves ud fra domænemodel
+23. Postgres kodeord gemmes som miljøvariable på egen computer
+24. Lav navigationsdiagram over websites flow
+
