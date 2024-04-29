@@ -1,5 +1,8 @@
 header {
     border: black solid 2px;
+    position: fixed; /* Set the navbar to fixed position */
+    top: 0; /* Position the navbar at the top of the page */
+    width: 100%; /* Full width */
 
     ul {
         display: flex;
@@ -78,3 +81,14 @@ header {
     }
 }
 
+.main {
+    margin-top: 120px;
+    margin-bottom: 120px;
+}
+
+footer {
+    text-align: center;
+    position: fixed; /* Set the navbar to fixed position */
+    bottom: 0; /* Position the navbar at the bottom of the page */
+    width: 100%; /* Full width */
+}
