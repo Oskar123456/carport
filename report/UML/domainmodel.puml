@@ -1,0 +1,42 @@
+@startuml
+@startuml
+
+metaclass materiale <<lager>> {
+  mål
+  pris
+  beskrivelse
+  andet info
+}
+
+metaclass produkt {
+  materialer
+  beskrivelse
+  mål / antal mm.
+  pris
+  status
+  andet info
+  levering
+  links f.eks. dokumentation
+}
+
+metaclass kunde {
+  kontaktinfo
+  korrespondence
+  historik f.eks. bestillinger
+}
+
+metaclass ansat {
+  kontaktinfo
+  korrespondence
+  rolle
+}
+
+materiale "0..*" -- "0..*" produkt
+
+kunde "0.." -- "0..*" produkt
+
+ansat "0..*" -- "0" kunde
+
+@enduml
+
+@enduml
