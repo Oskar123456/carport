@@ -1,18 +1,19 @@
 package carport;
 
+import carport.exceptions.DatabaseException;
+import carport.persistence.CarportMapper;
 import carport.persistence.ConnectionPool;
 import carport.config.ThymeleafConfig;
-import carport.controllers.CupcakeController;
+import carport.controllers.CarportController;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
-import io.javalin.http.staticfiles.Location;
 
 
 public class Main
 {
     private static final String USER = "postgres";
-    private static final String PASSWORD = "postgres";
-    private static final String URL = "jdbc:postgresql://localhost:5432/%s?currentSchema=public";
+    private static final String PASSWORD = "bwQc)89P";
+    private static final String URL = "jdbc:postgresql://104.248.251.153:5432/%s?currentSchema=public";
     private static final String DB = "carport";
 
     private static final ConnectionPool connectionPool = ConnectionPool.getInstance(USER, PASSWORD, URL, DB);
@@ -28,6 +29,14 @@ public class Main
 
 
         // Routing
-        CupcakeController.addRoutes(jav, connectionPool);
+        CarportController.addRoutes(jav, connectionPool);
+
+        // Test
+        try {
+            System.out.printf("Testing database connection...%n\tListing item names:%n");
+            CarportMapper.TestMapper(connectionPool);
+        } catch (DatabaseException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

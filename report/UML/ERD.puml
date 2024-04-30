@@ -9,24 +9,16 @@ entity item {
     length
     height
     weight
-    documentation
-    links
+    links : charvar[]
     price
-    specification_names : charvar[]
-    specification_details : charvar[]
 }
 entity product {
     id
     --
     name
     descript
-    categories
-    delivery_types
-    documentation
-    links
+    links : charvar[]
     price
-    specification_names : charvar[]
-    specification_details : charvar[]
 }
 entity product_line {
     id
@@ -35,12 +27,21 @@ entity product_line {
     product_id
     quantity
 }
-entity documentation {
+entity documentation_product {
     id
     --
     name
     descript
     data
+    product_id
+}
+entity documentation_item {
+    id
+    --
+    name
+    descript
+    data
+    item_id
 }
 entity customer {
     id
@@ -102,22 +103,46 @@ entity zip_code {
     --
     city_name
 }
+entity product_spec_line {
+    id
+    --
+    product_id
+    spec_name : charvar
+    spec_details : charvar
+}
+entity product_category_line {
+    id
+    --
+    product_id
+    category_id
+}
+entity product_delivery_type_line {
+    id
+    --
+    product_id
+    delivery_type_id
+}
 
 product_line "0..*" }o-- "1" item
 product_line "0..*" }o-- "1" product
 
+product "1" ||--{ "0..*" product_category_line
+product_category_line "0..*" }--|| "1" category
+
+product "1" ||--{ "0..*" product_delivery_type_line
+product_delivery_type_line "0..*" }--|| "1" delivery_type
+
+product "1" ||--{ "0..*" product_spec_line
+
 order_line "0..*" }o-- "1" orders
 order_line "0..*" }o-- "1" item
 
-product " " --o{ "1..*" documentation
-item " " --|{ "1..*" documentation
-
-product " " --|{ "1..*" delivery_type
-product " " --|{ "1..*" category
+documentation_product "1..*" }--|| "1" product
+item "1" ||--|{ "1..*" documentation_item
 
 orders "0..*" }|--|| "1" customer
 orders "0..*" }|--|| "1" employee
-orders " " --|| "1" delivery_type
+orders "0..*" }--|| "1" delivery_type
 
 customer " " --|| "1" address
 employee " " --|| "1" address
