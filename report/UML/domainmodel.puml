@@ -5,7 +5,7 @@ metaclass materiale <<lager>> {
   mål
   pris
   beskrivelse
-  andet info
+  kategori
 }
 
 metaclass produkt {
@@ -14,9 +14,10 @@ metaclass produkt {
   mål / antal mm.
   pris
   status
-  andet info
   levering
-  links f.eks. dokumentation
+  dokumentation f.eks. vejl.
+  kategori
+  yderligere specifikationer...
 }
 
 metaclass kunde {
@@ -31,11 +32,36 @@ metaclass ansat {
   rolle
 }
 
-materiale "0..*" -- "0..*" produkt
+metaclass bestilling {
+  kunde
+  ansat
+  produkt
+  dato/tid
+}
+
+metaclass kategori {
+  fællesnævnere
+}
+
+metaclass lager {
+    adresse
+    materialer
+    ansat
+}
+
+materiale "1..*" -- "0.." produkt
+materiale "0..*" -- "0..*" lager
 
 kunde "0.." -- "0..*" produkt
 
-ansat "0..*" -- "0" kunde
+ansat "0..1" -- "0..*" kunde
+ansat "0..1" -- "0..*" lager
+
+kategori "1..*" -- "0..*" produkt
+
+bestilling "0..*" -- "0..1" kunde
+bestilling "0..*" -- "0..1" ansat
+bestilling "0..*" -- "0..*" produkt
 
 @enduml
 

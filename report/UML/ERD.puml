@@ -1,0 +1,127 @@
+@startuml
+
+entity item {
+    id
+    --
+    name
+    descript
+    width
+    length
+    height
+    weight
+    documentation
+    links
+    price
+    specification_names : charvar[]
+    specification_details : charvar[]
+}
+entity product {
+    id
+    --
+    name
+    descript
+    categories
+    delivery_types
+    documentation
+    links
+    price
+    specification_names : charvar[]
+    specification_details : charvar[]
+}
+entity product_line {
+    id
+    --
+    item_id
+    product_id
+    quantity
+}
+entity documentation {
+    id
+    --
+    name
+    descript
+    data
+}
+entity customer {
+    id
+    --
+    name
+    email
+    password
+    address_id
+}
+entity employee {
+    id
+    --
+    name
+    email
+    password
+    address_id
+    role
+}
+entity orders {
+    id
+    --
+    time_transaction
+    time_delivery
+    time_completion
+    delivery_type_id
+    customer_id
+    employee_id
+    price
+}
+entity order_line {
+    id
+    --
+    order_id
+    item_id
+    quantity
+}
+entity delivery_type {
+    id
+    --
+    name
+    price
+}
+entity category {
+    id
+    --
+    name
+    common_denominators
+}
+entity address {
+    id
+    --
+    street
+    number
+    floor
+    zip_code
+}
+entity zip_code {
+    code
+    --
+    city_name
+}
+
+product_line "0..*" }o-- "1" item
+product_line "0..*" }o-- "1" product
+
+order_line "0..*" }o-- "1" orders
+order_line "0..*" }o-- "1" item
+
+product " " --o{ "1..*" documentation
+item " " --|{ "1..*" documentation
+
+product " " --|{ "1..*" delivery_type
+product " " --|{ "1..*" category
+
+orders "0..*" }|--|| "1" customer
+orders "0..*" }|--|| "1" employee
+orders " " --|| "1" delivery_type
+
+customer " " --|| "1" address
+employee " " --|| "1" address
+
+address " " --|| "1" zip_code
+
+@enduml
