@@ -1,7 +1,7 @@
 ### DOMÆNE ANALYSE
 
-<beskriv/forklar motivationen til en domæneanalyse (f.eks. at den muliggør database-design, som 
-i takt muliggør implementation af IT-løsningsprototype)>
+- beskriv/forklar motivationen til en domæneanalyse (f.eks. at den muliggør database-design, som 
+i takt muliggør implementation af IT-løsningsprototype)
 
 På baggrund af det udleverede virksomhedsbesøg, samt en grundig gennemgang af online materialer, 
 er der foretaget en domæneanalyse af Johannes Fog byggemarked.
@@ -22,7 +22,7 @@ en bestilling kan behandles.
 Diagrammet nedenfor er en umiddelbar __domænemodel__, udarbejdet i begyndelsen af projektet, som 
 et udgangspunkt til en mere detaljeret skitsering af den data, en eventuel IT-løsning vil få brug for.
 
-<IMG : domainmodel.puml>
+- IMG : domainmodel.puml
 
 De egentlige fysiske besiddelser hos forretning er _materialer_/_varer_ på et lager. Siden 
 forretningen f.eks. i forbindelse med salg af en carport, ikke sælger disse hver for sig, men 
@@ -48,5 +48,5 @@ nødvendigt eller hensigtsmæssigt).
 
 Nedenfor ses en _ERD_ model for en mulig implementation af en database.
 
-<IMG : ERD.puml>
+- IMG : ERD.puml
 
