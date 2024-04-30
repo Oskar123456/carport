@@ -1,8 +1,24 @@
+html {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    background-color: #f5f5f3;
+
+    font-family: "Roboto", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+}
+
+.page {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
 header {
-    border: black solid 2px;
     position: fixed; /* Set the navbar to fixed position */
     top: 0; /* Position the navbar at the top of the page */
-    width: 100%; /* Full width */
+    width: 99%; /* Full width */
 
     ul {
         display: flex;
@@ -29,21 +45,31 @@ header {
     }
 
     li a:hover {
-        background-color: red;
+        border-bottom: black solid 0.25rem;
+        height: 5.75rem;
     }
 }
 
 .header-info {
     display: flex;
     justify-content: space-around;
-
+    li {
+        margin-right: 10px;
+        margin-left: 10px;
+    }
+    li a:hover {
+        text-decoration-line: underline;
+        margin-right: 4px;
+        margin-left: 4px;
+    }
 }
 
 .nav {
     display: flex;
-    border: red solid 2px;
+    flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    background-color: white;
 
     img {
         height: 6rem;
@@ -51,7 +77,21 @@ header {
         vertical-align: bottom;
     }
 
+    a, form {
+        display: flex;
+        height: 6rem;
+        justify-content: center;
+        align-items: center;
+    }
 
+    ul {
+        margin-left: 16px;
+    }
+
+    li {
+        margin-left: 8px;
+        margin-right: 8px;
+    }
 
     li.dropdown-button {
         display: inline-block;
@@ -62,7 +102,7 @@ header {
         position: absolute;
         background-color: #f9f9f9;
         min-width: 160px;
-        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
         z-index: 1;
     }
 
@@ -79,6 +119,41 @@ header {
     .nav-categories-element:hover .dropdown-content {
         display: block;
     }
+}
+
+.nav-right {
+    display: flex;
+}
+.nav-left {
+    display: flex;
+}
+.nav-search-form {
+    input {
+        width: 20rem;
+        height: 1.8rem;
+        padding: 8px;
+        border: #003d76 solid 2px;
+        border-radius: 12px;
+    }
+    input:focus {
+        outline: none;
+    }
+}
+.nav-search-button {
+    border: none;
+    border-radius: 12px;
+    padding: 8px;
+    background-color: #003d76;
+    margin-right: 10px;
+    img {
+        height: 2rem;
+        width: 2.2rem;
+        background-color: #003d76;
+    }
+}
+.nav-search-button:hover {
+    cursor: pointer;
+    border: #003d76 solid 2px;
 }
 
 .main {

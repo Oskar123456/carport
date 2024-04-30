@@ -7,6 +7,9 @@
 <link href="../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
 <link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/cupcakefavico32x32.png}">
 <link rel="icon" type="image/png" sizes="48x48" th:href="@{/images/cupcakefavico48x48.png}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@100..800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -22,40 +25,88 @@
         </ul>
     </div>
         <div class="nav">
-            <div class="nav-logo">
-                <a href="index.html">
-                <img src="../public/images/foglogo.png" th:src="@{/images/foglogo.png}" alt=""/>
-                </a>
-            </div>
-            <div class="nav-categories">
-                <ul>
-                    <li class="nav-categories-element"><a href="">Home</a></li>
-                    <li class="nav-categories-element"><a href="">News</a></li>
-                    <li class="nav-categories-element">
-                        <a href="javascript:void(0)" class="dropdown-button">Dropdown</a>
-                        <div class="dropdown-content">
-                            <a href="#">Link 1</a>
-                            <a href="#">Link 2</a>
-                            <a href="#">Link 3</a>
-                        </div>
-                    </li>
-                </ul>
+            <div class="nav-left">
+                <div class="nav-logo">
+                    <a href="index.html">
+                        <img src="../public/images/foglogo.png" th:src="@{/images/foglogo.png}" alt=""/>
+                    </a>
+                </div>
+                <div class="nav-categories">
+                    <ul>
+                        <li class="nav-categories-element">
+                            <a href="javascript:void(0)" class="dropdown-button">Kategori 1</a>
+                            <div class="dropdown-content">
+                                <a href="#">Link 1</a>
+                                <a href="#">Link 2</a>
+                                <a href="#">Link 3</a>
+                            </div>
+                        </li>
 
+                        <li class="nav-categories-element">
+                            <a href="javascript:void(0)" class="dropdown-button">Kategori 2</a>
+                            <div class="dropdown-content">
+                                <a href="#">Link 1</a>
+                                <a href="#">Link 2</a>
+                                <a href="#">Link 3</a>
+                            </div>
+                        </li>
+                        <li class="nav-categories-element">
+                            <a href="javascript:void(0)" class="dropdown-button">Kategori 3</a>
+                            <div class="dropdown-content">
+                                <a href="#">Link 1</a>
+                                <a href="#">Link 2</a>
+                                <a href="#">Link 3</a>
+                            </div>
+                        </li>
+                        <li class="nav-categories-element">
+                            <a href="javascript:void(0)" class="dropdown-button">Kategori 4</a>
+                            <div class="dropdown-content">
+                                <a href="#">Link 1</a>
+                                <a href="#">Link 2</a>
+                                <a href="#">Link 3</a>
+                            </div>
+                        </li>
+                        <li class="nav-categories-element">
+                            <a href="javascript:void(0)" class="dropdown-button">Kategori 5</a>
+                            <div class="dropdown-content">
+                                <a href="#">Link 1</a>
+                                <a href="#">Link 2</a>
+                                <a href="#">Link 3</a>
+                            </div>
+                        </li>
+                        <li class="nav-categories-element">
+                            <a href="javascript:void(0)" class="dropdown-button">Kategori 6</a>
+                            <div class="dropdown-content">
+                                <a href="#">Link 1</a>
+                                <a href="#">Link 2</a>
+                                <a href="#">Link 3</a>
+                            </div>
+                        </li>
+                    </ul>
+
+                </div>
             </div>
-            <div class="nav-search">
-                <form class="nav-search-form">
-                    <button type="submit" formaction="search">Søg</button>
-                    <input type="text" placeholder="Søg på produkter eller kategorier">
-                    <button type="button">luk</button>
-                </form>
+            <div class="nav-right">
+                <div class="nav-search">
+                    <form class="nav-search-form">
+                        <button class="nav-search-button" type="submit" formaction="search">
+                            <img src="../public/images/magnifyingglass64x64.png" alt=""/>
+                        </button>
+                        <label>
+                            <input type="text" placeholder="Søg på produkter eller kategorier">
+                        </label>
+                        <!-- <button class="nav-search-cancel-button" type="button">luk</button> -->
+                    </form>
+                </div>
+                <div class="nav-personal">
+                    <ul>
+                        <li><a href="">Fog Konto</a></li>
+                        <li><a href="">Find Fog</a></li>
+                        <li><a href="">Kurv</a></li>
+                    </ul>
+                </div>
             </div>
-            <div class="nav-personal">
-                <ul>
-                    <li><a href="">Fog Konto</a></li>
-                    <li><a href="">Find Fog</a></li>
-                    <li><a href="">Kurv</a></li>
-                </ul>
-            </div>
+
         </div>
 </header>
 <div class="main">
