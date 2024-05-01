@@ -34,7 +34,7 @@
                 <div class="nav-categories">
                     <ul>
                         <li class="nav-categories-element">
-                            <a href="javascript:void(0)" class="dropdown-button">Kategori 1</a>
+                            <a href="" class="dropdown-button">Kategori 1</a>
                             <div class="dropdown-content">
                                 <a href="#">Link 1</a>
                                 <a href="#">Link 2</a>
@@ -43,7 +43,7 @@
                         </li>
 
                         <li class="nav-categories-element">
-                            <a href="javascript:void(0)" class="dropdown-button">Kategori 2</a>
+                            <a href="" class="dropdown-button">Kategori 2</a>
                             <div class="dropdown-content">
                                 <a href="#">Link 1</a>
                                 <a href="#">Link 2</a>
@@ -51,7 +51,7 @@
                             </div>
                         </li>
                         <li class="nav-categories-element">
-                            <a href="javascript:void(0)" class="dropdown-button">Kategori 3</a>
+                            <a href="" class="dropdown-button">Kategori 3</a>
                             <div class="dropdown-content">
                                 <a href="#">Link 1</a>
                                 <a href="#">Link 2</a>
@@ -59,7 +59,7 @@
                             </div>
                         </li>
                         <li class="nav-categories-element">
-                            <a href="javascript:void(0)" class="dropdown-button">Kategori 4</a>
+                            <a href="" class="dropdown-button">Kategori 4</a>
                             <div class="dropdown-content">
                                 <a href="#">Link 1</a>
                                 <a href="#">Link 2</a>
@@ -67,7 +67,7 @@
                             </div>
                         </li>
                         <li class="nav-categories-element">
-                            <a href="javascript:void(0)" class="dropdown-button">Kategori 5</a>
+                            <a href="" class="dropdown-button">Kategori 5</a>
                             <div class="dropdown-content">
                                 <a href="#">Link 1</a>
                                 <a href="#">Link 2</a>
@@ -75,7 +75,7 @@
                             </div>
                         </li>
                         <li class="nav-categories-element">
-                            <a href="javascript:void(0)" class="dropdown-button">Kategori 6</a>
+                            <a href="" class="dropdown-button">Carporte</a>
                             <div class="dropdown-content">
                                 <a href="#">Link 1</a>
                                 <a href="#">Link 2</a>
@@ -89,11 +89,11 @@
             <div class="nav-right">
                 <div class="nav-search">
                     <form class="nav-search-form">
-                        <button class="nav-search-button" type="submit" formaction="search">
-                            <img src="../public/images/magnifyingglass64x64.png" alt=""/>
+                        <button class="nav-search-button" type="submit" formaction="soegning">
+                            <img src="../public/images/magnifyingglass64x64.png" th:src="@{/images/magnifyingglass64x64.png}"  alt=""/>
                         </button>
                         <label>
-                            <input type="text" placeholder="Søg på produkter eller kategorier">
+                            <input type="text" placeholder="Søg på produkter eller kategorier" name="searchString" id="searchString">
                         </label>
                         <!-- <button class="nav-search-cancel-button" type="button">luk</button> -->
                     </form>

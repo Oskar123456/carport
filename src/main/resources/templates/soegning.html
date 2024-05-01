@@ -7,13 +7,16 @@
     <link href="../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
     <link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/cupcakefavico32x32.png}">
     <link rel="icon" type="image/png" sizes="48x48" th:href="@{/images/cupcakefavico48x48.png}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@100..800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
 <div class="page">
     <header>
-        <div class="headerInfo">
+        <div class="header-info">
             <ul>
                 <li><a href="">extra info</a></li>
                 <li><a href="">extra info</a></li>
@@ -22,52 +25,121 @@
             </ul>
         </div>
         <div class="nav">
-            <div class="nav-logo"></div>
-            <div class="nav-categories">
-                <ul>
-                    <li><a href="index.html">
-                        <img src="../public/images/cupcakelogotitle.png" th:src="@{/images/cupcakelogotitle.png}" alt=""/>
-                    </a></li>
-                    <li><a href="">Home</a></li>
-                    <li><a href="">News</a></li>
-                    <li class="dropdown">
-                        <a href="javascript:void(0)" class="dropbtn">Dropdown</a>
-                        <div class="dropdown-content">
-                            <a href="#">Link 1</a>
-                            <a href="#">Link 2</a>
-                            <a href="#">Link 3</a>
-                        </div>
-                    </li>
-                </ul>
+            <div class="nav-left">
+                <div class="nav-logo">
+                    <a href="index.html">
+                        <img src="../public/images/foglogo.png" th:src="@{/images/foglogo.png}" alt=""/>
+                    </a>
+                </div>
+                <div class="nav-categories">
+                    <ul>
+                        <li class="nav-categories-element">
+                            <a href="" class="dropdown-button">Kategori 1</a>
+                            <div class="dropdown-content">
+                                <a href="#">Link 1</a>
+                                <a href="#">Link 2</a>
+                                <a href="#">Link 3</a>
+                            </div>
+                        </li>
 
+                        <li class="nav-categories-element">
+                            <a href="" class="dropdown-button">Kategori 2</a>
+                            <div class="dropdown-content">
+                                <a href="#">Link 1</a>
+                                <a href="#">Link 2</a>
+                                <a href="#">Link 3</a>
+                            </div>
+                        </li>
+                        <li class="nav-categories-element">
+                            <a href="" class="dropdown-button">Kategori 3</a>
+                            <div class="dropdown-content">
+                                <a href="#">Link 1</a>
+                                <a href="#">Link 2</a>
+                                <a href="#">Link 3</a>
+                            </div>
+                        </li>
+                        <li class="nav-categories-element">
+                            <a href="" class="dropdown-button">Kategori 4</a>
+                            <div class="dropdown-content">
+                                <a href="#">Link 1</a>
+                                <a href="#">Link 2</a>
+                                <a href="#">Link 3</a>
+                            </div>
+                        </li>
+                        <li class="nav-categories-element">
+                            <a href="" class="dropdown-button">Kategori 5</a>
+                            <div class="dropdown-content">
+                                <a href="#">Link 1</a>
+                                <a href="#">Link 2</a>
+                                <a href="#">Link 3</a>
+                            </div>
+                        </li>
+                        <li class="nav-categories-element">
+                            <a href="" class="dropdown-button">Carporte</a>
+                            <div class="dropdown-content">
+                                <a href="#">Link 1</a>
+                                <a href="#">Link 2</a>
+                                <a href="#">Link 3</a>
+                            </div>
+                        </li>
+                    </ul>
+
+                </div>
             </div>
-            <div class="nav-search"></div>
-            <div class="nav-personal"></div>
+            <div class="nav-right">
+                <div class="nav-search">
+                    <form class="nav-search-form">
+                        <button class="nav-search-button" type="submit" formaction="search">
+                            <img src="../public/images/magnifyingglass64x64.png" th:src="@{/images/magnifyingglass64x64.png}"  alt=""/>
+                        </button>
+                        <label>
+                            <input type="text" placeholder="Søg på produkter eller kategorier">
+                        </label>
+                        <!-- <button class="nav-search-cancel-button" type="button">luk</button> -->
+                    </form>
+                </div>
+                <div class="nav-personal">
+                    <ul>
+                        <li><a href="">Fog Konto</a></li>
+                        <li><a href="">Find Fog</a></li>
+                        <li><a href="">Kurv</a></li>
+                    </ul>
+                </div>
+            </div>
+
         </div>
     </header>
     <div class="main">
-        <div class="search">
-            <h1 th:text="Søgning">Søgning</h1>
-            <div class="search-filters">
+    <div class="search-result">
+        <h1 th:text="'Søgning: ' + ${searchString}"></h1>
+        <form>
 
-            </div>
-            <div class="search-sort">
-
-            </div>
-            <div class="search-results">
-
-            </div>
-            <div class="search-footer">
-
-            </div>
+        </form>
+        <form><!-- SORTER EFTER META DATA (POPULARITY; AGE; ETC) --></form>
+        <div class="search-result-list">
+            <a th:if="${productList != null && !productList.isEmpty()}" class="search-result-element"
+                 th:each="product,iterStat : ${productList}" th:href="'produkt/' + '?name=' + ${product.Name()} + '&id=' + ${product.Id()}">
+                <h2 th:text="${product.Name()}"></h2>
+                <p th:text="${product.Description()}"></p>
+            </a>
+            <div th:if="${productList == null || productList.isEmpty()}">Ingen resultater :(</div>
         </div>
-        <div class="suggestions">
-
-        </div>
+        <ul>
+            <li><a href=""> left </a></li>
+            <li><a href=""> right </a></li>
+        </ul>
     </div>
-<footer>
 
-</footer>
+    <div class="related-products">
+        <h1>Relaterede produkter...</h1>
+    </div>
+
+    </div>
+
+    <footer>
+        this is a footer
+    </footer>
+
 </div>
 </body>
 </html>

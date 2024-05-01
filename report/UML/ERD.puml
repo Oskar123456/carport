@@ -103,12 +103,18 @@ entity zip_code {
     --
     city_name
 }
+entity picture {
+    id
+    --
+    data : bytea
+    link : varchar
+}
 entity product_spec_line {
     id
     --
     product_id
-    spec_name : charvar
-    spec_details : charvar
+    spec_name : varchar
+    spec_details : varchar
 }
 entity product_category_line {
     id
@@ -122,6 +128,12 @@ entity product_delivery_type_line {
     product_id
     delivery_type_id
 }
+entity product_picture_line {
+    id
+    --
+    product_id
+    picture_id
+}
 
 product_line "0..*" }o-- "1" item
 product_line "0..*" }o-- "1" product
@@ -133,6 +145,8 @@ product "1" ||--{ "0..*" product_delivery_type_line
 product_delivery_type_line "0..*" }--|| "1" delivery_type
 
 product "1" ||--{ "0..*" product_spec_line
+product "1" ||--{ "0..*" product_picture_line
+picture "1" ||--{ "0..*" product_picture_line
 
 order_line "0..*" }o-- "1" orders
 order_line "0..*" }o-- "1" item
