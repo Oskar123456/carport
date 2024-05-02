@@ -48,5 +48,7 @@ nødvendigt eller hensigtsmæssigt).
 
 Nedenfor ses en _ERD_ model for en mulig implementation af en database.
 
-- IMG : ERD.puml
+- IMG : ERD
+
+
 

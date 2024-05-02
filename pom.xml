@@ -92,7 +92,7 @@
 
     <build>
 
-        <finalName>cupcake</finalName>
+        <finalName>carport</finalName>
 
         <plugins>
             <plugin>

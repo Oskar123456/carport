@@ -9,16 +9,21 @@ entity item {
     length
     height
     weight
-    links : charvar[]
     price
+    links : charvar[]
+    pictures : int[]
+    categories : int[]
 }
 entity product {
     id
     --
     name
     descript
-    links : charvar[]
     price
+    links : charvar[]
+    delivery_types : int[]
+    pictures : int[]
+    categories : int[]
 }
 entity product_line {
     id
@@ -116,37 +121,18 @@ entity product_spec_line {
     spec_name : varchar
     spec_details : varchar
 }
-entity product_category_line {
-    id
-    --
-    product_id
-    category_id
-}
-entity product_delivery_type_line {
-    id
-    --
-    product_id
-    delivery_type_id
-}
-entity product_picture_line {
-    id
-    --
-    product_id
-    picture_id
-}
 
 product_line "0..*" }o-- "1" item
 product_line "0..*" }o-- "1" product
 
-product "1" ||--{ "0..*" product_category_line
-product_category_line "0..*" }--|| "1" category
+product " " --{ "0..*" category
+product " " --{ "0..*" picture
+product " " --{ "0..*" delivery_type
 
-product "1" ||--{ "0..*" product_delivery_type_line
-product_delivery_type_line "0..*" }--|| "1" delivery_type
+item " " --{ "0..*" category
+item " " --{ "0..*" picture
 
 product "1" ||--{ "0..*" product_spec_line
-product "1" ||--{ "0..*" product_picture_line
-picture "1" ||--{ "0..*" product_picture_line
 
 order_line "0..*" }o-- "1" orders
 order_line "0..*" }o-- "1" item

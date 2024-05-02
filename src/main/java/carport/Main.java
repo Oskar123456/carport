@@ -29,9 +29,11 @@ public class Main
         String userDir = System.getProperty("user.dir");
         String publicDir = userDir + "/src/main/resources/public";
 
+        System.err.println(publicDir);
+
         Javalin jav = Javalin.create(config -> {
-            //config.staticFiles.add("/public");
-            config.staticFiles.add(publicDir, Location.EXTERNAL);
+            config.staticFiles.add("/public");
+            //config.staticFiles.add(publicDir, Location.EXTERNAL);
             config.jetty.modifyServletContextHandler(handler -> handler.setSessionHandler(SessionConfig.sessionConfig()));
             config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
         }).start(7070);
