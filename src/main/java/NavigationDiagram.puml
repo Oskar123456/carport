@@ -1,0 +1,26 @@
+@startuml
+title Fog Carport - Navigationsdiagram
+
+[*] --> Login
+Login --> Hjemmeside : succes
+Login : login.jsp
+Hjemmeside : index.jsp
+Hjemmeside --> Profil : klik på profil
+Profil --> RedigerProfil : rediger knap
+Profil : profil.jsp
+RedigerProfil : redigerProfil.jsp
+RedigerProfil --> Profil : gem
+Hjemmeside --> ProduktDetaljer : vælg produkt
+ProduktDetaljer --> Hjemmeside : tilbage
+ProduktDetaljer : produktDetaljer.jsp
+
+Hjemmeside --> Indkøbskurv : tilføj til kurv
+Indkøbskurv --> Kasse : gå til kassen
+Indkøbskurv : kurv.jsp
+Kasse --> Betaling : fortsæt til betaling
+Betaling --> Bekræftelse : bekræft
+Betaling : betaling.jsp
+Bekræftelse --> [*]
+Bekræftelse : bekræftelse.jsp
+
+@enduml
