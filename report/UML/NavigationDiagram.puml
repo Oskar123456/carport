@@ -1,15 +1,21 @@
 @startuml
 title Fog Carport - Navigationsdiagram for Kunde og Sælger
 
-[*] --> Login
-Login --> Hjemmeside : succes
-Login : Login side
+[*] --> Hjemmeside
 Hjemmeside : Hovedside
 
-'Det her er Hjemmeside til kundens navigation
+'Hjemmeside til kundens navigation
 Hjemmeside --> ProduktDetaljer : vælg produkt
 ProduktDetaljer --> Hjemmeside : tilbage
 ProduktDetaljer : Produkt detalje side
+
+'Valgmuligheder for login og oprettelse af bruger
+Hjemmeside --> Login : log ind
+Hjemmeside --> OpretBruger : opret bruger
+Login --> Hjemmeside : succes
+OpretBruger --> Hjemmeside : bruger oprettet
+Login : Login side
+OpretBruger : Opret bruger side
 
 'Kunde kan anmode om skræddersyet carport
 ProduktDetaljer --> Anmodning : send forespørgsel
