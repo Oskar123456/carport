@@ -1,0 +1,47 @@
+@startuml
+title Fog Carport - Navigationsdiagram for Kunde og Sælger
+
+[*] --> Hjemmeside
+Hjemmeside : Hovedside
+
+'Hjemmeside til kundens navigation
+Hjemmeside --> ProduktDetaljer : vælg produkt
+ProduktDetaljer --> Hjemmeside : tilbage
+ProduktDetaljer : Produkt detalje side
+
+'Valgmuligheder for login og oprettelse af bruger
+Hjemmeside --> Login : log ind
+Hjemmeside --> OpretBruger : opret bruger
+Login --> Hjemmeside : succes
+OpretBruger --> Hjemmeside : bruger oprettet
+Login : Login side
+OpretBruger : Opret bruger side
+
+'Kunde kan anmode om skræddersyet carport
+ProduktDetaljer --> Anmodning : send forespørgsel
+Anmodning : Anmodning side
+Anmodning --> DialogMedSælger : sælger modtager og reagerer
+DialogMedSælger : Dialog side
+
+'Kunde og sælger dialog, der kan fortsætte tilbage og frem
+DialogMedSælger --> GemPåProfil : enighed og bekræft design
+DialogMedSælger --> DialogMedKunde
+GemPåProfil : Gem på profil side
+
+'Gemmer og går til betaling
+GemPåProfil --> Betaling : gå til betaling
+Betaling : Betalings side
+Betaling --> Hjemmeside : betaling gennemført
+
+'Det her er Sælgerens navigation
+Hjemmeside --> SælgerPanel : sælger login
+SælgerPanel : Sælger panel
+SælgerPanel --> SeKundeforespørgsler : se forespørgsler
+SeKundeforespørgsler --> DialogMedKunde : vælg at reagere på forespørgsel
+DialogMedKunde : Dialog med kunde side
+DialogMedKunde --> DialogMedSælger : fortsat dialog
+DialogMedKunde --> GemPåProfil : når enigheden er opnået
+
+SeKundeforespørgsler --> [*] : log ud
+
+@enduml
