@@ -14,16 +14,19 @@
 
 <body>
 
+
+
 <div class="page">
-    <header>
-        <div class="header-info">
-            <ul>
-                <li><a href="">extra info</a></li>
-                <li><a href="">extra info</a></li>
-                <li><a href="">extra info</a></li>
-                <li><a href="">extra info</a></li>
-            </ul>
-        </div>
+<!-- BEGINNING OF NAV BAR -->
+<header>
+    <div class="header-info">
+        <ul>
+            <li><a href="">extra info</a></li>
+            <li><a href="">extra info</a></li>
+            <li><a href="">extra info</a></li>
+            <li><a href="">extra info</a></li>
+        </ul>
+    </div>
         <div class="nav">
             <div class="nav-left">
                 <div class="nav-logo">
@@ -89,11 +92,11 @@
             <div class="nav-right">
                 <div class="nav-search">
                     <form class="nav-search-form">
-                        <button class="nav-search-button" type="submit" formaction="search">
+                        <button class="nav-search-button" type="submit" formaction="soegning">
                             <img src="../public/images/magnifyingglass64x64.png" th:src="@{/images/magnifyingglass64x64.png}"  alt=""/>
                         </button>
                         <label>
-                            <input type="text" placeholder="Søg på produkter eller kategorier">
+                            <input type="text" placeholder="Søg på produkter eller kategorier" name="searchString" id="searchString">
                         </label>
                         <!-- <button class="nav-search-cancel-button" type="button">luk</button> -->
                     </form>
@@ -108,19 +111,26 @@
             </div>
 
         </div>
-    </header>
+</header>
+<!-- END OF NAV BAR -->
     <div class="main">
     <div class="search-result">
         <h1 th:text="'Søgning: ' + ${searchString}"></h1>
         <form>
-
         </form>
         <form><!-- SORTER EFTER META DATA (POPULARITY; AGE; ETC) --></form>
         <div class="search-result-list">
-            <a th:if="${productList != null && !productList.isEmpty()}" class="search-result-element"
-                 th:each="product,iterStat : ${productList}" th:href="'produkt/' + '?name=' + ${product.Name()} + '&id=' + ${product.Id()}">
-                <h2 th:text="${product.Name()}"></h2>
-                <p th:text="${product.Description()}"></p>
+            <a th:if="${productList != null && !productList.isEmpty()}"
+               class="search-result-element"
+               th:each="product,iterStat : ${productList}"
+               th:href="'produkt/' + '?name=' + ${product.getName()} + '&id=' + ${product.getId()}">
+              <img src="null"
+                   th:src="'billeder?id=' + ${product.getImageIdsMini()[0]}"
+                   alt="productimage">
+              <p class="search-result-title"
+                 th:text="${product.getName()}"></p>
+              <p class="search-result-price"
+                 th:text="'pris: ' + ${product.getPrice()}"></p>
             </a>
             <div th:if="${productList == null || productList.isEmpty()}">Ingen resultater :(</div>
         </div>

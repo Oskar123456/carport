@@ -1,0 +1,169 @@
+@startuml
+!theme mars
+skinparam class {
+BackgroundColor #FFFF99
+}
+skinparam linetype ortho
+
+entity orders {
+* <<pk>> id : serial
+--
+<<fk>> product_id : bigint
+<<fk>> employee_id : bigint
+<<fk>> customer_id : bigint
+<<fk>> status_code : bigint
+<<fk>> shipment_id : bigint
+price : numeric
+time_of_order : timestamp
+note : varchar
+}
+entity status_code {
+* <<pk>> id : serial
+--
+name : varchar
+description : varchar
+}
+entity order_product {
+* <<pk>> id : serial
+--
+<<fk>> order_id : bigint
+<<fk>> product_id : bigint
+quantity : bigint
+}
+entity product {
+* <<pk>> id : serial
+--
+name : varchar
+description : varchar
+price : numeric
+links : varchar[]
+images : bigint[]
+images_mini : bigint[]
+}
+entity product_component {
+* <<pk>> id : serial
+--
+<<fk>> product_id : bigint
+<<fk>> component_id : bigint
+quantity : bigint
+}
+entity product_documentation {
+* <<pk>> id : serial
+--
+name : varchar
+data : bytea
+<<fk>> product_id
+}
+entity product_specification{
+* <<pk>> id : serial
+--
+<<fk>> product_id : bigint
+<<fk>> specification_id : bigint
+details : varchar
+}
+entity category {
+* <<pk>> id : serial
+--
+name : varchar
+common_specs : bigint[]
+}
+entity product_category {
+* <<pk>> id : serial
+--
+product_id : bigint
+category_id : bigint
+}
+entity specification {
+* <<pk>> id : serial
+--
+name : varchar
+unit : varchar
+}
+entity product_image {
+* <<pk>> id : serial
+--
+name : varchar
+description : varchar
+source : varchar
+format : varchar
+data : bytea
+}
+entity warehouse {
+* <<pk>> id : serial
+--
+<<fk>> address_id : bigint
+}
+entity warehouse_product {
+* <<pk>> id : serial
+--
+<<fk>> warehouse_id : bigint
+<<fk>> product_id : bigint
+quantity : bigint
+}
+entity users {
+* <<pk>> id : serial
+--
+name : varchar
+email : varchar
+password : varchar
+role : varchar
+<<fk>> address : bigint
+}
+entity address {
+* <<pk>> id : serial
+--
+street : varchar
+number : bigint
+floor : bigint
+<<fk>> zip : bigint
+}
+entity zip_code {
+code
+--
+city : varchar
+}
+entity shipment {
+* <<pk>> id : serial
+--
+name : varchar
+time_of_shipment : timestamp
+time_of_delivery : timestamp
+}
+entity payment {
+* <<pk>> id : serial
+--
+<<fk>> order_id : bigint
+time_of_payment : timestamp
+amount : numeric
+details : varchar
+}
+
+order_product ||--|| orders
+order_product ||--|| product
+
+orders -- shipment
+orders -- payment
+orders -- users
+orders -- status_code
+
+product -- product_category
+product -- product_documentation
+product -- product_specification
+product -- product_component
+product -- product_image
+
+product_specification -- specification
+
+category -- specification
+product_category -- category
+
+warehouse_product -- product
+warehouse_product -- warehouse
+warehouse -- users
+
+users -- address
+users -- payment
+
+address -- zip_code
+
+@enduml

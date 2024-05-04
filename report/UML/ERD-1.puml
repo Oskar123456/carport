@@ -1,0 +1,20 @@
+@startuml
+entity orders {}
+entity order_product {}
+entity product {}
+entity product_component {}
+entity product_documentation {}
+entity product_specification
+entity product_category {}
+entity warehouse {}
+entity warehouse_product {}
+entity users {}
+entity address {}
+entity zip_code {}
+entity shipment {}
+entity payment {}
+@enduml
+
+/'
+orders and users are reserved words in singular
+'/

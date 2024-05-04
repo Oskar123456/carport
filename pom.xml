@@ -87,6 +87,13 @@
             <version>${hamcrest.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+        <groupId>org.imgscalr</groupId>
+        <artifactId>imgscalr-lib</artifactId>
+        <version>4.2</version>
+        <type>jar</type>
+        <scope>compile</scope>
+        </dependency>
 
     </dependencies>
 

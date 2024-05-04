@@ -41,6 +41,12 @@ Med domæneanalysen færdig er vi nu i stand til at skabe en model for IT-løsni
 
 ### DATABASE
 
+https://vertabelo.com/blog/er-diagram-for-online-shop/
+
+"As general conditions, the ER diagram for an online shopping system must be normalized up to the third normal form. The reason for this is that the online shopping system is purely transactional, so it must support constant and concurrent updates of the tables that make up the schema. And it must support those updates while strictly maintaining data integrity and consistency."
+
+
+
 For at omdanne domænemodellen til en model der kan bruges til at implementere en database for 
 en IT-løsning, kræves det, at mange-til-mange relationer omdannes til en-til-mange og mange-til-en 
 relationer. Derudover skal domænets data helst bringes på normalform (det er dog ikke altid 
@@ -50,5 +56,68 @@ Nedenfor ses en _ERD_ model for en mulig implementation af en database.
 
 - IMG : ERD
 
+#### DATABASE NOTER
 
+Forklar hvorfor vi går fra mangetilmange til entilmange med mellemledstabeller (navn?).
 
+##### produkt
+
+Et produkt skulle tilknyttes en række informationer, f.eks. et billede, pris, 
+noget dokumentation samt eventuelle eksterne links. Derudover skal det fremgå, 
+hvor produktet findes fysisk, dvs. på hvilke lagre, samt antal.
+
+I domæneanalysen blev det tydeligt, at et produkt dels kan være en simpel 
+"atomisk" genstand som et brædde, men også en mængde af disse, f.eks. er en 
+carport først og fremmest en carport, men samtidig findes den ikke på lageret. 
+Den består derimod af dele, som faktisk findes på lageret. Med det sagt, 
+valgte vi, at et et produkt i databasen kan tilknyttes et vilkårligt antal 
+produkter i form relationen produkt <-- produktkomponent.
+
+##### specs
+
+produktspecifikation: motiveret af høj diversitet blandt produkter, og derfor 
+deres fællesnænvnere. Dette er problem ifbm. søgning/sortering. Man skal kunne 
+sortere carporte efter længde, bredde, osv., men hvad med varer, der måske har 
+andre fællesnævnere (længde og bredde er universelle) som vægt, plads, type 
+af forskellige dele på produktet.
+Løsning: tabel over specifikationer, med navn og enhed. tabel til at 
+koble et produkt til en specifikation, sammen med detaljerne for denne, f.eks. 
+
+- (produkt)carport <-- (detaljer)fladt --> (specifikationsnavn)tagtype
+
+Problematik: datatype for detaljer er fastlåst, dvs. en målbar specifikation 
+som længde skulle måske gemmes som en varchar/streng. I vores forundersøgelse 
+af Fogs hjemmeside lader deres søgefunktion rent faktisk til at behandle dem 
+således, dvs., man sortere varer som en carport efter længde, ligesom man 
+ville sortere dem efter mærke; ved at vælge en eller flere fra en liste, og 
+ikke __min < x < max__, som nemt kunne implementeres med et prædikat; 
+__SELECT * FROM table WHERE length > min && length < max__. Den samme 
+forspørgsel ville formentlig være meget kompliceret og dyr (arbejdsmæssigt 
+for serveren), at implementere.
+
+Hvor om alting er, valgte vi ovenstående løsning, altså at alle 
+specifikationsdetaljer fik samme datatype.
+
+##### bestilling
+
+En bestilling skal tilknyttes et produkt, en ansat (user), en kunde (user), 
+nogle leveringsdetaljer. Derudover blev der lavet en tabel til statuskoder. 
+Dermed er det muligt at holde styr på, hvor i forløbet en bestilling er, 
+og derved f.eks. opfylde kravet om, at en stykliste på en skræddersyet 
+carport først må frigives til kunden, efter betaling.
+
+User-story # beskriver en indkøbskurv, som ikke indgår i database designet. 
+Grunden er, at der er tale om midlertidige valg, som højst sandsynligt 
+ændres undervejs, og derfor ville det ikke være hensynsmæssigt, at ligge 
+dem i- og opdatere databasen ved hver ændring.
+
+For at opfylde user-story #, skal en bestilling have sin egen uafhængige pris, 
+for at lade en sælger give en særtilbud til kunden.
+
+##### users/kunde/ansat
+
+##### kommunikation
+
+Indgår ikke i databasen, da korrespondence bliver eksternt i form af email.
+
+Eller... ?

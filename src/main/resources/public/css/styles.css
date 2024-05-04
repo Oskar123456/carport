@@ -53,6 +53,7 @@ header {
 .header-info {
     display: flex;
     justify-content: space-around;
+    background-color: white;
     li {
         margin-right: 10px;
         margin-left: 10px;
@@ -173,11 +174,21 @@ header {
     grid-template-columns: auto auto auto auto;
    /* grid-template-rows: 80px 160px;*/
     gap: 10px;
+
+    a, a:visited {
+        color: black;
+    }
+
     .search-result-element {
         background-color: white;
         padding: 10px;
-        width: 80px;
-        height: 160px;
+        width: 220px;
+        height: 360px;
+        text-decoration: none;
+
+        img {
+            width: 200px;
+        }
     }
 }
 
