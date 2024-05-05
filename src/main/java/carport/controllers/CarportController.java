@@ -26,12 +26,13 @@ public class CarportController {
 
         app.get("/bygselv", ctx -> renderBygSelv(ctx, cp));
         app.get("/bygselvcarport", ctx -> renderBygSelv(ctx, cp));
-
+        // TODO: KATEGORI SØGNING OG ALT DEN LOGIK (f.eks. dropdown med COMMONDENOMINATOR kategorier som søger efter kategori x)
         /*
          * get custom
          */
         app.get("/produkt*", ctx -> renderProduct(ctx, cp));
         app.get("/billeder*", ctx -> sendImage(ctx, cp));
+        app.get("/kategori*", ctx -> renderCategorySearch(ctx, cp));
         /*
          * post
          */
@@ -86,6 +87,7 @@ public class CarportController {
                                    CarportMapper.
                                    SelectProductIdsByStringMatch(cp,
                                                                  pageNumber,
+                                                                 true, true, true,
                                                                  searchStringSplit));
             ctx.attribute("productList", productList);
         } catch (DatabaseException e) {
@@ -93,6 +95,36 @@ public class CarportController {
         }
         ctx.render("soegning.html");
     }
+
+    private static void renderCategorySearch(Context ctx, ConnectionPool cp) {
+        String searchString = ctx.queryParam("category");
+        searchString = (searchString == null) ? "" : searchString;
+        String pageString = ctx.queryParam("page");
+        int pageNumber = -1;
+        if (pageString != null) {
+            try {
+                pageNumber = Integer.parseInt(pageString);
+            } catch (NumberFormatException ignored) {}
+        }
+
+        ctx.attribute("searchString", searchString);
+        try {
+            List<Product> productList =
+                CarportMapper.
+                SelectProductsById(cp,
+                                   pageNumber,
+                                   CarportMapper.
+                                   SelectProductIdsByStringMatch(cp,
+                                                                 pageNumber,
+                                                                 false, false, true,
+                                                                 searchString));
+            ctx.attribute("productList", productList);
+        } catch (DatabaseException e) {
+            System.err.println(e.getMessage());
+        }
+        ctx.render("soegning.html");
+    }
+
 
     private static void renderIndex(Context ctx, ConnectionPool cp) {
         ctx.render("index.html");

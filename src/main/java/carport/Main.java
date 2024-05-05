@@ -1,16 +1,10 @@
 package carport;
 
-import java.util.List;
-
 import carport.config.SessionConfig;
 import carport.config.ThymeleafConfig;
 import carport.controllers.CarportController;
-import carport.entities.Product;
-import carport.entities.ProductImage;
-import carport.exceptions.DatabaseException;
 import carport.persistence.CarportMapper;
 import carport.persistence.ConnectionPool;
-import carport.tools.ProductImageFactory;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
 

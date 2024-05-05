@@ -123,14 +123,14 @@
             <a th:if="${productList != null && !productList.isEmpty()}"
                class="search-result-element"
                th:each="product,iterStat : ${productList}"
-               th:href="'produkt/' + '?name=' + ${product.getName()} + '&id=' + ${product.getId()}">
+               th:href="'produkt/' + '?name=' + ${product.Name} + '&id=' + ${product.Id}">
               <img src="null"
-                   th:src="'billeder?id=' + ${product.getImageIdsMini()[0]}"
+                   th:src="'billeder?id=' + ${product.ImageIdsMini[0]}"
                    alt="productimage">
               <p class="search-result-title"
-                 th:text="${product.getName()}"></p>
+                 th:text="${product.Name}"></p>
               <p class="search-result-price"
-                 th:text="'pris: ' + ${product.getPrice()}"></p>
+                 th:text="'pris: ' + ${product.Price}"></p>
             </a>
             <div th:if="${productList == null || productList.isEmpty()}">Ingen resultater :(</div>
         </div>
