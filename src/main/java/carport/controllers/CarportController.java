@@ -10,6 +10,8 @@ import io.javalin.http.Context;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 public class CarportController {
     public static void addRoutes(Javalin app, ConnectionPool cp) {
         /*
@@ -22,6 +24,9 @@ public class CarportController {
         app.get("/soegning", ctx -> renderSearch(ctx, cp));
         app.get("/soegning.html", ctx -> renderSearch(ctx, cp));
 
+        app.get("/bygselv", ctx -> renderBygSelv(ctx, cp));
+        app.get("/bygselvcarport", ctx -> renderBygSelv(ctx, cp));
+
         /*
          * get custom
          */
@@ -32,6 +37,10 @@ public class CarportController {
          */
     }
 
+    private static void renderBygSelv(@NotNull Context ctx, ConnectionPool cp) {
+        ctx.result("lol");
+    }
+
     private static void sendImage(Context ctx, ConnectionPool cp) {
         String qParamImgId = ctx.queryParam("id");
         int imgId = 0;
@@ -39,13 +48,14 @@ public class CarportController {
             try {
                 imgId = Integer.parseInt(qParamImgId);
                 ProductImage img = CarportMapper.SelectProductImageById(cp, imgId);
-                ctx.contentType("image/" + img.Format());
-                ctx.result(img.Data());
-            } catch (NumberFormatException | DatabaseException e) {
-                System.out.println("Error " + e.getMessage());
-                e.printStackTrace();
-            }
+                if (img != null){
+                    ctx.contentType("image/" + img.Format());
+                    ctx.result(img.Data());
+                    return;
+                }
+            } catch (NumberFormatException | DatabaseException ignored) {}
         }
+        ctx.redirect("/notfound");
     }
 
     private static void renderProduct(Context ctx, ConnectionPool cp) {

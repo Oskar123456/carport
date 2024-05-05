@@ -58,6 +58,7 @@ public class CarportMapper {
         ps.setInt(argNum, (pageNum >= 0) ? pageNum * SEARCH_PAGE_SIZE : 0);
     }
 
+
     private static String setSQLPredicate(String sql, String predicate){
         if (sql == null || !sql.contains(SQL_PREDICATE_INJECTION_POINT))
             return sql;

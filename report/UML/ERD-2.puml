@@ -51,8 +51,11 @@ entity product_documentation {
 * <<pk>> id : serial
 --
 name : varchar
+description : varchar
 data : bytea
 <<fk>> product_id
+type : varchar
+format : varchar
 }
 entity product_specification{
 * <<pk>> id : serial
