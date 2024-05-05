@@ -58,6 +58,35 @@ public class CarportMapper {
         ps.setInt(argNum, (pageNum >= 0) ? pageNum * SEARCH_PAGE_SIZE : 0);
     }
 
+    private static String setSQLPredicate(String sql, String predicate){
+        if (sql == null || !sql.contains(SQL_PREDICATE_INJECTION_POINT))
+            return sql;
+        String[] sqlSplit = sql.split(SQL_PREDICATE_INJECTION_POINT);
+        String sqlUpdated = sqlSplit[0] + System.lineSeparator()
+            + predicate + sqlSplit[1] + System.lineSeparator();
+        return sqlUpdated;
+    }
+
+    private static String setSQLOrderBy(String sql, String orderby){
+        if (sql == null || !sql.contains(SQL_ORDERBY_INJECTION_POINT))
+            return sql;
+        String[] sqlSplit = sql.split(SQL_ORDERBY_INJECTION_POINT);
+        String sqlUpdated = sqlSplit[0] + System.lineSeparator()
+            + orderby + sqlSplit[1] + System.lineSeparator();
+        return sqlUpdated;
+    }
+
+    private static String setSQLColumns(String sql, String... columns){
+        if (sql == null || columns == null || columns.length < 1)
+            return sql;
+        String sqlSubStr = sql.substring(sql.indexOf("FROM"));
+        String sqlSelect = "SELECT ";
+        for (String s : columns){
+            sqlSelect += s + System.lineSeparator();
+        }
+        return sqlSelect + sqlSubStr;
+    }
+
     /*
      * User
      */
@@ -87,60 +116,93 @@ public class CarportMapper {
                 rs.getArray("comp_quantities"));
     }
 
-    public static List<Product> SelectProductsStringMatch(ConnectionPool cp,
-            int page,
-            String[] needlesGeneral,
-            String[] needlesName,
-            String[] needlesDescription,
-            String[] needlesCategories) throws DatabaseException {
+    public static int[] SelectProductIdsByStringMatch(ConnectionPool cp,
+                                                      int page,
+                                                      String... needles) throws DatabaseException{
+        List<Integer> ids = new ArrayList<>();
+        if (needles == null || needles.length < 1)
+            return null;
 
+        String sql = SQL_PRODUCT_FULL_SELECTOR.
+            replace("ARRAY_AGG(category.name) category_names",
+                    "STRING_AGG(category.name, ', ') category_names");
+        //sql = setSQLColumns(sql, "product.id as id");
+        String sqlPredicate = " WHERE ";
+        for (int i = 0; i < needles.length; ++i){
+            sqlPredicate += " name ILIKE ? OR ";
+            sqlPredicate += " description ILIKE ? OR ";
+            sqlPredicate += " category_names ILIKE ? ";
+            if (i < needles.length - 1)
+                sqlPredicate += " OR ";
+        }
+        sql = setSQLPredicate(sql, sqlPredicate);
+
+        try (Connection c = cp.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql);) {
+            int argNum = 1;
+            for (int i = 0; i < needles.length; ++i){
+                ps.setString(argNum++, "%" + needles[i] + "%");
+                ps.setString(argNum++, "%" + needles[i] + "%");
+                ps.setString(argNum++, "%" + needles[i] + "%");
+            }
+            sql = setSQLOrderBy(sql, "ORDER BY product.id ASC");
+            setSQLPage(ps, page, argNum);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next())
+                ids.add(rs.getInt("id"));
+        }
+        catch (SQLException e) {
+            throw new DatabaseException("error in database search::" + e.getMessage());
+        }
+        if (ids.isEmpty())
+            return null;
+        int[] idsResult = new int[ids.size()];
+        for (int i = 0; i < idsResult.length; ++i){
+            idsResult[i] = ids.get(i).intValue();
+        }
+        return idsResult;
+    }
+
+    public static List<Product> SelectProductsById(ConnectionPool cp,
+                                                   int page,
+                                                   int... ids) throws DatabaseException {
         List<Product> productList = new ArrayList<>();
-
+        if (ids == null || ids.length < 1)
+            return productList;
         int argNum = 1;
         String sql = SQL_PRODUCT_FULL_SELECTOR;
+        String sqlPredicate = "WHERE ";
+        for (int i = 0; i < ids.length; ++i) {
+            sqlPredicate += " id = ? ";
+            if (i < ids.length - 1)
+                sqlPredicate += " OR ";
+        }
+        sql = setSQLPredicate(sql, sqlPredicate);
 
         try (Connection c = cp.getConnection();
                 PreparedStatement ps = c.prepareStatement(sql);) {
+            for (; argNum <= ids.length; ++argNum)
+                ps.setInt(argNum, ids[argNum - 1]);
+
+            sql = setSQLOrderBy(sql, "ORDER BY product.id ASC");
             setSQLPage(ps, page, argNum);
             ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                // TODO: delegate search to DB query?
-                Product pCandidate = importProduct(rs);
-                if (needlesGeneral != null) {
-                    for (String s : needlesGeneral) {
-                        if (pCandidate == null)
-                            break;
-                        s = s.toLowerCase();
-                        if (pCandidate.getName().toLowerCase().contains(s)) {
-                            productList.add(pCandidate);
-                            break;
-                        }
-                        if (pCandidate.getDescription().toLowerCase().contains(s)) {
-                            productList.add(pCandidate);
-                            break;
-                        }
-                        for (ProductCategory cat : pCandidate.getCategories()) {
-                            if (cat.Name().toLowerCase().contains(s)) {
-                                productList.add(pCandidate);
-                                pCandidate = null;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (SQLException e) {
+            while (rs.next())
+                productList.add(importProduct(rs));
+        }
+        catch (SQLException e) {
             throw new DatabaseException("error in database search::" + e.getMessage());
         }
-
         return productList;
     }
 
     /*
      * ProductImage
      */
-    public static int InsertProductImage(ConnectionPool cp, ProductImage img, boolean downscaled, int newWidth)
-            throws DatabaseException {
+    public static int InsertProductImage(ConnectionPool cp,
+                                         ProductImage img,
+                                         boolean downscaled,
+                                         int newWidth) throws DatabaseException {
         int retval = 0;
 
         String sql = "INSERT INTO image (id, data, source, name, format) VALUES (DEFAULT, ?, ?, ?, ?)";

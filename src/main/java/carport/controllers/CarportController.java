@@ -66,14 +66,17 @@ public class CarportController {
 
         ctx.attribute("searchString", searchString);
         try {
+            searchString = searchString.toLowerCase();
             String[] searchStringSplit = searchString.split(" ");
-            List<Product> productList = CarportMapper.
-                SelectProductsStringMatch(cp,
-                                          pageNumber,
-                                          searchStringSplit,
-                                          null,
-                                          null,
-                                          null);
+
+            List<Product> productList =
+                CarportMapper.
+                SelectProductsById(cp,
+                                   pageNumber,
+                                   CarportMapper.
+                                   SelectProductIdsByStringMatch(cp,
+                                                                 pageNumber,
+                                                                 searchStringSplit));
             ctx.attribute("productList", productList);
         } catch (DatabaseException e) {
             System.err.println(e.getMessage());

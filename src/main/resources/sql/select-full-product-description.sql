@@ -66,7 +66,6 @@ ON pcomps.product_id = product.id
 
 --
 -- orderby_injection
-ORDER BY product.id ASC
 
 LIMIT ?
 OFFSET ?
