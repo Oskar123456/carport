@@ -8,7 +8,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import carport.entities.Product;
 import carport.entities.ProductCategory;
@@ -108,6 +110,7 @@ public class CarportMapper {
                 rs.getArray("comp_ids"),
                 rs.getArray("comp_quantities"));
     }
+
     /*
      * Main search function for products. Simple substring search
      * through optionally name, description & categories.
@@ -143,8 +146,9 @@ public class CarportMapper {
         sql = setSQLPredicate(sql, sqlPredicate);
         /* DEBUG PRINTINT */
         String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
-        System.err.printf("[debug::logging]%n\t%s(page %d, searchName %b, searchDescription %b, searchCategories %b, needles: {%s})%n",
-                          thisMethodName, page, searchName, searchDescription, searchCategories, String.join(", ", needles));
+        System.err.printf(
+                "[debug::logging]%n\t%s(page %d, searchName %b, searchDescription %b, searchCategories %b, needles: {%s})%n",
+                thisMethodName, page, searchName, searchDescription, searchCategories, String.join(", ", needles));
         /* DEBUG PRINTINT */
         try (Connection c = cp.getConnection();
                 PreparedStatement ps = c.prepareStatement(sql);) {
@@ -318,5 +322,33 @@ public class CarportMapper {
             throw new DatabaseException("fejl ved søgning i databasen (" + thisMethodName + ")");
         }
         return img;
+    }
+
+    /*
+     * Specifications
+     */
+    public static int[] SelectCommonSpecIdsFromProductIds(ConnectionPool cp,
+            int... ids) {
+        int [] commonSpecIds = null;
+        if (ids == null || ids.length < 1)
+            return commonSpecIds;
+        String sql = "SELECT  ";
+        try (
+                Connection c = cp.getConnection();
+                PreparedStatement ps = c.prepareStatement(sql);) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                img = new ProductImage(id,
+                        rs.getString("name"),
+                        rs.getString("source"),
+                        rs.getBytes("data"),
+                        rs.getString("format"));
+            }
+        } catch (SQLException e) {
+            String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+            throw new DatabaseException("fejl ved søgning i databasen (" + thisMethodName + ")");
+        }
+        return commonSpecIds;
     }
 }

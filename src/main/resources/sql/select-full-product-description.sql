@@ -1,4 +1,3 @@
---
 -- fetches all relevant info about products -----------------------------------------------
 --
 SELECT product.id as id,
