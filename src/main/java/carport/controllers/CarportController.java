@@ -26,16 +26,22 @@ public class CarportController {
 
         app.get("/bygselv", ctx -> renderBygSelv(ctx, cp));
         app.get("/bygselvcarport", ctx -> renderBygSelv(ctx, cp));
+
+        app.get("/admin", ctx -> renderAdminPage(ctx, cp));
+        app.get("/administrator", ctx ->  renderAdminPage(ctx, cp));
         // TODO: KATEGORI SØGNING OG ALT DEN LOGIK (f.eks. dropdown med COMMONDENOMINATOR kategorier som søger efter kategori x)
         /*
          * get custom
          */
-        app.get("/produkt*", ctx -> renderProduct(ctx, cp));
-        app.get("/billeder*", ctx -> sendImage(ctx, cp));
-        app.get("/kategori*", ctx -> renderCategorySearch(ctx, cp));
+        app.get("/produkt", ctx -> renderProduct(ctx, cp));
+        app.get("/billeder", ctx -> sendImage(ctx, cp));
+        app.get("/kategori", ctx -> renderCategorySearch(ctx, cp));
         /*
          * post
          */
+    }
+
+    private static void renderAdminPage(@NotNull Context ctx, ConnectionPool cp) {
     }
 
     private static void renderBygSelv(@NotNull Context ctx, ConnectionPool cp) {

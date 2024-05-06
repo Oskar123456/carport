@@ -37,8 +37,6 @@ name : varchar
 description : varchar
 price : numeric
 links : varchar[]
-images : bigint[]
-images_mini : bigint[]
 }
 entity product_component {
 * <<pk>> id : serial
@@ -68,7 +66,12 @@ entity category {
 * <<pk>> id : serial
 --
 name : varchar
-common_specs : bigint[]
+}
+entity category_specification {
+* <<pk>> id : serial
+--
+* (fk) category_id : int
+* (fk) specification_id : int
 }
 entity product_category {
 * <<pk>> id : serial
@@ -82,7 +85,7 @@ entity specification {
 name : varchar
 unit : varchar
 }
-entity product_image {
+entity image {
 * <<pk>> id : serial
 --
 name : varchar
@@ -90,6 +93,13 @@ description : varchar
 source : varchar
 format : varchar
 data : bytea
+}
+entity product_image {
+* <<pk>> id : serial
+--
+(fk) product_id
+(fk) image_id
+(fk) image_downscaled_id
 }
 entity warehouse {
 * <<pk>> id : serial
@@ -157,8 +167,12 @@ product -- product_image
 
 product_specification -- specification
 
-category -- specification
+category -- category_specification
+category_specification -- specification
+
 product_category -- category
+
+product_image "0..*   " }o--|{ "1..2  " image
 
 warehouse_product -- product
 warehouse_product -- warehouse

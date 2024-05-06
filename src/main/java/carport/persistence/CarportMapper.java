@@ -99,7 +99,7 @@ public class CarportMapper {
                 rs.getBigDecimal("price"),
                 rs.getArray("links"),
                 rs.getArray("image_ids"),
-                rs.getArray("image_ids_mini"),
+                rs.getArray("image_downscaled_ids"),
                 rs.getArray("spec_names"),
                 rs.getArray("spec_details"),
                 rs.getArray("spec_units"),
@@ -141,7 +141,11 @@ public class CarportMapper {
                 sqlPredicate = sqlPredicate.substring(0, sqlPredicate.lastIndexOf("OR"));
         }
         sql = setSQLPredicate(sql, sqlPredicate);
-
+        /* DEBUG PRINTINT */
+        String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+        System.err.printf("[debug::logging]%n\t%s(page %d, searchName %b, searchDescription %b, searchCategories %b, needles: {%s})%n",
+                          thisMethodName, page, searchName, searchDescription, searchCategories, String.join(", ", needles));
+        /* DEBUG PRINTINT */
         try (Connection c = cp.getConnection();
                 PreparedStatement ps = c.prepareStatement(sql);) {
             int argNum = 1;

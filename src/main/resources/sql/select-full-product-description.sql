@@ -6,8 +6,8 @@ SELECT product.id as id,
     product.description as description,
     product.price as price,
     product.links as links,
-    product.images as image_ids,
-    product.images_mini as image_ids_mini,
+    image_ids,
+    image_downscaled_ids,
     spec_names as spec_names,
     spec_details as spec_details,
     spec_unit as spec_units,
@@ -61,6 +61,20 @@ LEFT JOIN
     GROUP BY product_id
 ) as pcomps
 ON pcomps.product_id = product.id
+
+LEFT JOIN
+(
+    SELECT product_image.product_id,
+        ARRAY_AGG(product_image.image_id) image_ids,
+        ARRAY_AGG(product_image.image_downscaled_id) image_downscaled_ids
+    FROM image
+    INNER JOIN
+    product_image
+    ON
+    image.id = product_image.image_id
+    GROUP BY product_image.product_id
+) as pimgs
+ON pimgs.product_id = product.id
 --
 -- predicate_injection
 
