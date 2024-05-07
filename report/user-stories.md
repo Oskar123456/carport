@@ -51,7 +51,6 @@ FOR bedre at kunne vurdere, om mål passer ind i ens hjem.
 	AK 01: 
 US 06:
 ER DET MULIGT AT få vist en produktbeskrivelse
-
 FOR AT kunne vurdere om produktet passer til ens behov før et eventuelt køb.
 	AK 01: 
 US 07:
@@ -61,8 +60,6 @@ FOR AT kunne vurdere om man besidder kompetencer til selv at sammensætte produk
 	AK 01: 
 
 #### Valg
-
-
 US 08:
 ER DET MULIGT AT vælge et produkt at lægge i sin indkøbskurv
 
@@ -129,10 +126,8 @@ FOR at opnå adgang til eksklusiv funktionalitet ment til ansatte.
 	AK 01: 
 
 #### Opdatering
-
 US 19:
 ER DET MULIGT AT ændre pris på varer i lageret
-
 FOR at holde prislisterne opdaterede.
 	AK 01: 
 US 20:
@@ -142,7 +137,6 @@ FOR at sikre at IT-systemet reflektere virkeligheden.
 	AK 01: 
 
 #### Vejledning
-
 US 21:
 ER DET MULIGT AT vejlede/korrespondere med kunder, der har valgt at købe en carport
 
@@ -168,6 +162,7 @@ ER DET MULIGT AT få en bygningsvejledning til den skræddersyede carport digita
 
 FOR at kunne sende kunden en vejledning, og undgå fejl fra kundens side.
 	AK 01: 
+
  
 #### Salg
 
@@ -189,4 +184,3 @@ FOR både at sikre at kunden får hvad de betaler for, men også undgå, at
 kunden har nemt ved at gå til en konkurrent inden bestilling, og købe byggematerialerne
 andetsteds.
 	AK 01: 
-
