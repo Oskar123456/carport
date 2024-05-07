@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,8 @@ public class CarportMapper {
     static private int SEARCH_PAGE_SIZE = 25;
     // TODO: maybe this is overcomplication
     static private String SQL_PRODUCT_FULL_SELECTOR;
+    static private String SQL_SPECS_OF_CATS;
+    static private String SQL_CATS_OF_PRODS;
     static private String SQL_PREDICATE_INJECTION_POINT;
     static private String SQL_ORDERBY_INJECTION_POINT;
 
@@ -36,10 +39,19 @@ public class CarportMapper {
      * TODO: Reset table sequences
      */
     public static void Init() {
-        InputStream sqlInputStream = CarportMapper.class.getResourceAsStream(
+        InputStream sqlSpecsOfCatsStream = CarportMapper.class.getResourceAsStream(
+                "/sql/select-specs-of-categories.sql");
+        InputStream sqlCatsOfProdsStream = CarportMapper.class.getResourceAsStream(
+                "/sql/select-categories-of-products.sql");
+        InputStream sqlProdFullSelStream = CarportMapper.class.getResourceAsStream(
                 "/sql/select-full-product-description.sql");
         try {
-            SQL_PRODUCT_FULL_SELECTOR = new String(sqlInputStream.readAllBytes());
+            SQL_PRODUCT_FULL_SELECTOR = new String(sqlProdFullSelStream.readAllBytes());
+            SQL_CATS_OF_PRODS = new String(sqlCatsOfProdsStream.readAllBytes());
+            SQL_SPECS_OF_CATS = new String(sqlSpecsOfCatsStream.readAllBytes());
+            sqlSpecsOfCatsStream.close();
+            sqlProdFullSelStream.close();
+            sqlCatsOfProdsStream.close();
         } catch (IOException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
@@ -102,6 +114,7 @@ public class CarportMapper {
                 rs.getArray("links"),
                 rs.getArray("image_ids"),
                 rs.getArray("image_downscaled_ids"),
+                rs.getArray("spec_ids"),
                 rs.getArray("spec_names"),
                 rs.getArray("spec_details"),
                 rs.getArray("spec_units"),
@@ -297,6 +310,137 @@ public class CarportMapper {
         }
         return category;
     }
+    /*
+     * Selects unique category ids based on provided array of product ids.
+     * Will select only common denominators if desired.
+     * @param cp
+     * @param commonDenominatorOnly
+     * @param ids
+     * @return
+     * @throws DatabaseException
+     */
+    public static int[] SelectCategoryIdsFromProductIds(ConnectionPool cp,
+                                                        boolean commonDenominatorOnly,
+                                                        int... ids) throws DatabaseException{
+        if (ids == null || ids.length < 1)
+            return null;
+        List<Integer> catIdsList = new ArrayList<>();
+        boolean firstIter = true;
+
+        String sql = SQL_CATS_OF_PRODS;
+        String sqlPredicate = " WHERE ";
+        for (int i = 0; i < ids.length; ++i){
+            sqlPredicate += " id = ? ";
+            if (i < ids.length - 1)
+                sqlPredicate += " OR ";
+        }
+        sql = setSQLPredicate(sql, sqlPredicate);
+
+        try (
+                Connection c = cp.getConnection();
+                PreparedStatement ps = c.prepareStatement(sql);) {
+            for (int i = 0; i < ids.length; ++i)
+                ps.setInt(i + 1, ids[i]);
+            System.err.println(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Array sqlRowCats = rs.getArray("category_ids");
+                if (sqlRowCats == null){
+                    if (commonDenominatorOnly)
+                        return null; // if one product has no specs, no common denominators exist
+                    else
+                        continue;
+                }
+                Long[] RowCats = (Long[]) sqlRowCats.getArray();
+                if (commonDenominatorOnly){
+                    if (firstIter){
+                        for (int i = 0; i < RowCats.length; ++i){
+                            catIdsList.add(RowCats[i].intValue());
+                        }
+                    }
+                    else {
+                        for (int i = 0; i < catIdsList.size(); ++i){
+                            boolean exists = false;
+                            for (int j = 0; j < RowCats.length; ++j){
+                                if (catIdsList.get(i) == RowCats[i].intValue())
+                                    exists = true;
+                            }
+                            if (!exists)
+                                catIdsList.remove(i);
+                        }
+                    }
+                    firstIter = false;
+                }
+                else {
+                    for (int i = 0; i < RowCats.length; ++i){
+                        if (!catIdsList.contains(RowCats[i].intValue()))
+                            catIdsList.add(RowCats[i].intValue());
+                    }
+                }
+
+            }
+        } catch (SQLException e) {
+            String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+            throw new DatabaseException("fejl ved søgning i databasen (" + thisMethodName + ")");
+        }
+        if (catIdsList.size() < 1)
+            return null;
+        int[] catIds = new int[catIdsList.size()];
+        for (int i = 0; i < catIds.length; ++i)
+            catIds[i] = catIdsList.get(i);
+        return catIds;
+    }
+
+    /*
+     * Return array of unique spec ids from provided array of category ids
+     * @param cp
+     * @param ids
+     * @return
+     * @throws DatabaseException
+     */
+    public static int[] SelectSpecIdsFromCategoryIds(ConnectionPool cp,
+                                                     int... ids) throws DatabaseException{
+        if (ids == null || ids.length < 1)
+            return null;
+        List<Integer> specIdsList = new ArrayList<>();
+
+        String sql = SQL_CATS_OF_PRODS;
+        String sqlPredicate = " WHERE ";
+        for (int i = 0; i < ids.length; ++i){
+            sqlPredicate += " category_id = ? ";
+            if (i < ids.length - 1)
+                sqlPredicate += " OR ";
+        }
+        sql = setSQLPredicate(sql, sqlPredicate);
+
+        try (
+                Connection c = cp.getConnection();
+                PreparedStatement ps = c.prepareStatement(sql);) {
+            for (int i = 0; i < ids.length; ++i)
+                ps.setInt(i + 1, ids[i]);
+            System.err.println(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Array sqlRowCats = rs.getArray("spec_id");
+                if (sqlRowCats == null)
+                    continue;
+                Long[] RowCats = (Long[]) sqlRowCats.getArray();
+                for (int i = 0; i < RowCats.length; ++i){
+                    if (!specIdsList.contains(RowCats[i].intValue()))
+                        specIdsList.add(RowCats[i].intValue());
+                }
+            }
+        } catch (SQLException e) {
+            String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+            throw new DatabaseException("fejl ved søgning i databasen (" + thisMethodName + ")");
+        }
+        if (specIdsList.size() < 1)
+            return null;
+        int[] specIds = new int[specIdsList.size()];
+        for (int i = 0; i < specIds.length; ++i)
+            specIds[i] = specIdsList.get(i);
+        return specIds;
+    }
 
     /*
      * Images
@@ -322,33 +466,5 @@ public class CarportMapper {
             throw new DatabaseException("fejl ved søgning i databasen (" + thisMethodName + ")");
         }
         return img;
-    }
-
-    /*
-     * Specifications
-     */
-    public static int[] SelectCommonSpecIdsFromProductIds(ConnectionPool cp,
-            int... ids) {
-        int [] commonSpecIds = null;
-        if (ids == null || ids.length < 1)
-            return commonSpecIds;
-        String sql = "SELECT  ";
-        try (
-                Connection c = cp.getConnection();
-                PreparedStatement ps = c.prepareStatement(sql);) {
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                img = new ProductImage(id,
-                        rs.getString("name"),
-                        rs.getString("source"),
-                        rs.getBytes("data"),
-                        rs.getString("format"));
-            }
-        } catch (SQLException e) {
-            String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
-            throw new DatabaseException("fejl ved søgning i databasen (" + thisMethodName + ")");
-        }
-        return commonSpecIds;
     }
 }
