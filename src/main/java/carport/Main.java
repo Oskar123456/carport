@@ -32,8 +32,6 @@ public class Main {
         CarportMapper.Init();
 
         // Test
-        String userDir = System.getProperty("user.dir");
-        String publicDir = userDir + "/src/main/resources/public";
         System.err.printf("DebugInfo::%nEnv_Vars:%n\t%s, %s, %s, %s, %s%n",
                         System.getenv("DEPLOYED"),
                         System.getenv("JDBC_USER"),
