@@ -45,6 +45,22 @@ ER DET MULIGT AT sortere i listen over carporte ud fra mål og pris
 
 FOR AT få hurtig adgang til de mest/eneste relevante carporte
 	AK 01:
+    
+_US_ 29:
+ER DET MULIGT AT søge varer vha. brugerdefineret tekst.
+
+FOR AT finde præcis det man leder efter
+
+AK 01:
+
+Man kan søge efter f.eks. "carport", "have" eller "xyz", og finde 
+en liste over carporte, da de tilhører kategorierne carport og 
+have, eller andet der tilhører "xyz"-kategorien.
+
+AK 02: 
+
+Man kan søge efter "xyz" og finde en eller flere varer med "xyz" 
+i navnet eller beskrivelsen.
 
 _US_ 05:
 ER DET MULIGT AT få vist en liste over produktdetaljer
