@@ -125,4 +125,8 @@ public class Product {
 
         return specIds;
     }
+
+    public static int FilterProductListUsingSpecs(List<Product> products, int... specIds){
+        return 0;
+    }
 }
