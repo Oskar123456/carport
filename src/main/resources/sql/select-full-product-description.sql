@@ -7,9 +7,10 @@ SELECT product.id as id,
     product.links as links,
     image_ids,
     image_downscaled_ids,
-    spec_names as spec_names,
-    spec_details as spec_details,
-    spec_unit as spec_units,
+    spec_ids,
+    spec_names,
+    spec_details,
+    spec_units,
     category_names as categories,
     doc_ids,
     comp_ids,
@@ -31,9 +32,10 @@ ON pcat.product_id = product.id
 LEFT JOIN
 (
     SELECT product_specification.product_id,
+        ARRAY_AGG(specification.id) spec_ids,
         ARRAY_AGG(specification.name) spec_names,
         ARRAY_AGG(product_specification.details) spec_details,
-        ARRAY_AGG(specification.unit) spec_unit
+        ARRAY_AGG(specification.unit) spec_units
     FROM product_specification
     INNER JOIN
     specification

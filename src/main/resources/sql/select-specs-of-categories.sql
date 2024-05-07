@@ -1,13 +1,16 @@
+--MAP CATEGORIES TO THEIR SPECIFICATIONS---------------------------------------
 SELECT category.id as category_id,
 	category.name as category_name,
 	catSpecs.spec_name,
-	catSpecs.spec_unit
+	catSpecs.spec_unit,
+	catSpecs.spec_id
 FROM category
 LEFT JOIN
 (
 	SELECT category_specification.category_id as category_id,
 		ARRAY_AGG(specification.name) spec_name,
-		ARRAY_AGG(specification.unit) spec_unit
+		ARRAY_AGG(specification.unit) spec_unit,
+		ARRAY_AGG(specification.id) spec_id
 	FROM category_specification
 	INNER JOIN
 	specification

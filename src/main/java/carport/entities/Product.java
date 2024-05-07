@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.Array;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.List;
 
 public class Product {
     public int Id;
@@ -21,10 +22,11 @@ public class Product {
     public Product(int id, String name,
             String description, BigDecimal price,
             Array sqlLinks, Array sqlImageIds,
-            Array sqlImageIdsMini, Array sqlSpecNames,
-            Array sqlSpecDetails, Array sqlSpecUnits,
-            Array sqlCategories, Array sqlDocIds,
-            Array sqlCompIds, Array sqlCompQuants) {
+            Array sqlImageIdsMini, Array sqlSpecIds,
+            Array sqlSpecNames, Array sqlSpecDetails,
+            Array sqlSpecUnits, Array sqlCategories,
+            Array sqlDocIds, Array sqlCompIds,
+            Array sqlCompQuants) {
 
         this.Id = id;
         this.Name = name;
@@ -55,18 +57,18 @@ public class Product {
                 sqlSpecDetails != null &&
                 sqlSpecUnits != null) {
             try {
-                String[] sNames = (String[]) sqlSpecNames.getArray();
-                String[] sDetails = (String[]) sqlSpecDetails.getArray();
-                String[] sUnits = (String[]) sqlSpecUnits.getArray();
-                if (sNames.length == sDetails.length &&
-                        sDetails.length == sUnits.length &&
-                        sUnits.length == sNames.length) {
-                    Specs = new ProductSpecification[sNames.length];
-                    for (int i = 0; i < sNames.length; ++i) {
+                String[] specNames = (String[]) sqlSpecNames.getArray();
+                String[] specDetails = (String[]) sqlSpecDetails.getArray();
+                String[] specUnits = (String[]) sqlSpecUnits.getArray();
+                if (specNames.length == specDetails.length &&
+                        specDetails.length == specUnits.length &&
+                        specUnits.length == specNames.length) {
+                    Specs = new ProductSpecification[specNames.length];
+                    for (int i = 0; i < specNames.length; ++i) {
                         Specs[i] = new ProductSpecification(0,
-                                sNames[i],
-                                sDetails[i],
-                                sUnits[i]);
+                                specNames[i],
+                                specDetails[i],
+                                specUnits[i]);
                     }
                 }
             } catch (SQLException ignored) {
@@ -109,5 +111,22 @@ public class Product {
             } catch (SQLException ignored) {
             }
         }
+    }
+
+    /*
+     * static
+     */
+    public static int[] MapProductsToCommonSpecIds(List<Product> products) {
+        int[] specIds = null;
+
+        for (Product p : products) {
+
+        }
+
+        return specIds;
+    }
+
+    public static int FilterProductListUsingSpecs(List<Product> products, int... specIds){
+        return 0;
     }
 }
