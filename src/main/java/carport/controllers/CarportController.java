@@ -8,6 +8,7 @@ import carport.persistence.ConnectionPool;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
@@ -95,6 +96,19 @@ public class CarportController {
                             pageNumber,
                             true, true, true,
                             searchStringSplit));
+            int[] commonSpecIds = Product.MapProductsToCommonSpecIds(productList);
+            System.err.print(Arrays.toString(commonSpecIds));
+            for (int i = 0; i < commonSpecIds.length; ++i) {
+                System.err.println("commonspec " + commonSpecIds[i] + "::");
+                List<String> ls = Product.MapProductsToUniqueSpecDetails(productList, commonSpecIds[i]);
+                System.err.println();
+                System.err.println(ls);
+                System.err.println();
+            }
+            System.err.println();
+            for (int i = 0; i < commonSpecIds.length; ++i)
+                System.err.print(commonSpecIds[i]);
+            System.err.println();
             ctx.attribute("productList", productList);
         } catch (DatabaseException e) {
             System.err.println(e.getMessage());
@@ -122,6 +136,7 @@ public class CarportController {
                             pageNumber,
                             false, false, true,
                             searchString));
+
             ctx.attribute("productList", productList);
         } catch (DatabaseException e) {
             System.err.println(e.getMessage());

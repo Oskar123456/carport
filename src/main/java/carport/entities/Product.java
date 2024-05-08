@@ -3,6 +3,7 @@ package carport.entities;
 import java.math.BigDecimal;
 import java.sql.Array;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -55,17 +56,20 @@ public class Product {
         }
         if (sqlSpecNames != null &&
                 sqlSpecDetails != null &&
-                sqlSpecUnits != null) {
+                sqlSpecUnits != null &&
+            sqlSpecIds != null) {
             try {
+                Long[] specIds = (Long[]) sqlSpecIds.getArray();
                 String[] specNames = (String[]) sqlSpecNames.getArray();
                 String[] specDetails = (String[]) sqlSpecDetails.getArray();
                 String[] specUnits = (String[]) sqlSpecUnits.getArray();
-                if (specNames.length == specDetails.length &&
-                        specDetails.length == specUnits.length &&
-                        specUnits.length == specNames.length) {
+                if (specNames.length == specIds.length &&
+                    specDetails.length == specIds.length &&
+                    specUnits.length == specIds.length) {
                     Specs = new ProductSpecification[specNames.length];
-                    for (int i = 0; i < specNames.length; ++i) {
-                        Specs[i] = new ProductSpecification(0,
+                    for (int i = 0; i < specIds.length; ++i) {
+                        Specs[i] = new ProductSpecification(
+                                specIds[i].intValue(),
                                 specNames[i],
                                 specDetails[i],
                                 specUnits[i]);
@@ -117,16 +121,51 @@ public class Product {
      * static
      */
     public static int[] MapProductsToCommonSpecIds(List<Product> products) {
-        int[] specIds = null;
-
-        for (Product p : products) {
-
+        if (products == null || products.size() < 1 || products.get(0).Specs.length < 1)
+            return null;
+        List<Integer> specIds = new ArrayList<>();
+        for (int i = 0; i < products.get(0).Specs.length; ++i){
+            specIds.add(products.get(0).Specs[i].Id());
         }
-
-        return specIds;
+        for (Product p : products) {
+            for (int i = 0; i < specIds.size(); ++i){
+                boolean exists = false;
+                if (p.Specs == null)
+                    continue;
+                for (int j = 0; j < p.Specs.length; ++j){
+                    if (specIds.get(i) == p.Specs[j].Id())
+                        exists = true;
+                }
+                if (!exists)
+                    specIds.remove(i);
+            }
+        }
+        if (specIds.size() < 1)
+            return null;
+        int[] specIdsArray = new int[specIds.size()];
+        for (int i = 0; i < specIdsArray.length; ++i)
+            specIdsArray[i] = specIds.get(i);
+        return specIdsArray;
     }
 
-    public static int FilterProductListUsingSpecs(List<Product> products, int... specIds){
+    public static int FilterProductListUsingSpecIds(List<Product> products, int... specIds){
         return 0;
+    }
+
+    public static List<String> MapProductsToUniqueSpecDetails(List<Product> products, int specId){
+        if (products == null || products.size() < 1 || specId < 0)
+            return null;
+        List<String> uniqueSpecDetails = new ArrayList<>();
+        for (Product p : products){
+            if (p.Specs == null)
+                continue;
+            for (ProductSpecification sp : p.Specs){
+                if (sp.Id() == specId){
+                    if (!uniqueSpecDetails.contains(sp.Details()))
+                        uniqueSpecDetails.add(sp.Details());
+                }
+            }
+        }
+        return uniqueSpecDetails;
     }
 }
