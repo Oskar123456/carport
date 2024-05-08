@@ -8,11 +8,11 @@ import java.util.List;
 public class ProductCategory {
     public int Id;
     public String Name;
-    public List<ProductSpecification> CommonSpecIds;
+    public List<ProductSpecification> CommonSpecs;
 
     public ProductCategory(int id, String name, List<ProductSpecification> commonSpecIds) {
         Id = id;
         Name = name;
-        CommonSpecIds = commonSpecIds;
+        CommonSpecs = commonSpecIds;
     }
 }

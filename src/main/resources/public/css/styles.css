@@ -154,42 +154,12 @@ header {
 }
 .nav-search-button:hover {
     cursor: pointer;
-    border: #003d76 solid 2px;
+    /* border: #003d76 solid 2px; */
 }
 
 .main {
     margin-top: 140px;
     margin-bottom: 140px;
-}
-
-.search-result {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
-}
-
-.search-result-list {
-    display: grid;
-    grid-template-columns: auto auto auto auto;
-   /* grid-template-rows: 80px 160px;*/
-    gap: 10px;
-
-    a, a:visited {
-        color: black;
-    }
-
-    .search-result-element {
-        background-color: white;
-        padding: 10px;
-        width: 220px;
-        height: 360px;
-        text-decoration: none;
-
-        img {
-            width: 200px;
-        }
-    }
 }
 
 footer {

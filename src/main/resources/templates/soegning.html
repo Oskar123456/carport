@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
+    <link href="../public/css/soegning.css" th:href="@{/css/soegning.css}" rel="stylesheet"/>
     <link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/cupcakefavico32x32.png}">
     <link rel="icon" type="image/png" sizes="48x48" th:href="@{/images/cupcakefavico48x48.png}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -117,10 +118,31 @@
 <!-- END OF NAV BAR -->
     <div class="main">
     <div class="search-result">
-        <h1 th:text="'Søgning: ' + ${searchString}"></h1>
-        <form>
+        <h1 th:text="'Søgning: ' + ${searchStringPrev}"></h1>
+        <!-- BEGINNING OF SORTER -->
+        <h2>Filtre:</h2>
+        <form class="search-result-filter-form" th:if="${commonSpecList != null && commonSpecListOptions != null}" action="filter">
+            <ul th:each="spec,iterStat : ${commonSpecList}">
+                <p th:text="${spec.Name()}"></p>
+                <li th:each="specOption : ${commonSpecListOptions.get(__${iterStat.index}__)}">
+                    <input type="checkbox" th:id="${spec.Id()}"
+                           th:name="${specOption}" th:value="${specOption}">
+                    <label th:for="${spec.Id()}" th:text="${specOption}"></label>
+                </li>
+            </ul>
+            <ul class="search-result-hidden-ul">
+                <li>
+                    <input type="hidden" selected="selected" id="searchString" name="searchString" th:value="${searchStringPrev}">
+                </li>
+            </ul>
+            <ul class="search-result-submit-ul">
+                <li>
+                    <input type="submit" value="Submit">
+                </li>
+            </ul>
         </form>
-        <form><!-- SORTER EFTER META DATA (POPULARITY; AGE; ETC) --></form>
+        <!-- END OF SORTER -->
+        <h2>Resultater:</h2>
         <div class="search-result-list">
             <a th:if="${productList != null && !productList.isEmpty()}"
                class="search-result-element"

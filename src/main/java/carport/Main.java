@@ -1,8 +1,12 @@
 package carport;
 
+import java.util.List;
+
 import carport.config.SessionConfig;
 import carport.config.ThymeleafConfig;
 import carport.controllers.CarportController;
+import carport.entities.ProductCategory;
+import carport.exceptions.DatabaseException;
 import carport.persistence.CarportMapper;
 import carport.persistence.ConnectionPool;
 import io.javalin.Javalin;
@@ -38,8 +42,16 @@ public class Main {
                         System.getenv("JDBC_PASSWORD"),
                         System.getenv("JDBC_CONNECTION_STRING_STARTCODE"),
                         System.getenv("JDBC_DB"));
+        try {
+            List<ProductCategory> cats = CarportMapper.SelectAllCategories(connectionPool);
+            for (ProductCategory c : cats){
+                System.err.printf("%s::%s%n", c.Name, c.CommonSpecs.toString());
+            }
+        } catch (DatabaseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         // Todos
-        // TODO: implement search (by name and category)
-        // TODO: add images that we can now serve to product display
+        //
     }
 }

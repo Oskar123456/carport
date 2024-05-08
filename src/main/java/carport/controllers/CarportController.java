@@ -1,6 +1,7 @@
 package carport.controllers;
 
 import carport.entities.ProductImage;
+import carport.entities.ProductSpecification;
 import carport.entities.Product;
 import carport.exceptions.DatabaseException;
 import carport.persistence.CarportMapper;
@@ -8,6 +9,7 @@ import carport.persistence.ConnectionPool;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -85,7 +87,7 @@ public class CarportController {
             }
         }
 
-        ctx.attribute("searchString", searchString);
+        ctx.attribute("searchStringPrev", searchString);
         try {
             searchString = searchString.toLowerCase();
             String[] searchStringSplit = searchString.split(" ");
@@ -97,18 +99,15 @@ public class CarportController {
                             true, true, true,
                             searchStringSplit));
             int[] commonSpecIds = Product.MapProductsToCommonSpecIds(productList);
-            System.err.print(Arrays.toString(commonSpecIds));
-            for (int i = 0; i < commonSpecIds.length; ++i) {
-                System.err.println("commonspec " + commonSpecIds[i] + "::");
-                List<String> ls = Product.MapProductsToUniqueSpecDetails(productList, commonSpecIds[i]);
-                System.err.println();
-                System.err.println(ls);
-                System.err.println();
+            if (commonSpecIds != null){
+                List<ProductSpecification> commonSpecs = CarportMapper.SelectSpecificationsById(cp, commonSpecIds);
+                List<List<String>> commonSpecUniqueDetails = new ArrayList<>();
+                for (int i = 0; i < commonSpecIds.length; ++i)
+                    commonSpecUniqueDetails.add(Product.MapProductsToUniqueSpecDetails(productList, commonSpecIds[i]));
+                ctx.attribute("commonSpecList", commonSpecs);
+                ctx.attribute("commonSpecListOptions", commonSpecUniqueDetails);
             }
-            System.err.println();
-            for (int i = 0; i < commonSpecIds.length; ++i)
-                System.err.print(commonSpecIds[i]);
-            System.err.println();
+
             ctx.attribute("productList", productList);
         } catch (DatabaseException e) {
             System.err.println(e.getMessage());
@@ -128,7 +127,6 @@ public class CarportController {
             }
         }
 
-        ctx.attribute("searchString", searchString);
         try {
             List<Product> productList = CarportMapper.SelectProductsById(cp,
                     pageNumber,

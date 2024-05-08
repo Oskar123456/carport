@@ -250,6 +250,40 @@ public class CarportMapper {
     /*
      * Category and Specification
      */
+    public static List<ProductCategory> SelectAllCategories(ConnectionPool cp) throws DatabaseException{
+        List<ProductCategory> categories = new ArrayList<>();
+
+        String sql = SQL_SPECS_OF_CATS;
+        sql = setSQLOrderBy(sql, "ORDER BY category_name");
+        try (
+                Connection c = cp.getConnection();
+                PreparedStatement ps = c.prepareStatement(sql);) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Array sqlSpecIds = rs.getArray("spec_id");
+                Array sqlSpecNames = rs.getArray("spec_name");
+                Array sqlSpecUnits = rs.getArray("spec_unit");
+                Long[] specIds = (sqlSpecIds == null) ? null : (Long[]) sqlSpecIds.getArray();
+                String[] specNames = (sqlSpecNames == null) ? null : (String[]) sqlSpecNames.getArray();
+                String[] specUnits = (sqlSpecUnits == null) ? null : (String[]) sqlSpecUnits.getArray();
+                List<ProductSpecification> catSpecs = new ArrayList<>();
+                if (specIds != null &&
+                    specNames != null &&
+                    specUnits != null &&
+                    specIds.length == specNames.length &&
+                    specUnits.length == specNames.length){
+                    for (int i = 0; i < specIds.length; ++i)
+                        catSpecs.add(new ProductSpecification(specIds[i].intValue(), specNames[i], null, specUnits[i]));
+                }
+                categories.add(new ProductCategory(rs.getInt("category_id"), rs.getString("category_name"), catSpecs));
+            }
+        } catch (SQLException e) {
+            String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+            throw new DatabaseException("fejl ved søgning i databasen (" + thisMethodName + "):" + e.getMessage());
+        }
+        return categories;
+    }
+
     public static List<ProductSpecification> SelectSpecificationsById(ConnectionPool cp,
             int... ids) throws DatabaseException {
         List<ProductSpecification> specs = new ArrayList<>();

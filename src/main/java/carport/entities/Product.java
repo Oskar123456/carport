@@ -148,10 +148,6 @@ public class Product {
         return specIdsArray;
     }
 
-    public static int FilterProductListUsingSpecIds(List<Product> products, int... specIds){
-        return 0;
-    }
-
     public static List<String> MapProductsToUniqueSpecDetails(List<Product> products, int specId){
         if (products == null || products.size() < 1 || specId < 0)
             return null;
