@@ -21,13 +21,12 @@
 
     }
     input[type=submit] {
-        height: 3rem;
+        height: 2rem;
         border: none;
         border-radius: 12px;
         padding: 8px;
         color: whitesmoke;
         background-color: #003d76;
-        margin-right: 10px;
     }
     input[type=submit]:hover {
         cursor: pointer;
@@ -64,4 +63,37 @@
             width: 200px;
         }
     }
+}
+
+.search-result-filters {
+    display: flex;
+    position: relative;
+}
+
+.search-result-filter-form-button {
+        background-color: white;
+        border: 2px solid black;
+        height: 2rem;
+}
+
+.search-result-filter-form-dropdown {
+  display: none;
+  position: absolute;
+  background-color: white;
+}
+
+.search-result-filters:hover .search-result-filter-form-dropdown {
+    border: 1px black solid;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-top: 2.2rem;
+    /* display: inline-block; */
+    min-width: 100%;
+}
+
+.search-result-filter-form-dropdown-div {
+    display: flex;
+    min-width: 100%;
 }

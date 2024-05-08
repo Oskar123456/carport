@@ -52,6 +52,6 @@ public class Main {
             e.printStackTrace();
         }
         // Todos
-        //
+        // TODO: add wrappe around image-gets for frontend, so that there is always some placeholder to serve if none found
     }
 }
