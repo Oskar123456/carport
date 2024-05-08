@@ -166,6 +166,14 @@ ER DET MULIGT AT logge ind på Fogs hjemmeside
 FOR at opnå adgang til eksklusiv funktionalitet ment til ansatte.
 	AK 01: 
 
+_US_ 30:
+
+ER DET MULIGT AT se en liste over bestillinger 
+
+FOR AT kunne danne sig et overblik over bestillingshistorikken
+
+	AK 01: En ansat/admin bruger kan få udleveret en komplet liste over bestillinger via hjemmesiden.
+
 #### Opdatering
 
 _US_ 19:
