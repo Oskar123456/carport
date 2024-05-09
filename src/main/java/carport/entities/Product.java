@@ -7,7 +7,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import carport.exceptions.DatabaseException;
+import carport.persistence.CarportMapper;
+import carport.persistence.ConnectionPool;
+
 public class Product {
+    static public int PlaceholderImageId;
+    static public int PlaceholderImageIdMini;
+
     public int Id;
     public String Name;
     public String Description;
@@ -117,9 +124,20 @@ public class Product {
         }
     }
 
+    public int GetFirstImageId() {
+        return (ImageIds != null) ? ImageIds[0] : PlaceholderImageId;
+    }
+    public int GetFirstImageIdDownscaled() {
+        return (ImageIdsMini != null) ? ImageIdsMini[0] : PlaceholderImageIdMini;
+    }
     /*
      * static
      */
+    public static void SetPlaceholderImgs(int regular, int downscaled){
+        PlaceholderImageId = regular;
+        PlaceholderImageIdMini = downscaled;
+    }
+
     public static int[] MapProductsToCommonSpecIds(List<Product> products) {
         if (products == null || products.size() < 1 || products.get(0).Specs.length < 1)
             return null;

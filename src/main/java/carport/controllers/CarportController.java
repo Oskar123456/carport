@@ -6,17 +6,18 @@ import carport.entities.Product;
 import carport.exceptions.DatabaseException;
 import carport.persistence.CarportMapper;
 import carport.persistence.ConnectionPool;
+import carport.tools.ProductImageFactory;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 
 public class CarportController {
     public static void addRoutes(Javalin app, ConnectionPool cp) {
+        CarportMapper.Init(cp);
         /*
          * get
          */
@@ -32,6 +33,8 @@ public class CarportController {
 
         app.get("/admin", ctx -> renderAdminPage(ctx, cp));
         app.get("/administrator", ctx -> renderAdminPage(ctx, cp));
+
+        app.get("/uploadimage", ctx -> renderUploadImage(ctx, cp));
         // TODO: KATEGORI SØGNING OG ALT DEN LOGIK (f.eks. dropdown med
         // COMMONDENOMINATOR kategorier som søger efter kategori x)
         /*
@@ -43,6 +46,33 @@ public class CarportController {
         /*
          * post
          */
+        app.post("uploadimage", ctx -> storeImage(ctx, cp));
+        /*
+         * testing
+         * */
+        app.beforeMatched(ctx -> ctx.sessionAttribute("admin", true));
+    }
+
+    private static void storeImage(@NotNull Context ctx, ConnectionPool cp) {
+        String imgUrl = ctx.formParam("imageURL");
+        ProductImage img = ProductImageFactory.FromURL(imgUrl);
+        if (img != null) {
+            try {
+                int uploadedImgId = CarportMapper.InsertProductImage(cp, img, false, 0);
+                int uploadedImgIdDownscaled = CarportMapper.InsertProductImage(cp, img, true, 200);
+                ctx.attribute("message", "success");
+                ctx.attribute("uploadedImgId", uploadedImgId);
+                ctx.attribute("uploadedImgIdDownscaled", uploadedImgIdDownscaled);
+            } catch (DatabaseException e) {
+                ctx.attribute("message", "fejl ved upload af billede");
+            }
+        } else {ctx.attribute("message", "fejl ved upload af billede");}
+
+        renderUploadImage(ctx, cp);
+    }
+
+    private static void renderUploadImage(@NotNull Context ctx, ConnectionPool cp) {
+        ctx.render("uploadimage.html");
     }
 
     private static void renderAdminPage(@NotNull Context ctx, ConnectionPool cp) {

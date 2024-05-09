@@ -7,11 +7,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import carport.entities.Product;
 import carport.entities.ProductCategory;
@@ -29,6 +27,9 @@ public class CarportMapper {
     static private String SQL_PREDICATE_INJECTION_POINT;
     static private String SQL_ORDERBY_INJECTION_POINT;
 
+    static private int PRODUCT_IMG_NOTFOUND_PLACEHOLDER = 46;
+    static private int PRODUCT_IMG_NOTFOUND_PLACEHOLDER_DOWNSCALED = 47;
+
     public static void SetSearchPageSize(int n) {
         if (n > 0 && n < 100)
             SEARCH_PAGE_SIZE = n;
@@ -38,7 +39,7 @@ public class CarportMapper {
      * Call once
      * TODO: Reset table sequences
      */
-    public static void Init() {
+    public static void Init(ConnectionPool cp) {
         InputStream sqlSpecsOfCatsStream = CarportMapper.class.getResourceAsStream(
                 "/sql/select-specs-of-categories.sql");
         InputStream sqlCatsOfProdsStream = CarportMapper.class.getResourceAsStream(
@@ -56,8 +57,40 @@ public class CarportMapper {
             System.err.println(e.getMessage());
             e.printStackTrace();
         }
+
         SQL_PREDICATE_INJECTION_POINT = "predicate_injection";
         SQL_ORDERBY_INJECTION_POINT = "orderby_injection";
+
+        Product.SetPlaceholderImgs(PRODUCT_IMG_NOTFOUND_PLACEHOLDER, PRODUCT_IMG_NOTFOUND_PLACEHOLDER_DOWNSCALED);
+
+        // TODO:  Product.SetPlaceholderImgs(SEARCH_PAGE_SIZE, SEARCH_PAGE_SIZE);
+        // TODO:  THIS BELOW
+        //         public void create(User user) throws SQLException {
+        //     try (
+        //         Connection connection = dataSource.getConnection();
+        //         PreparedStatement statement = connection.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS);
+        //     ) {
+        //         statement.setString(1, user.getName());
+        //         statement.setString(2, user.getPassword());
+        //         statement.setString(3, user.getEmail());
+        //         // ...
+
+        //         int affectedRows = statement.executeUpdate();
+
+        //         if (affectedRows == 0) {
+        //             throw new SQLException("Creating user failed, no rows affected.");
+        //         }
+
+        //         try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+        //             if (generatedKeys.next()) {
+        //                 user.setId(generatedKeys.getLong(1));
+        //             }
+        //             else {
+        //                 throw new SQLException("Creating user failed, no ID obtained.");
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     private static void setSQLPage(PreparedStatement ps, int pageNum, int argNum) throws SQLException {
@@ -224,7 +257,7 @@ public class CarportMapper {
             ProductImage img,
             boolean downscaled,
             int newWidth) throws DatabaseException {
-        int retval = 0;
+        int dbGeneratedImgId = 0;
 
         String sql = "INSERT INTO image (id, data, source, name, format) VALUES (DEFAULT, ?, ?, ?, ?)";
 
@@ -234,17 +267,22 @@ public class CarportMapper {
 
         try (
                 Connection c = cp.getConnection();
-                PreparedStatement ps = c.prepareStatement(sql);) {
+                PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
             ps.setBytes(1, img.Data());
             ps.setString(2, img.Source());
             ps.setString(3, img.Name());
             ps.setString(4, img.Format());
-            retval = ps.executeUpdate();
+            int success = ps.executeUpdate();
+            if (success < 1)
+                return -1;
+            ResultSet generatedId = ps.getGeneratedKeys();
+            if (generatedId.next())
+                dbGeneratedImgId = (int) generatedId.getLong(1);
         } catch (SQLException e) {
             String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException(thisMethodName + "::error (" + e.getMessage() + ")");
         }
-        return retval;
+        return dbGeneratedImgId;
     }
 
     /*
@@ -487,6 +525,7 @@ public class CarportMapper {
                 Connection c = cp.getConnection();
                 PreparedStatement ps = c.prepareStatement(sql);) {
             ps.setInt(1, id);
+            System.err.println(ps.toString());
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 img = new ProductImage(id,

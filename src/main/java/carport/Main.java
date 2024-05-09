@@ -33,7 +33,6 @@ public class Main {
         // Routing
         CarportController.addRoutes(jav, connectionPool);
         // Other setup
-        CarportMapper.Init();
 
         // Test
         System.err.printf("DebugInfo::%nEnv_Vars:%n\t%s, %s, %s, %s, %s%n",

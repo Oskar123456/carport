@@ -17,6 +17,7 @@ html {
 
 header {
     position: fixed; /* Set the navbar to fixed position */
+    z-index: 100; /*PUT THIS THING ON TOP OF EVERYTHING ON SITE*/
     top: 0; /* Position the navbar at the top of the page */
     width: 99%; /* Full width */
 

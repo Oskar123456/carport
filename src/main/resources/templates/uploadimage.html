@@ -1,23 +1,18 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="">
 <head>
-    <title>Frontpage</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
-    <link href="../public/css/soegning.css" th:href="@{/css/soegning.css}" rel="stylesheet"/>
-    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/cupcakefavico32x32.png}">
-    <link rel="icon" type="image/png" sizes="48x48" th:href="@{/images/cupcakefavico48x48.png}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@100..800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+<title>Frontpage</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
+<link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/cupcakefavico32x32.png}">
+<link rel="icon" type="image/png" sizes="48x48" th:href="@{/images/cupcakefavico48x48.png}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@100..800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 </head>
 
 <body>
-
-
-
-<div class="page">
 <!-- BEGINNING OF NAV BAR -->
 <div class="page">
 <header>
@@ -116,69 +111,26 @@
         </div>
 </header>
 <!-- END OF NAV BAR -->
-    <div class="main">
-    <div class="search-result">
-        <h1 th:text="'Søgning: ' + ${searchStringPrev}"></h1>
-        <!-- BEGINNING OF SORTER -->
-        <h2>Filtre:</h2>
-        <form class="search-result-filter-form" th:if="${commonSpecList != null && commonSpecListOptions != null}" action="filter">
-            <ul th:each="spec,iterStat : ${commonSpecList}">
-                <li class="search-result-filters">
-                    <button class="search-result-filter-form-button" th:text="${spec.Name()}"></button>
-                    <div class="search-result-filter-form-dropdown">
-                        <div class="search-result-filter-form-dropdown-div"
-                             th:each="specOption : ${commonSpecListOptions.get(__${iterStat.index}__)}">
-                        <input type="checkbox"
-                               th:id="${spec.Id()}"
-                               th:name="${specOption}" th:value="${specOption}">
-                        <label th:for="${spec.Id()}" th:text="${specOption} + ' ' + ${spec.Unit()}"></label>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-            <ul class="search-result-hidden-ul">
-                <li>
-                    <input type="hidden" selected="selected" id="searchString" name="searchString" th:value="${searchStringPrev}">
-                </li>
-            </ul>
-            <ul class="search-result-submit-ul">
-                <li>
-                    <input type="submit" value="søg">
-                </li>
-            </ul>
-        </form>
-        <!-- END OF SORTER -->
-        <h2>Resultater:</h2>
-        <div class="search-result-list">
-            <a th:if="${productList != null && !productList.isEmpty()}"
-               class="search-result-element"
-               th:each="product,iterStat : ${productList}"
-               th:href="'produkt/' + '?name=' + ${product.Name} + '&id=' + ${product.Id}">
-              <img src="null"
-                   th:src="'billeder?id=' + ${product.GetFirstImageIdDownscaled()}"
-                   alt="productimage">
-              <p class="search-result-title"
-                 th:text="${product.Name}"></p>
-              <p class="search-result-price"
-                 th:text="'pris: ' + ${product.Price}"></p>
-            </a>
-            <div th:if="${productList == null || productList.isEmpty()}">Ingen resultater :(</div>
-        </div>
-        <ul>
-            <li><a href=""> left </a></li>
-            <li><a href=""> right </a></li>
-        </ul>
+<div class="main">
+    <h2>Upload billede</h2>
+    <form class="nav-search-form" method="post" action="uploadimage">
+        <input type="text" placeholder="indtast billedets URL (skal ende på .png, .jpeg osv.)" name="imageURL" id="imageURL">
+        <button class="nav-search-button" type="submit"> </button>
+    </form>
+    <div th:if="${message != null}" >
+    <h2 class="status-message" th:text="${message}"></h2>
+    <div th:if="${uploadedImgId != null && uploadedImgIdDownscaled != null}">
+    <h3>Uploadet billede:</h3>
+    <img th:src="'billeder?id=' + ${uploadedImgId}" alt=""/>
+    <h3>Uploadet billede (nedskaleret):</h3>
+    <img th:src="'billeder?id=' + ${uploadedImgIdDownscaled}" alt=""/>
     </div>
-
-    <div class="related-products">
-        <h1>Relaterede produkter...</h1>
     </div>
+</div>
 
-    </div>
-
-    <footer>
-        this is a footer
-    </footer>
+<footer>
+this is a footer
+</footer>
 
 </div>
 </body>

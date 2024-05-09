@@ -66,34 +66,39 @@
 }
 
 .search-result-filters {
-    display: flex;
-    position: relative;
+        display: flex;
+        /* position: relative; */
 }
 
 .search-result-filter-form-button {
         background-color: white;
         border: 2px solid black;
         height: 2rem;
+        width: 6rem;
 }
 
 .search-result-filter-form-dropdown {
-  display: none;
-  position: absolute;
-  background-color: white;
+        display: none;
+        background-color: white;
+        position: absolute;
+        /* min-width: 100%; */
+        width: 8rem;
 }
 
 .search-result-filters:hover .search-result-filter-form-dropdown {
     border: 1px black solid;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    margin-top: 2.2rem;
-    /* display: inline-block; */
-    min-width: 100%;
+    /* top: 2.2rem; */
+    /* display: flex; */
+    /* flex-direction: column; */
+    /* justify-content: flex-start; */
+    /* align-items: flex-start; */
+    margin-top: 2rem;
+    display: inline-block;
 }
 
 .search-result-filter-form-dropdown-div {
     display: flex;
-    min-width: 100%;
+    /* min-width: 100%; */
+    width: 100%;
+    max-width: 100%;
 }

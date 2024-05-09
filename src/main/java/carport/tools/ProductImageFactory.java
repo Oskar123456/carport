@@ -25,6 +25,8 @@ public class ProductImageFactory {
      * @return
      */
     public static ProductImage FromURL(String Url){
+        if (Url == null)
+            return null;
         ProductImage pic = null;
         try {
             URI uri = new URI(Url);
@@ -48,7 +50,7 @@ public class ProductImageFactory {
                 }
             }
 
-        } catch (URISyntaxException | IOException e) {
+        } catch (URISyntaxException | IOException | IllegalArgumentException e) {
             System.err.println(e.getMessage());
         }
         return pic;
