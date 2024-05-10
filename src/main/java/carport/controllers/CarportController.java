@@ -27,6 +27,7 @@ public class CarportController {
 
         app.get("/soegning", ctx -> renderSearch(ctx, cp));
         app.get("/soegning.html", ctx -> renderSearch(ctx, cp));
+        app.get("/filter", ctx -> renderSearch(ctx, cp));
 
         app.get("/bygselv", ctx -> renderBygSelv(ctx, cp));
         app.get("/bygselvcarport", ctx -> renderBygSelv(ctx, cp));
@@ -48,12 +49,15 @@ public class CarportController {
          */
         app.post("uploadimage", ctx -> storeImage(ctx, cp));
         /*
-         * testing
-         * */
-        app.beforeMatched(ctx -> ctx.sessionAttribute("admin", true));
+         * testing only stuff
+         */
+        if (System.getenv("test") != null && System.getenv("test").equals("true"))
+            app.beforeMatched(ctx -> ctx.sessionAttribute("admin", true));
     }
 
     private static void storeImage(@NotNull Context ctx, ConnectionPool cp) {
+        if (ctx.sessionAttribute("admin") == null)
+            return;
         String imgUrl = ctx.formParam("imageURL");
         ProductImage img = ProductImageFactory.FromURL(imgUrl);
         if (img != null) {
@@ -66,12 +70,16 @@ public class CarportController {
             } catch (DatabaseException e) {
                 ctx.attribute("message", "fejl ved upload af billede");
             }
-        } else {ctx.attribute("message", "fejl ved upload af billede");}
+        } else {
+            ctx.attribute("message", "fejl ved upload af billede");
+        }
 
         renderUploadImage(ctx, cp);
     }
 
     private static void renderUploadImage(@NotNull Context ctx, ConnectionPool cp) {
+        if (ctx.sessionAttribute("admin") == null)
+            return;
         ctx.render("uploadimage.html");
     }
 
@@ -117,19 +125,54 @@ public class CarportController {
             }
         }
 
-        ctx.attribute("searchStringPrev", searchString);
+        /* filter params */
+        boolean searchWithFilters = true;
+        List<String> queryFilterSpecIds = ctx.queryParams("specIds");
+        List<Integer> filterSpecIds = new ArrayList<>();
+        List<List<String>> filterSpecDetails = new ArrayList<>();
+        if (queryFilterSpecIds != null && queryFilterSpecIds.size() > 0) {
+            for (String s : queryFilterSpecIds) {
+                int sId = -1;
+                try {
+                    sId = Integer.parseInt(s);
+                } catch (NumberFormatException | NullPointerException e) {
+                    searchWithFilters = false;
+                    break;
+                }
+                List<String> sDetails = ctx.queryParams(s);
+                if (sDetails != null && sDetails.size() > 0 && sId >= 0) {
+                    filterSpecDetails.add(sDetails);
+                    filterSpecIds.add(sId);
+                    System.err.printf("filter search::added:\tspecId-%d : %s%n", sId, sDetails.toString());
+                }
+            }
+        } else {
+            searchWithFilters = false;
+        }
+
         try {
             searchString = searchString.toLowerCase();
             String[] searchStringSplit = searchString.split(" ");
-
-            List<Product> productList = CarportMapper.SelectProductsById(cp,
-                    pageNumber,
-                    CarportMapper.SelectProductIdsByStringMatch(cp,
-                            pageNumber,
-                            true, true, true,
-                            searchStringSplit));
+            List<Product> productList = null;
+            if (searchWithFilters) {
+                productList = CarportMapper.SelectProductsById(cp,
+                        pageNumber,
+                        CarportMapper.SelectProductIdsBySpecDetails(cp,
+                                pageNumber,
+                                true, true, true,
+                                filterSpecIds,
+                                filterSpecDetails,
+                                searchStringSplit));
+            } else {
+                productList = CarportMapper.SelectProductsById(cp,
+                        pageNumber,
+                        CarportMapper.SelectProductIdsByStringMatch(cp,
+                                pageNumber,
+                                true, true, true,
+                                searchStringSplit));
+            }
             int[] commonSpecIds = Product.MapProductsToCommonSpecIds(productList);
-            if (commonSpecIds != null){
+            if (commonSpecIds != null) {
                 List<ProductSpecification> commonSpecs = CarportMapper.SelectSpecificationsById(cp, commonSpecIds);
                 List<List<String>> commonSpecUniqueDetails = new ArrayList<>();
                 for (int i = 0; i < commonSpecIds.length; ++i)
@@ -137,11 +180,11 @@ public class CarportController {
                 ctx.attribute("commonSpecList", commonSpecs);
                 ctx.attribute("commonSpecListOptions", commonSpecUniqueDetails);
             }
-
             ctx.attribute("productList", productList);
         } catch (DatabaseException e) {
             System.err.println(e.getMessage());
         }
+        ctx.attribute("searchStringPrev", searchString);
         ctx.render("soegning.html");
     }
 

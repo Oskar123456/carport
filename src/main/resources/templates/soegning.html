@@ -123,6 +123,7 @@
         <h2>Filtre:</h2>
         <form class="search-result-filter-form" th:if="${commonSpecList != null && commonSpecListOptions != null}" action="filter">
             <ul th:each="spec,iterStat : ${commonSpecList}">
+                <input type="hidden" selected="selected" id="specIds" name="specIds" th:value="${spec.Id()}">
                 <li class="search-result-filters">
                     <button class="search-result-filter-form-button" th:text="${spec.Name()}"></button>
                     <div class="search-result-filter-form-dropdown">
@@ -130,7 +131,7 @@
                              th:each="specOption : ${commonSpecListOptions.get(__${iterStat.index}__)}">
                         <input type="checkbox"
                                th:id="${spec.Id()}"
-                               th:name="${specOption}" th:value="${specOption}">
+                               th:value="${specOption}" th:name="${spec.Id()}">
                         <label th:for="${spec.Id()}" th:text="${specOption} + ' ' + ${spec.Unit()}"></label>
                         </div>
                     </div>
