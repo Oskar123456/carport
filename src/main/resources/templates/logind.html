@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="">
 <head>
-    <title>Brugeroprettelse</title>
+    <title>logind</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="../public/css/brugeroprettelse.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
+    <link href="../public/css/logind.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
     <link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/cupcakefavico32x32.png}">
     <link rel="icon" type="image/png" sizes="48x48" th:href="@{/images/cupcakefavico48x48.png}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -101,7 +101,7 @@
                 </div>
                 <div class="nav-personal">
                     <ul>
-                        <li><a href="brugeroprettelse.html">Fog Konto</a></li>
+                        <li><a href="">Fog Konto</a></li>
                         <li><a href="">Find Fog</a></li>
                         <li><a href="">Kurv</a></li>
                     </ul>
@@ -110,59 +110,28 @@
 
         </div>
     </header>
-
     <!-- END OF NAV BAR -->
-    <form action="/action_page.php" class="form-container">
-        <div class="form-container">
-            <h1>Opret konto</h1>
-            <form action="/register" method="post">
-                <section class="form-section">
-                    <label for="user-type">Jeg er*</label>
-                    <select id="user-type" name="user_type" required>
-                        <option value="private">Privat</option>
-                        <option value="business">Firma</option>
-                    </select>
+    <form class="modal-content animate" action="/action_page.php">
+        <div class="imgcontainer">
+        </div>
 
-                    <label for="Fornavn">Fornavn*</label>
-                    <input type="text" id="Fornavn" name="Fornavn" placeholder="Indtast Fornavn" required>
+        <div class="container">
+            <h1>Log ind</h1>
+            <label><b>Brugernavn</b></label>
+            <input type="text" placeholder="Indtast brugernavn" name="uname" required>
 
-                    <label for="Efternavn">Efternavn*</label>
-                    <input type="text" id="Efternavn" name="Efternavn" placeholder="Indtast Efternavn" required>
+            <label><b>Adgangskode</b></label>
+            <input type="password" placeholder="Indtast adgangskode" name="psw" required>
 
-                    <label for="email">Email*</label>
-                    <input type="email" id="email" name="email" placeholder="Indtast Email" required>
+            <button type="submit">Login</button>
+            <label>
+                <input type="checkbox" checked="checked" name="husk"> Husk mig
+            </label>
+        </div>
 
-                    <label for="psw">Adgangskode*</label>
-                    <input type="password" id="psw" name="psw" placeholder="Indtast Adgangskode" required>
-
-                    <label for="psw-repeat">Gentag Adgangskode*</label>
-                    <input type="password" id="psw-repeat" name="psw-repeat" placeholder="Gentag Adgangskode" required>
-                </section>
-
-                <section class="form-section">
-                    <h2>Din adresse</h2>
-                    <label for="address">Gadenavn*</label>
-                    <input type="text" id="address" name="address" placeholder="Indtast adresse..." required>
-
-                    <label for="zip">Postnummer*</label>
-                    <input type="text" id="zip" name="zip" placeholder="Indtast postnummer..." required>
-
-                    <label for="city">By*</label>
-                    <input type="text" id="city" name="city" placeholder="Indtast bynavn..." required>
-
-                    <label for="country">Land*</label>
-                    <select id="country" name="country" required>
-                        <option value="Denmark">Danmark</option>
-                    </select>
-
-                    <label for="phone">Telefonnummer*</label>
-                    <input type="text" id="phone" name="phone" placeholder="Indtast telefonnummer..." required>
-                </section>
-
-                <button type="submit" class="registerbtn">Registrer</button>
-            </form>
-            <div class="container signin">
-                <p>Allerede registreret? <a href="login.html">Log ind</a>.</p>
-            </div>
+        <div class="container" style="background-color:#f1f1f1">
+            <span class="psw">Glemt <a href="#">adgangskode?</a></span>
+        </div>
+    </form>
 </body>
 </html>
