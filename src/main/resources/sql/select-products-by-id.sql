@@ -1,17 +1,9 @@
 SELECT
-    p.id,
-    p.name,
-    p.description,
-    p.links,
-    p.price,
-    cp.category_ids,
-    cs.specification_ids,
-    cs.specification_details,
-    cd.documentation_ids,
-    ci.image_ids,
-    ci.image_downscaled_ids,
-    pcomp.component_ids,
-    pcomp.component_quantities
+    p.id, p.name, p.description, p.links,
+    p.price, cp.category_ids, cs.specification_ids,
+    cs.specification_details, cd.documentation_ids,
+    ci.image_ids, ci.image_downscaled_ids,
+    pcomp.component_ids, pcomp.component_quantities
 FROM (SELECT * FROM product
         -- predicate_position_product
         ) as p
@@ -30,6 +22,7 @@ LEFT JOIN
         ARRAY_AGG(specification_id) specification_ids,
         ARRAY_AGG(details) specification_details
     FROM product_specification
+        -- predicate_position_specification
     GROUP BY product_id
 ) as cs
 ON p.id = cs.product_id
@@ -63,21 +56,10 @@ LEFT JOIN
 ) as pcomp
 ON p.id = pcomp.product_id
 
-GROUP BY p.id,
-p.name,
-p.description,
-p.links,
-p.price,
-cp.category_ids,
-cs.specification_ids,
-cs.specification_details,
-cd.documentation_ids,
-ci.image_ids,
-ci.image_downscaled_ids,
-pcomp.component_ids,
-pcomp.component_quantities
+GROUP BY p.id, p.name, p.description, p.links,
+p.price, cp.category_ids, cs.specification_ids,
+cs.specification_details, cd.documentation_ids,
+ci.image_ids, ci.image_downscaled_ids,
+pcomp.component_ids, pcomp.component_quantities
 
 ORDER BY p.id
-
-LIMIT  ?
-OFFSET ?

@@ -32,7 +32,7 @@
         <div class="nav">
             <div class="nav-left">
                 <div class="nav-logo">
-                    <a href="index.html">
+                    <a href="index.html" th:href="@{/}">
                         <img src="../public/images/foglogo.png" th:src="@{/images/foglogo.png}" alt=""/>
                     </a>
                 </div>
@@ -95,7 +95,7 @@
             <div class="nav-right">
                 <div class="nav-search">
                     <form class="nav-search-form">
-                        <button class="nav-search-button" type="submit" formaction="soegning">
+                        <button class="nav-search-button" type="submit" formaction="/soegning">
                             <img src="../public/images/magnifyingglass64x64.png" th:src="@{/images/magnifyingglass64x64.png}"  alt=""/>
                         </button>
                         <label>
@@ -156,7 +156,7 @@
                th:each="product,iterStat : ${productList}"
                th:href="'produkt/' + '?name=' + ${product.Name} + '&id=' + ${product.Id}">
               <img src="null"
-                   th:src="'billeder?id=' + ${product.GetFirstImageIdDownscaled()}"
+                   th:src="'billeder?id=' + ${product.GetFirstImageDownscaledId()}"
                    alt="productimage">
               <p class="search-result-title"
                  th:text="${product.Name}"></p>

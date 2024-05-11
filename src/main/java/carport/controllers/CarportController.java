@@ -11,11 +11,15 @@ import io.javalin.Javalin;
 import io.javalin.http.Context;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.jetty.util.thread.strategy.ProduceConsume;
 import org.jetbrains.annotations.NotNull;
 
 public class CarportController {
+    private static int PAGE_SIZE = 16;
+
     public static void addRoutes(Javalin app, ConnectionPool cp) {
         CarportMapper.Init(cp);
         /*
@@ -117,7 +121,7 @@ public class CarportController {
         String searchString = ctx.queryParam("searchString");
         searchString = (searchString == null) ? "" : searchString;
         String pageString = ctx.queryParam("page");
-        int pageNumber = -1;
+        int pageNumber = 0;
         if (pageString != null) {
             try {
                 pageNumber = Integer.parseInt(pageString);
@@ -130,7 +134,7 @@ public class CarportController {
         List<String> queryFilterSpecIds = ctx.queryParams("specIds");
         List<Integer> filterSpecIds = new ArrayList<>();
         List<List<String>> filterSpecDetails = new ArrayList<>();
-        if (queryFilterSpecIds != null && queryFilterSpecIds.size() > 0) {
+        if (queryFilterSpecIds.size() > 0) {
             for (String s : queryFilterSpecIds) {
                 int sId = -1;
                 try {
@@ -140,10 +144,9 @@ public class CarportController {
                     break;
                 }
                 List<String> sDetails = ctx.queryParams(s);
-                if (sDetails != null && sDetails.size() > 0 && sId >= 0) {
+                if (sDetails.size() > 0 && sId >= 0) {
                     filterSpecDetails.add(sDetails);
                     filterSpecIds.add(sId);
-                    System.err.printf("filter search::added:\tspecId-%d : %s%n", sId, sDetails.toString());
                 }
             }
         } else {
@@ -153,33 +156,22 @@ public class CarportController {
         try {
             searchString = searchString.toLowerCase();
             String[] searchStringSplit = searchString.split(" ");
+            List<Integer> searchCategories = CarportMapper.SearchCategory(cp, Arrays.asList(searchStringSplit));
             List<Product> productList = null;
-            if (searchWithFilters) {
-                productList = CarportMapper.SelectProductsById(cp,
-                        pageNumber,
-                        CarportMapper.SelectProductIdsBySpecDetails(cp,
-                                pageNumber,
-                                true, true, true,
-                                filterSpecIds,
-                                filterSpecDetails,
-                                searchStringSplit));
-            } else {
-                productList = CarportMapper.SelectProductsById(cp,
-                        pageNumber,
-                        CarportMapper.SelectProductIdsByStringMatch(cp,
-                                pageNumber,
-                                true, true, true,
-                                searchStringSplit));
-            }
-            int[] commonSpecIds = Product.MapProductsToCommonSpecIds(productList);
-            if (commonSpecIds != null) {
-                List<ProductSpecification> commonSpecs = CarportMapper.SelectSpecificationsById(cp, commonSpecIds);
-                List<List<String>> commonSpecUniqueDetails = new ArrayList<>();
-                for (int i = 0; i < commonSpecIds.length; ++i)
-                    commonSpecUniqueDetails.add(Product.MapProductsToUniqueSpecDetails(productList, commonSpecIds[i]));
-                ctx.attribute("commonSpecList", commonSpecs);
-                ctx.attribute("commonSpecListOptions", commonSpecUniqueDetails);
-            }
+            productList = CarportMapper.SelectProductsById(cp,
+                    pageNumber, CarportMapper.SearchProducts(cp,
+                            pageNumber, PAGE_SIZE,
+                            Arrays.asList(searchStringSplit), Arrays.asList(searchStringSplit),
+                            searchCategories, searchWithFilters,
+                            filterSpecIds, filterSpecDetails));
+            List<Long> commonSpecIds = Product.MapProductsToCommonSpecIds(productList);
+            List<ProductSpecification> commonSpecs = CarportMapper.SelectSpecificationsById(cp, commonSpecIds);
+            List<List<String>> commonSpecUniqueDetails = new ArrayList<>();
+            if (commonSpecs != null)
+                for (ProductSpecification commonSpec : commonSpecs)
+                    commonSpecUniqueDetails.add(Product.MapProductsToUniqueSpecDetails(productList, commonSpec.Id()));
+            ctx.attribute("commonSpecList", commonSpecs);
+            ctx.attribute("commonSpecListOptions", commonSpecUniqueDetails);
             ctx.attribute("productList", productList);
         } catch (DatabaseException e) {
             System.err.println(e.getMessage());
@@ -201,12 +193,12 @@ public class CarportController {
         }
 
         try {
+            List<Integer> catIds = CarportMapper.SearchCategory(cp, searchString);
             List<Product> productList = CarportMapper.SelectProductsById(cp,
-                    pageNumber,
-                    CarportMapper.SelectProductIdsByStringMatch(cp,
-                            pageNumber,
-                            false, false, true,
-                            searchString));
+                    pageNumber, CarportMapper.SearchProducts(cp, pageNumber, PAGE_SIZE,
+                                                             null, null,
+                                                             catIds, false,
+                                                             null, null));
 
             ctx.attribute("productList", productList);
         } catch (DatabaseException e) {

@@ -20,91 +20,24 @@ import carport.exceptions.DatabaseException;
 import carport.tools.ProductImageFactory;
 
 public class CarportMapper {
-    static private int SEARCH_PAGE_SIZE = 25;
-    // TODO: maybe this is overcomplication
-    static private String SQL_PRODUCT_FULL_SELECTOR;
-    static private String SQL_SPECS_OF_CATS;
-    static private String SQL_CATS_OF_PRODS;
-    static private String SQL_PRODUCT_ID_FROM_SPEC_DETS;
-
-    static private String SQL_PREDICATE_INJECTION_POINT;
-    static private String SQL_ORDERBY_INJECTION_POINT;
+    static private String SQL_SELECT_PRODUCTS_BY_ID;
 
     static private int PRODUCT_IMG_NOTFOUND_PLACEHOLDER = 46;
     static private int PRODUCT_IMG_NOTFOUND_PLACEHOLDER_DOWNSCALED = 47;
-
-    public static void SetSearchPageSize(int n) {
-        if (n > 0 && n < 100)
-            SEARCH_PAGE_SIZE = n;
-    }
 
     /*
      * Call once
      * TODO: Reset table sequences
      */
     public static void Init(ConnectionPool cp) {
-        InputStream sqlSpecsOfCatsStream = CarportMapper.class.getResourceAsStream(
-                "/sql/select-specs-of-categories.sql");
-        InputStream sqlCatsOfProdsStream = CarportMapper.class.getResourceAsStream(
-                "/sql/select-categories-of-products.sql");
-        InputStream sqlProdFullSelStream = CarportMapper.class.getResourceAsStream(
-                "/sql/select-full-product-description.sql");
-        InputStream sqlProdIdFromSpecDetsStream = CarportMapper.class.getResourceAsStream(
-                "/sql/select-product-ids-match-spec-details.sql");
+        InputStream sqlSelProdsStream = CarportMapper.class.getResourceAsStream("/sql/select-products-by-id.sql");
         try {
-            SQL_PRODUCT_FULL_SELECTOR = new String(sqlProdFullSelStream.readAllBytes());
-            SQL_CATS_OF_PRODS = new String(sqlCatsOfProdsStream.readAllBytes());
-            SQL_SPECS_OF_CATS = new String(sqlSpecsOfCatsStream.readAllBytes());
-            SQL_PRODUCT_ID_FROM_SPEC_DETS = new String(sqlProdIdFromSpecDetsStream.readAllBytes());
-            sqlSpecsOfCatsStream.close();
-            sqlProdFullSelStream.close();
-            sqlCatsOfProdsStream.close();
-            sqlProdIdFromSpecDetsStream.close();
+            SQL_SELECT_PRODUCTS_BY_ID = new String(sqlSelProdsStream.readAllBytes());
         } catch (IOException e) {
-            System.err.println(e.getMessage());
-            e.printStackTrace();
+            System.err.println("CarportMapper failed to load sql statements from file");
         }
-
-        SQL_PREDICATE_INJECTION_POINT = "predicate_injection";
-        SQL_ORDERBY_INJECTION_POINT = "orderby_injection";
-
         Product.SetPlaceholderImgs(PRODUCT_IMG_NOTFOUND_PLACEHOLDER, PRODUCT_IMG_NOTFOUND_PLACEHOLDER_DOWNSCALED);
     }
-
-    private static void setSQLPage(PreparedStatement ps, int pageNum, int argNum) throws SQLException {
-        ps.setInt(argNum++, SEARCH_PAGE_SIZE);
-        ps.setInt(argNum, (pageNum >= 0) ? pageNum * SEARCH_PAGE_SIZE : 0);
-    }
-
-    private static String setSQLPredicate(String sql, String injectionPoint, String predicate) {
-        if (sql == null || !sql.contains(injectionPoint))
-            return sql;
-        String[] sqlSplit = sql.split(injectionPoint);
-        String sqlUpdated = sqlSplit[0] + System.lineSeparator()
-                + predicate + sqlSplit[1] + System.lineSeparator();
-        return sqlUpdated;
-    }
-
-    private static String setSQLOrderBy(String sql, String orderby) {
-        if (sql == null || !sql.contains(SQL_ORDERBY_INJECTION_POINT))
-            return sql;
-        String[] sqlSplit = sql.split(SQL_ORDERBY_INJECTION_POINT);
-        String sqlUpdated = sqlSplit[0] + System.lineSeparator()
-                + orderby + sqlSplit[1] + System.lineSeparator();
-        return sqlUpdated;
-    }
-
-    private static String setSQLColumns(String sql, String... columns) {
-        if (sql == null || columns == null || columns.length < 1)
-            return sql;
-        String sqlSubStr = sql.substring(sql.indexOf("FROM"));
-        String sqlSelect = "SELECT ";
-        for (String s : columns) {
-            sqlSelect += s + System.lineSeparator();
-        }
-        return sqlSelect + sqlSubStr;
-    }
-
     /*
      * User
      */
@@ -116,199 +49,151 @@ public class CarportMapper {
     /*
      * Product
      */
-    private static Product importProduct(ResultSet rs) throws SQLException {
-        return new Product(
-                rs.getInt("id"),
-                rs.getString("name"),
-                rs.getString("description"),
-                rs.getBigDecimal("price"),
-                rs.getArray("links"),
-                rs.getArray("image_ids"),
-                rs.getArray("image_downscaled_ids"),
-                rs.getArray("spec_ids"),
-                rs.getArray("spec_names"),
-                rs.getArray("spec_details"),
-                rs.getArray("spec_units"),
-                rs.getArray("categories"),
-                rs.getArray("doc_ids"),
-                rs.getArray("comp_ids"),
-                rs.getArray("comp_quantities"));
-    }
-
     /*
      * Main search function for products. Simple substring search
-     * through optionally name, description & categories.
+     * through optionally name, description & categories. Can filter
+     * based on specid-specdetails.
      */
-    public static int[] SelectProductIdsByStringMatch(ConnectionPool cp,
-            int page,
-            boolean searchName,
-            boolean searchDescription,
-            boolean searchCategories,
-            String... needles) throws DatabaseException {
+    // TODO: spec search either in new func or this one
+    public static List<Integer> SearchProducts(ConnectionPool cp,
+            int pageNum,
+            int pageSize,
+            List<String> nameNeedles,
+            List<String> descriptionNeedles,
+            List<Integer> categoryIds,
+            boolean shouldFilter,
+            List<Integer> specIds,
+            List<List<String>> specDetails) throws DatabaseException {
         List<Integer> ids = new ArrayList<>();
-        if (needles == null || needles.length < 1)
-            return null;
-        String sql = SQL_PRODUCT_FULL_SELECTOR.replace("ARRAY_AGG(category.name) category_names",
-                "STRING_AGG(category.name, ', ') category_names");
-        String sqlPredicate = " WHERE ";
 
-        int searchNameIntVal = (searchName) ? 1 : 0;
-        int searchDescriptionIntVal = (searchDescription) ? 1 : 0;
-        int searchCategoriesIntVal = (searchCategories) ? 1 : 0;
-        int searchColNum = searchNameIntVal + searchDescriptionIntVal + searchCategoriesIntVal;
-        for (int i = 0; i < needles.length; ++i) {
-            if (searchName)
+        String sql = """
+                SELECT p.id FROM (SELECT *
+                    FROM product
+                ) as p
+                INNER JOIN (SELECT *
+                    FROM product_category
+                ) as pcat
+                ON p.id = pcat.product_id
+                -- should_filter
+                INNER JOIN (SELECT *
+                    FROM product_specification
+                    -- predicate_position_specification
+                ) as pspec
+                ON p.id = pspec.product_id
+                -- should_filter
+                -- predicate_position_product
+                GROUP BY p.id
+                ORDER BY p.id
+                LIMIT ? OFFSET ?""";
+
+        String sqlPredicate = "";
+        String sqlSpecPredicate = "";
+        if (nameNeedles != null && nameNeedles.size() > 0)
+            for (int i = 0; i < nameNeedles.size(); ++i)
                 sqlPredicate += " name ILIKE ? OR ";
-            if (searchDescription)
+        if (descriptionNeedles != null && descriptionNeedles.size() > 0)
+            for (int i = 0; i < descriptionNeedles.size(); ++i)
                 sqlPredicate += " description ILIKE ? OR ";
-            if (searchCategories)
-                sqlPredicate += " category_names ILIKE ? OR ";
-            if (i == needles.length - 1)
-                sqlPredicate = sqlPredicate.substring(0, sqlPredicate.lastIndexOf("OR"));
+        if (categoryIds != null && categoryIds.size() > 0)
+            for (int i = 0; i < categoryIds.size(); ++i)
+                sqlPredicate += " pcat.category_id = ? OR ";
+        if (shouldFilter && specIds != null) {
+            for (int i = 0; i < specIds.size() ; ++i){
+                if (specDetails.get(i) != null)
+                    for (int j = 0; j < specDetails.get(i).size(); ++j)
+                        sqlSpecPredicate += " (specification_id = ? AND details = ?) OR ";            }
+        } else
+            sql = sql.replaceAll("should_filter(.|\s)*should_filter", System.lineSeparator());
+        if (sqlPredicate.length() > 0) {
+            sqlPredicate = sqlPredicate.substring(0, sqlPredicate.lastIndexOf("OR"));
+            sqlPredicate = System.lineSeparator() + " WHERE " + sqlPredicate + System.lineSeparator();
         }
-        sql = setSQLPredicate(sql, SQL_PREDICATE_INJECTION_POINT, sqlPredicate);
-        sql = setSQLOrderBy(sql, "ORDER BY product.id ASC");
-        /* DEBUG PRINTINT */
-        String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
-        System.err.printf(
-                "[debug::logging]%n\t%s(page %d, searchName %b, searchDescription %b, searchCategories %b, needles: {%s})%n",
-                thisMethodName, page, searchName, searchDescription, searchCategories, String.join(", ", needles));
-        /* DEBUG PRINTINT */
+        if (sqlSpecPredicate.length() > 0) {
+            sqlSpecPredicate = sqlSpecPredicate.substring(0, sqlSpecPredicate.lastIndexOf("OR"));
+            sqlSpecPredicate = System.lineSeparator() + " WHERE " + sqlSpecPredicate + System.lineSeparator();
+        }
+
+        sql = sql.replace("predicate_position_product", sqlPredicate);
+        sql = sql.replace("predicate_position_specification", sqlSpecPredicate);
+
+        /* DEBUG PRINTING */
+        // String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+        // System.err.printf("%s::%n%s%n%n%n%n%n%n",
+        //         thisMethodName,
+        //      sql);
+        /* DEBUG PRINTING */
+
         try (Connection c = cp.getConnection();
                 PreparedStatement ps = c.prepareStatement(sql);) {
             int argNum = 1;
-            for (int i = 0; i < needles.length * searchColNum; ++i)
-                ps.setString(argNum++, "%" + needles[i / searchColNum] + "%");
-            setSQLPage(ps, page, argNum);
+            if (shouldFilter)
+                for (int i = 0; i < specIds.size(); ++i) {
+                    for (String detail : specDetails.get(i)) {
+                        ps.setInt(argNum++, specIds.get(i));
+                        ps.setString(argNum++, detail);
+                    }
+                }
+            if (nameNeedles != null)
+                for (int i = 0; i < nameNeedles.size(); ++i)
+                    ps.setString(argNum++, '%' + nameNeedles.get(i) + '%');
+            if (descriptionNeedles != null)
+                for (int i = 0; i < descriptionNeedles.size(); ++i)
+                    ps.setString(argNum++, '%' + descriptionNeedles.get(i) + '%');
+            if (categoryIds != null)
+                for (int i = 0; i < categoryIds.size(); ++i)
+                    ps.setInt(argNum++, categoryIds.get(i));
+            ps.setInt(argNum++, pageSize);
+            ps.setInt(argNum++, pageNum);
             System.err.println(ps.toString());
             ResultSet rs = ps.executeQuery();
             while (rs.next())
                 ids.add(rs.getInt("id"));
         } catch (SQLException e) {
-            throw new DatabaseException("error in database search::" + e.getMessage());
+            String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
+            throw new DatabaseException(funcName + "::" + e.getMessage());
         }
-        if (ids.isEmpty())
-            return null;
-        int[] idsResult = new int[ids.size()];
-        for (int i = 0; i < idsResult.length; ++i) {
-            idsResult[i] = ids.get(i).intValue();
-        }
-        return idsResult;
+        return ids;
     }
 
-    public static int[] SelectProductIdsBySpecDetails(ConnectionPool cp,
+    public static List<Product> SelectProductsById(ConnectionPool cp,
             int page,
-            boolean searchName,
-            boolean searchDescription,
-            boolean searchCategories,
-            List<Integer> specIds,
-            List<List<String>> specDetails,
-            String... needles) throws DatabaseException {
-        String sql = SQL_PRODUCT_ID_FROM_SPEC_DETS;
-        if (specIds != null && specDetails != null && specIds.size() > 0 && specDetails.size() == specIds.size()) {
-            String sqlPredicateSpecs = " WHERE ";
-            for (int i = 0; i < specIds.size(); ++i) {
-                sqlPredicateSpecs += " ( ";
-                for (int j = 0; j < specDetails.get(i).size(); ++j) {
-                    sqlPredicateSpecs += " ( specification_id = ? AND details = ? ) OR ";
-                }
-                sqlPredicateSpecs = sqlPredicateSpecs.substring(0, sqlPredicateSpecs.lastIndexOf("OR"));
-                sqlPredicateSpecs += " ) ";
-                if (i < specIds.size() - 1)
-                    sqlPredicateSpecs += " AND ";
-            }
-            sql = setSQLPredicate(sql, "predicate_specs_injection", sqlPredicateSpecs);
-            System.err.println("sqlPredicateSpecs::");
-            System.err.println(sqlPredicateSpecs);
-            System.err.println(sql);
-        }
-        int searchNameIntVal = (searchName) ? 1 : 0;
-        int searchDescriptionIntVal = (searchDescription) ? 1 : 0;
-        int searchCategoriesIntVal = (searchCategories) ? 1 : 0;
-        int searchColNum = searchNameIntVal + searchDescriptionIntVal + searchCategoriesIntVal;
-        if (needles != null && needles.length > 0) {
-            String sqlPredicate = " WHERE ";
-            for (int i = 0; i < needles.length; ++i) {
-                if (searchName)
-                    sqlPredicate += " name ILIKE ? OR ";
-                if (searchDescription)
-                    sqlPredicate += " description ILIKE ? OR ";
-                if (searchCategories)
-                    sqlPredicate += " category_names ILIKE ? OR ";
-            }
-            sqlPredicate = sqlPredicate.substring(0, sqlPredicate.lastIndexOf("OR"));
-            sql = setSQLPredicate(sql, SQL_PREDICATE_INJECTION_POINT, sqlPredicate);
-            System.err.println("with both predicates::");
-            System.err.println(sql);
-        }
-        sql = setSQLOrderBy(sql, "ORDER BY product.id ASC");
-        /* DEBUG PRINTINT */
-        String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
-        System.err.printf(
-                "[debug::logging]%n\t%s(page %d, searchName %b, searchDescription %b, searchCategories %b, specIds: %s, needles: {%s})%n",
-                thisMethodName, page, searchName, searchDescription, searchCategories, specIds,
-                String.join(", ", needles));
-        /* DEBUG PRINTINT */
-        List<Integer> ids = new ArrayList<>();
-        try (Connection c = cp.getConnection();
-                PreparedStatement ps = c.prepareStatement(sql);) {
-            int argNum = 1;
-            for (int i = 0; i < specIds.size(); ++i) {
-                for (int j = 0; j < specDetails.get(i).size(); ++j) {
-                    ps.setInt(argNum++, specIds.get(i));
-                    ps.setString(argNum++, specDetails.get(i).get(j));
-                }
-            }
-            for (int i = 0; i < needles.length * searchColNum; ++i)
-                ps.setString(argNum++, "%" + needles[i / searchColNum] + "%");
-            sql = setSQLOrderBy(sql, "ORDER BY product.id ASC");
-            setSQLPage(ps, page, argNum);
-            /* DEBUG PRINTING */
-            System.err.println(ps.toString());
-            /* DEBUG PRINTING */
-            ResultSet rs = ps.executeQuery();
-            while (rs.next())
-                ids.add(rs.getInt("id"));
-        } catch (SQLException e) {
-            throw new DatabaseException("error in database search::" + thisMethodName + "message:" + e.getMessage());
-        }
-        if (ids.isEmpty())
+            List<Integer> ids) throws DatabaseException {
+        if (ids == null || ids.size() < 1)
             return null;
-        int[] idsResult = new int[ids.size()];
-        for (int i = 0; i < idsResult.length; ++i) {
-            idsResult[i] = ids.get(i).intValue();
-        }
-        return idsResult;
+        int[] idsArray = new int[ids.size()];
+        for (int i = 0; i < idsArray.length; ++i)
+            idsArray[i] = ids.get(i);
+        return SelectProductsById(cp, page, idsArray);
     }
 
     public static List<Product> SelectProductsById(ConnectionPool cp,
             int page,
             int... ids) throws DatabaseException {
         List<Product> productList = new ArrayList<>();
-        if (ids == null || ids.length < 1)
-            return productList;
-        int argNum = 1;
-        String sql = SQL_PRODUCT_FULL_SELECTOR;
-        String sqlPredicate = "WHERE ";
-        for (int i = 0; i < ids.length; ++i) {
-            sqlPredicate += " id = ? ";
-            if (i < ids.length - 1)
-                sqlPredicate += " OR ";
+
+        String sql = SQL_SELECT_PRODUCTS_BY_ID;
+        String sqlPredicate = "";
+        if (ids != null) {
+            for (int i = 0; i < ids.length; ++i)
+                sqlPredicate += " id = ? OR ";
         }
-        sql = setSQLPredicate(sql, SQL_PREDICATE_INJECTION_POINT, sqlPredicate);
+        if (sqlPredicate.length() > 0)
+            sqlPredicate = System.lineSeparator() + " WHERE "
+                    + sqlPredicate.substring(0, sqlPredicate.lastIndexOf("OR")) + System.lineSeparator();
+        sql = sql.replace("predicate_position_product", sqlPredicate);
 
         try (Connection c = cp.getConnection();
                 PreparedStatement ps = c.prepareStatement(sql);) {
-            for (; argNum <= ids.length; ++argNum)
-                ps.setInt(argNum, ids[argNum - 1]);
-
-            sql = setSQLOrderBy(sql, "ORDER BY product.id ASC");
-            setSQLPage(ps, page, argNum);
+            int argNum = 1;
+            if (ids != null)
+                for (int i = 0; i < ids.length; ++i)
+                    ps.setInt(argNum++, ids[i]);
             ResultSet rs = ps.executeQuery();
             while (rs.next())
-                productList.add(importProduct(rs));
+                productList.add(Product.ImportFromDB(rs));
         } catch (SQLException e) {
-            throw new DatabaseException("error in database search::" + e.getMessage());
+            String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
+            throw new DatabaseException(funcName + "::" + e.getMessage());
         }
         return productList;
     }
@@ -351,38 +236,67 @@ public class CarportMapper {
     /*
      * Category and Specification
      */
-    public static List<ProductCategory> SelectAllCategories(ConnectionPool cp) throws DatabaseException {
-        List<ProductCategory> categories = new ArrayList<>();
+    public static List<Integer> SearchCategory(ConnectionPool cp,
+                                               String needle) throws DatabaseException {
+        if (needle == null)
+            return null;
+        List<String> needleAsList = new ArrayList<>();
+        needleAsList.add(needle);
+        return SearchCategory(cp, needleAsList);
+    }
+    public static List<Integer> SearchCategory(ConnectionPool cp,
+            List<String> needles) throws DatabaseException {
+        List<Integer> ids = new ArrayList<>();
 
-        String sql = SQL_SPECS_OF_CATS;
-        sql = setSQLOrderBy(sql, "ORDER BY category_name");
-        try (
-                Connection c = cp.getConnection();
-                PreparedStatement ps = c.prepareStatement(sql);) {
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Array sqlSpecIds = rs.getArray("spec_id");
-                Array sqlSpecNames = rs.getArray("spec_name");
-                Array sqlSpecUnits = rs.getArray("spec_unit");
-                Long[] specIds = (sqlSpecIds == null) ? null : (Long[]) sqlSpecIds.getArray();
-                String[] specNames = (sqlSpecNames == null) ? null : (String[]) sqlSpecNames.getArray();
-                String[] specUnits = (sqlSpecUnits == null) ? null : (String[]) sqlSpecUnits.getArray();
-                List<ProductSpecification> catSpecs = new ArrayList<>();
-                if (specIds != null &&
-                        specNames != null &&
-                        specUnits != null &&
-                        specIds.length == specNames.length &&
-                        specUnits.length == specNames.length) {
-                    for (int i = 0; i < specIds.length; ++i)
-                        catSpecs.add(new ProductSpecification(specIds[i].intValue(), specNames[i], null, specUnits[i]));
-                }
-                categories.add(new ProductCategory(rs.getInt("category_id"), rs.getString("category_name"), catSpecs));
-            }
-        } catch (SQLException e) {
-            String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
-            throw new DatabaseException("fejl ved søgning i databasen (" + thisMethodName + "):" + e.getMessage());
+        String sql = """
+                SELECT id
+                FROM category
+                -- predicate_position_category
+                ORDER BY id""";
+
+        String sqlCatPredicate = "";
+        if (needles != null && needles.size() > 0)
+            for (int i = 0; i < needles.size(); ++i)
+                sqlCatPredicate += " name ILIKE ? OR ";
+        if (sqlCatPredicate.length() > 0) {
+            sqlCatPredicate = sqlCatPredicate.substring(0, sqlCatPredicate.lastIndexOf("OR"));
+            sqlCatPredicate = System.lineSeparator() + " WHERE " + sqlCatPredicate + System.lineSeparator();
+            sql = sql.replace("predicate_position_category", sqlCatPredicate);
         }
-        return categories;
+
+        /* DEBUG PRINTING */
+        // String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+        // System.err.printf("%s::%n\tsqlCatPredicate : %s%n\tFULL:%n%s%n%n",
+        //         thisMethodName,
+        //         sqlCatPredicate,
+        //         sql);
+        /* DEBUG PRINTING */
+
+        try (Connection c = cp.getConnection();
+                PreparedStatement ps = c.prepareStatement(sql);) {
+            int argNum = 1;
+            if (needles != null)
+                for (String s : needles)
+                    ps.setString(argNum++, s);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next())
+                ids.add(rs.getInt("id"));
+        } catch (SQLException e) {
+            String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
+            throw new DatabaseException(funcName + "::" + e.getMessage());
+        }
+
+        return ids;
+    }
+
+    public static List<ProductSpecification> SelectSpecificationsById(ConnectionPool cp,
+            List<Long> ids) throws DatabaseException {
+        if (ids == null || ids.size() < 1)
+            return null;
+        int[] idsArray = new int[ids.size()];
+        for (int i = 0; i < ids.size(); ++i)
+            idsArray[i] = ids.get(i).intValue();
+        return SelectSpecificationsById(cp, idsArray);
     }
 
     public static List<ProductSpecification> SelectSpecificationsById(ConnectionPool cp,
@@ -417,35 +331,6 @@ public class CarportMapper {
         return specs;
     }
 
-    public static ProductCategory SelectCategoryByName(ConnectionPool cp,
-            String needle) throws DatabaseException {
-        ProductCategory category = null;
-        String sql = "SELECT * FROM category WHERE name ILIKE ?";
-        try (
-                Connection c = cp.getConnection();
-                PreparedStatement ps = c.prepareStatement(sql);) {
-            ps.setString(1, needle);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                Array sqlCommonSpecIds = rs.getArray("common_specifications");
-                int[] commonSpecIds = null;
-                if (sqlCommonSpecIds != null) {
-                    Long[] sqlCommonSpecIdsObj = (Long[]) sqlCommonSpecIds.getArray();
-                    commonSpecIds = new int[sqlCommonSpecIdsObj.length];
-                    for (int i = 0; i < commonSpecIds.length; ++i)
-                        commonSpecIds[i] = sqlCommonSpecIdsObj[i].intValue();
-                }
-                category = new ProductCategory(rs.getInt("id"),
-                        rs.getString("name"),
-                        SelectSpecificationsById(cp, commonSpecIds));
-            }
-        } catch (SQLException e) {
-            String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
-            throw new DatabaseException("fejl ved søgning i databasen (" + thisMethodName + "):" + e.getMessage());
-        }
-        return category;
-    }
-
     /*
      * Selects unique category ids based on provided array of product ids.
      * Will select only common denominators if desired.
@@ -468,21 +353,36 @@ public class CarportMapper {
         List<Integer> catIdsList = new ArrayList<>();
         boolean firstIter = true;
 
-        String sql = SQL_CATS_OF_PRODS;
-        String sqlPredicate = " WHERE ";
-        for (int i = 0; i < ids.length; ++i) {
-            sqlPredicate += " id = ? ";
-            if (i < ids.length - 1)
-                sqlPredicate += " OR ";
-        }
-        sql = setSQLPredicate(sql, SQL_PREDICATE_INJECTION_POINT, sqlPredicate);
+        String sql = """
+                SELECT DISTINCT category_ids
+
+                FROM product
+
+                LEFT JOIN
+                (
+                    SELECT product_category.product_id as pid,
+                        ARRAY_AGG(product_category.category_id) category_ids
+                    FROM product_category
+                    INNER JOIN
+                    category
+                    on category.id = product_category.category_id
+                    GROUP BY product_category.product_id
+                ) as pCats
+                ON product.id = pCats.pid
+                -- predicate_position_product """;
+        String sqlPredicate = "";
+        for (int i = 0; i < ids.length; ++i)
+            sqlPredicate += " id = ? OR ";
+        if (sqlPredicate.length() > 0)
+            sqlPredicate = System.lineSeparator() + " WHERE " + sqlPredicate.substring(0, sqlPredicate.lastIndexOf("OR")) + System.lineSeparator();
+
+        sql = sql.replace("predicate_position_product", sqlPredicate);
 
         try (
                 Connection c = cp.getConnection();
                 PreparedStatement ps = c.prepareStatement(sql);) {
             for (int i = 0; i < ids.length; ++i)
                 ps.setInt(i + 1, ids[i]);
-            System.err.println(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Array sqlRowCats = rs.getArray("category_ids");
@@ -547,21 +447,41 @@ public class CarportMapper {
             return null;
         List<Integer> specIdsList = new ArrayList<>();
 
-        String sql = SQL_CATS_OF_PRODS;
-        String sqlPredicate = " WHERE ";
-        for (int i = 0; i < ids.length; ++i) {
-            sqlPredicate += " category_id = ? ";
-            if (i < ids.length - 1)
-                sqlPredicate += " OR ";
-        }
-        sql = setSQLPredicate(sql, SQL_PREDICATE_INJECTION_POINT, sqlPredicate);
+        String sql = """
+                SELECT category.id as category_id,
+                category.name as category_name,
+                catSpecs.spec_name,
+                catSpecs.spec_unit,
+                catSpecs.spec_id
+                FROM category
+                LEFT JOIN
+                (
+                SELECT category_specification.category_id as category_id,
+                    ARRAY_AGG(specification.name) spec_name,
+                    ARRAY_AGG(specification.unit) spec_unit,
+                    ARRAY_AGG(specification.id) spec_id
+                FROM category_specification
+                INNER JOIN
+                specification
+                ON category_specification.specification_id = specification.id
+                GROUP BY category_specification.category_id
+                ) as catSpecs
+                ON catSpecs.category_id = category.id
+                -- predicate_position_category """;
+
+        String sqlPredicate = "";
+        for (int i = 0; i < ids.length; ++i)
+            sqlPredicate += " category_id = ? OR ";
+        if (sqlPredicate.length() > 0)
+            sqlPredicate = System.lineSeparator() + " WHERE " + sqlPredicate.substring(0, sqlPredicate.lastIndexOf("OR")) + System.lineSeparator();
+
+        sql = sql.replace("predicater_position_category", sqlPredicate);
 
         try (
                 Connection c = cp.getConnection();
                 PreparedStatement ps = c.prepareStatement(sql);) {
             for (int i = 0; i < ids.length; ++i)
                 ps.setInt(i + 1, ids[i]);
-            System.err.println(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Array sqlRowCats = rs.getArray("spec_id");
@@ -596,7 +516,6 @@ public class CarportMapper {
                 Connection c = cp.getConnection();
                 PreparedStatement ps = c.prepareStatement(sql);) {
             ps.setInt(1, id);
-            System.err.println(ps.toString());
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 img = new ProductImage(id,
