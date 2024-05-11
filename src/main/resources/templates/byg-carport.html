@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="">
 <head>
-  <title>Build-your-own Carport</title>
+  <title>Byg-selv carport på specialmål - få tilbud omgående</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="../public/css/byg-selv.css" th:href="@{/css/byg-selv.css}" rel="stylesheet"/>
@@ -12,17 +12,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@100..800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 </head>
 
-
 <body>
 <!-- BEGINNING OF NAV BAR -->
 <div class="page">
   <header>
     <div class="header-info">
       <ul>
-        <li><a href="">extra info</a></li>
-        <li><a href="">extra info</a></li>
-        <li><a href="">extra info</a></li>
-        <li><a href="">extra info</a></li>
+        <li><a href="">30 dages returret</a></li>
+        <li><a href="">Klik og hent inden for 3 timer*</a></li>
+        <li><a href="">1-3 dages levering*</a></li>
+        <li><a href="">Lån en trailer gratis</a></li>
       </ul>
     </div>
     <div class="nav">
@@ -81,7 +80,7 @@
                 <a href="#">Link 1</a>
                 <a href="#">Link 2</a>
                 <!-- SPECIAL RULE FOR BYGSELV -->
-                <a href="#" th:href="@{/bygselvcarport}">Byg selv</a>
+                <a href="byg-carport.html" th:href="@{/bygselvcarport}">Byg selv</a>
               </div>
             </li>
           </ul>
@@ -170,14 +169,14 @@
           </div>
         </div>
 
-        <button type="submit">Beregn tilbud</button>
+        <button type="submit" formaction="tilbud">Beregn tilbud</button>
       </form>
     </section>
   </div>
 </div>
 
   <footer>
-    this is a footer
+    <p>&nbsp;&nbsp;&nbsp;Johannes Fog A/S<span>Firskovvej 20, 2800 Lyngby</span>CVR-nr. 16314439</p>
   </footer>
 
 </div>
