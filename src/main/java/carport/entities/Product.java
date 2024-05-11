@@ -2,6 +2,7 @@ package carport.entities;
 
 import java.math.BigDecimal;
 import java.sql.Array;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,171 +13,124 @@ import carport.persistence.CarportMapper;
 import carport.persistence.ConnectionPool;
 
 public class Product {
-    static public int PlaceholderImageId;
-    static public int PlaceholderImageIdMini;
+    static private int PlaceholderImageId;
+    static private int PlaceholderImageIdMini;
 
     public int Id;
     public String Name;
     public String Description;
     public BigDecimal Price;
     public String[] Links;
-    public int[] ImageIds;
-    public int[] ImageIdsMini;
-    public ProductSpecification[] Specs;
-    public ProductCategory[] Categories;
-    public ProductComponent[] Components;
-    public int[] DocIds;
+    public Long[] ImageIds;
+    public Long[] ImageDownscaledIds;
+    public Long[] CatIds;
+    public Long[] SpecIds;
+    public String[] SpecDetails;
+    public Long[] DocIds;
+    public Long[] CompIds;
+    public Long[] CompQuants;
 
     public Product(int id, String name,
             String description, BigDecimal price,
-            Array sqlLinks, Array sqlImageIds,
-            Array sqlImageIdsMini, Array sqlSpecIds,
-            Array sqlSpecNames, Array sqlSpecDetails,
-            Array sqlSpecUnits, Array sqlCategories,
-            Array sqlDocIds, Array sqlCompIds,
-            Array sqlCompQuants) {
-
+            String[] links, Long[] imageIds,
+            Long[] imageDownscaledIds, Long[] catIds,
+            Long[] specIds, String[] specDetails,
+            Long[] docIds, Long[] compIds,
+            Long[] compQuants) {
         this.Id = id;
         this.Name = name;
         this.Description = description;
         this.Price = price;
-        // SQL array conversion hell
-        if (sqlLinks != null) {
-            try {
-                Links = (String[]) sqlLinks.getArray();
-            } catch (SQLException ignored) {
-            }
-        }
-        if (sqlImageIds != null) {
-            try {
-                Long[] imageIdsObj = (Long[]) sqlImageIds.getArray();
-                ImageIds = Arrays.stream(imageIdsObj).mapToInt(Long::intValue).toArray();
-            } catch (SQLException ignored) {
-            }
-        }
-        if (sqlImageIdsMini != null) {
-            try {
-                Long[] imageIdsMiniObj = (Long[]) sqlImageIdsMini.getArray();
-                ImageIdsMini = Arrays.stream(imageIdsMiniObj).mapToInt(Long::intValue).toArray();
-            } catch (SQLException ignored) {
-            }
-        }
-        if (sqlSpecNames != null &&
-                sqlSpecDetails != null &&
-                sqlSpecUnits != null &&
-            sqlSpecIds != null) {
-            try {
-                Long[] specIds = (Long[]) sqlSpecIds.getArray();
-                String[] specNames = (String[]) sqlSpecNames.getArray();
-                String[] specDetails = (String[]) sqlSpecDetails.getArray();
-                String[] specUnits = (String[]) sqlSpecUnits.getArray();
-                if (specNames.length == specIds.length &&
-                    specDetails.length == specIds.length &&
-                    specUnits.length == specIds.length) {
-                    Specs = new ProductSpecification[specNames.length];
-                    for (int i = 0; i < specIds.length; ++i) {
-                        Specs[i] = new ProductSpecification(
-                                specIds[i].intValue(),
-                                specNames[i],
-                                specDetails[i],
-                                specUnits[i]);
-                    }
-                }
-            } catch (SQLException ignored) {
-            }
-        }
-        if (sqlCategories != null) {
-            try {
-                String[] sCats = (String[]) sqlCategories.getArray();
-                Categories = new ProductCategory[sCats.length];
-                for (int i = 0; i < Categories.length; ++i) {
-                    Categories[i] = new ProductCategory(-1,
-                            sCats[i],
-                            null);
-                }
-            } catch (SQLException ignored) {
-            }
-        }
-        if (sqlCompIds != null &&
-                sqlCompQuants != null) {
-            try {
-                Long[] compIdsObj = (Long[]) sqlCompIds.getArray();
-                Long[] compQuantsObj = (Long[]) sqlCompQuants.getArray();
-                if (compIdsObj.length == compQuantsObj.length) {
-                    Components = new ProductComponent[compIdsObj.length];
-                    for (int i = 0; i < Components.length; ++i) {
-                        Components[i] = new ProductComponent(compIdsObj[i].intValue(),
-                                compQuantsObj[i].intValue());
-                    }
-                }
-            } catch (SQLException ignored) {
-            }
-        }
-        if (sqlDocIds != null) {
-            try {
-                Long[] docIdsObj = (Long[]) sqlDocIds.getArray();
-                DocIds = new int[docIdsObj.length];
-                for (int i = 0; i < DocIds.length; ++i) {
-                    DocIds[i] = docIdsObj[i].intValue();
-                }
-            } catch (SQLException ignored) {
-            }
-        }
+        this.Links = links;
+        this.ImageIds = imageIds;
+        this.ImageDownscaledIds = imageDownscaledIds;
+        this.CatIds = catIds;
+        this.SpecIds = specIds;
+        this.SpecDetails = specDetails;
+        this.DocIds = docIds;
+        this.CompIds = compIds;
+        this.CompQuants = compQuants;
     }
 
     public int GetFirstImageId() {
-        return (ImageIds != null) ? ImageIds[0] : PlaceholderImageId;
+        return (ImageIds != null) ? ImageIds[0].intValue() : PlaceholderImageId;
     }
-    public int GetFirstImageIdDownscaled() {
-        return (ImageIdsMini != null) ? ImageIdsMini[0] : PlaceholderImageIdMini;
+
+    public int GetFirstImageDownscaledId() {
+        return (ImageDownscaledIds != null) ? ImageDownscaledIds[0].intValue() : PlaceholderImageIdMini;
     }
+
     /*
      * static
      */
-    public static void SetPlaceholderImgs(int regular, int downscaled){
+    public static Product ImportFromDB(ResultSet rs) throws SQLException{
+        Array sqlLinks = rs.getArray("links");
+        Array sqlImageIds = rs.getArray("image_ids");
+        Array sqlImageDownscaledIds = rs.getArray("image_downscaled_ids");
+        Array sqlCatIds = rs.getArray("category_ids");
+        Array sqlSpecIds = rs.getArray("specification_ids");
+        Array sqlSpecDetails = rs.getArray("specification_details");
+        Array sqlDocIds = rs.getArray("documentation_ids");
+        Array sqlCompIds = rs.getArray("component_ids");
+        Array sqlCompQuants = rs.getArray("component_quantities");
+
+        return new Product(rs.getInt("id"),
+                           rs.getString("name"),
+                           rs.getString("description"),
+                           rs.getBigDecimal("price"),
+                           (sqlLinks == null) ? null : (String[]) sqlLinks.getArray(),
+                           (sqlImageIds == null) ? null : (Long[]) sqlImageIds.getArray(),
+                           (sqlImageDownscaledIds == null) ? null : (Long[]) sqlImageDownscaledIds.getArray(),
+                           (sqlCatIds == null) ? null : (Long[]) sqlCatIds.getArray(),
+                           (sqlSpecIds == null) ? null : (Long[]) sqlSpecIds.getArray(),
+                           (sqlSpecDetails == null) ? null : (String[]) sqlSpecDetails.getArray(),
+                           (sqlDocIds == null) ? null : (Long[]) sqlDocIds.getArray(),
+                           (sqlCompIds == null) ? null : (Long[]) sqlCompIds.getArray(),
+                           (sqlCompQuants == null) ? null : (Long[]) sqlCompQuants.getArray());
+    }
+
+    public static void SetPlaceholderImgs(int regular, int downscaled) {
         PlaceholderImageId = regular;
         PlaceholderImageIdMini = downscaled;
     }
-
-    public static int[] MapProductsToCommonSpecIds(List<Product> products) {
-        if (products == null || products.size() < 1 || products.get(0).Specs.length < 1)
+    // TODO: MOST LIKELY BUGGED
+    public static List<Long> MapProductsToCommonSpecIds(List<Product> products) {
+        if (products == null || products.size() < 1 || products.get(0).SpecIds.length < 1)
             return null;
-        List<Integer> specIds = new ArrayList<>();
-        for (int i = 0; i < products.get(0).Specs.length; ++i){
-            specIds.add(products.get(0).Specs[i].Id());
+        List<Long> commonSpecIds = new ArrayList<>();
+        for (int i = 0; i < products.get(0).SpecIds.length; ++i) {
+            commonSpecIds.add(products.get(0).SpecIds[i]);
         }
         for (Product p : products) {
-            for (int i = 0; i < specIds.size(); ++i){
+            for (int i = 0; i < commonSpecIds.size(); ++i) {
                 boolean exists = false;
-                if (p.Specs == null)
+                if (p.SpecIds == null)
                     continue;
-                for (int j = 0; j < p.Specs.length; ++j){
-                    if (specIds.get(i) == p.Specs[j].Id())
+                for (int j = 0; j < p.SpecIds.length; ++j) {
+                    if (commonSpecIds.get(i) == p.SpecIds[j])
                         exists = true;
                 }
                 if (!exists)
-                    specIds.remove(i);
+                    commonSpecIds.remove(i);
             }
         }
-        if (specIds.size() < 1)
+        if (commonSpecIds.size() < 1)
             return null;
-        int[] specIdsArray = new int[specIds.size()];
-        for (int i = 0; i < specIdsArray.length; ++i)
-            specIdsArray[i] = specIds.get(i);
-        return specIdsArray;
+        return commonSpecIds;
     }
 
-    public static List<String> MapProductsToUniqueSpecDetails(List<Product> products, int specId){
+    // TODO: MOST LIKELY BUGGED
+    public static List<String> MapProductsToUniqueSpecDetails(List<Product> products, int specId) {
         if (products == null || products.size() < 1 || specId < 0)
             return null;
         List<String> uniqueSpecDetails = new ArrayList<>();
-        for (Product p : products){
-            if (p.Specs == null)
+        for (Product p : products) {
+            if (p.SpecIds == null || p.SpecDetails == null)
                 continue;
-            for (ProductSpecification sp : p.Specs){
-                if (sp.Id() == specId){
-                    if (!uniqueSpecDetails.contains(sp.Details()))
-                        uniqueSpecDetails.add(sp.Details());
+            for (int i = 0; i < p.SpecIds.length; ++i) {
+                if (p.SpecIds[i] == specId) {
+                    if (!uniqueSpecDetails.contains(p.SpecDetails[i]))
+                        uniqueSpecDetails.add(p.SpecDetails[i]);
                 }
             }
         }

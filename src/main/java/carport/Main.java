@@ -35,22 +35,15 @@ public class Main {
         // Other setup
 
         // Test
-        System.err.printf("DebugInfo::%nEnv_Vars:%n\t%s, %s, %s, %s, %s%n",
-                        System.getenv("DEPLOYED"),
-                        System.getenv("JDBC_USER"),
-                        System.getenv("JDBC_PASSWORD"),
-                        System.getenv("JDBC_CONNECTION_STRING_STARTCODE"),
-                        System.getenv("JDBC_DB"));
-        try {
-            List<ProductCategory> cats = CarportMapper.SelectAllCategories(connectionPool);
-            for (ProductCategory c : cats){
-                System.err.printf("%s::%s%n", c.Name, c.CommonSpecs.toString());
-            }
-        } catch (DatabaseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        System.err.printf("DebugInfo::%nEnv_Vars:%n\tdeployed: %s%n\tjdbc_user: %s%n\tjdbc_pw: %s%n\tjdbc_conn_str: %s%n\tjdbc_db: %s%n\ttest: %s%n",
+                          System.getenv("DEPLOYED"),
+                          System.getenv("JDBC_USER"),
+                          System.getenv("JDBC_PASSWORD"),
+                          System.getenv("JDBC_CONNECTION_STRING_STARTCODE"),
+                          System.getenv("JDBC_DB"),
+                          System.getenv("test"));
         // Todos
-        // TODO: add wrappe around image-gets for frontend, so that there is always some placeholder to serve if none found
+        // TODO: seperate SQL files to clean mapper, one per function, specialized. Much better idea imo.
+        // TODO: sql predicates move to the nested table-gluers
     }
 }
