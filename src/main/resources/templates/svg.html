@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="">
 <head>
-    <title>Frontpage</title>
+    <title>Tilbud</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
-    <link href="../public/css/soegning.css" th:href="@{/css/soegning.css}" rel="stylesheet"/>
+    <link href="../public/css/byg-selv.css" th:href="@{/css/byg-selv.css}" rel="stylesheet"/>
     <link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/cupcakefavico32x32.png}">
     <link rel="icon" type="image/png" sizes="48x48" th:href="@{/images/cupcakefavico48x48.png}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,21 +13,17 @@
 </head>
 
 <body>
-
-
-
-<div class="page">
 <!-- BEGINNING OF NAV BAR -->
 <div class="page">
-<header>
-    <div class="header-info">
-        <ul>
-            <li><a href="">30 dages returret</a></li>
-            <li><a href="">Klik og hent inden for 3 timer*</a></li>
-            <li><a href="">1-3 dages levering*</a></li>
-            <li><a href="">Lån en trailer gratis</a></li>
-        </ul>
-    </div>
+    <header>
+        <div class="header-info">
+            <ul>
+                <li><a href="">30 dages returret</a></li>
+                <li><a href="">Klik og hent inden for 3 timer*</a></li>
+                <li><a href="">1-3 dages levering*</a></li>
+                <li><a href="">Lån en trailer gratis</a></li>
+            </ul>
+        </div>
         <div class="nav">
             <div class="nav-left">
                 <div class="nav-logo">
@@ -85,7 +80,7 @@
                                 <a href="#">Link 1</a>
                                 <a href="#">Link 2</a>
                                 <!-- SPECIAL RULE FOR BYGSELV -->
-                                <a href="#" th:href="@{/bygselvcarport}">Byg selv</a>
+                                <a href="byg-carport.html" th:href="@{/bygselvcarport}">Byg selv</a>
                             </div>
                         </li>
                     </ul>
@@ -114,70 +109,56 @@
             </div>
 
         </div>
-</header>
-<!-- END OF NAV BAR -->
+    </header>
+    <!-- END OF NAV BAR -->
     <div class="main">
-    <div class="search-result">
-        <h1 th:text="'Søgning: ' + ${searchStringPrev}"></h1>
-        <!-- BEGINNING OF SORTER -->
-        <h2>Filtre:</h2>
-        <form class="search-result-filter-form" th:if="${commonSpecList != null && commonSpecListOptions != null}" action="filter">
-            <ul th:each="spec,iterStat : ${commonSpecList}">
-                <li class="search-result-filters">
-                    <button class="search-result-filter-form-button" th:text="${spec.Name()}"></button>
-                    <div class="search-result-filter-form-dropdown">
-                        <div class="search-result-filter-form-dropdown-div"
-                             th:each="specOption : ${commonSpecListOptions.get(__${iterStat.index}__)}">
-                        <input type="checkbox"
-                               th:id="${spec.Id()}"
-                               th:name="${specOption}" th:value="${specOption}">
-                        <label th:for="${spec.Id()}" th:text="${specOption} + ' ' + ${spec.Unit()}"></label>
-                        </div>
+        <section class="container-svg">
+            <div class="headline">
+                <h2>Tilbud</h2>
+                <p>Her ser du prisen og en skitsetegning på en carport med de specialmål du ønskede.<br>
+                    NB! Du kan til hver en tid gå tilbage og rette i dit tilbud.</p>
+            </div>
+            <div class="contain d-flex">
+                <div class="carport-container d-flex">
+                    <div class="carport">
+                        <img src="../public/images/carport.png" th:src="@{/images/carport.png}"  alt=""/>
+                        <img src="../public/images/carport-measurements.png" th:src="@{/images/carport-measurements.png}"  alt=""/>
                     </div>
-                </li>
-            </ul>
-            <ul class="search-result-hidden-ul">
-                <li>
-                    <input type="hidden" selected="selected" id="searchString" name="searchString" th:value="${searchStringPrev}">
-                </li>
-            </ul>
-            <ul class="search-result-submit-ul">
-                <li>
-                    <input type="submit" value="søg">
-                </li>
-            </ul>
-        </form>
-        <!-- END OF SORTER -->
-        <h2>Resultater:</h2>
-        <div class="search-result-list">
-            <a th:if="${productList != null && !productList.isEmpty()}"
-               class="search-result-element"
-               th:each="product,iterStat : ${productList}"
-               th:href="'produkt/' + '?name=' + ${product.Name} + '&id=' + ${product.Id}">
-              <img src="null"
-                   th:src="'billeder?id=' + ${product.GetFirstImageIdDownscaled()}"
-                   alt="productimage">
-              <p class="search-result-title"
-                 th:text="${product.Name}"></p>
-              <p class="search-result-price"
-                 th:text="'pris: ' + ${product.Price}"></p>
-            </a>
-            <div th:if="${productList == null || productList.isEmpty()}">Ingen resultater :(</div>
+                    <div class="carport-offer">
+                        <h2>Pris på carport</h2>
+                        <h5>Dimension:</h5>
+                        <p>6,0 X 7,8 MTR</p>
+                        <h5>Trapeztag:</h5>
+                        <p>Plasttrapezplader</p>
+                        <h5>Redskabsrum:</h5>
+                        <p>Med redskabsrum</p>
+                        <h3>Pris:<br><br>
+                            17.590 kr,-</h3>
+                        <button type="submit" formaction="byg-selv">Ret i tilbud</button>
+                        <button id="submit-request" type="submit" formaction="forespoergelse">Send forespørgelse</button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!--div class="carport">
+            <div class="carport-img">
+                <img src="../public/images/carport.png" th:src="@{/images/carport.png}"  alt=""/>
+            </div>
+        <div class="carport-img">
+            <img src="../public/images/carport-measurements.png" th:src="@{/images/carport-measurements.png}"  alt=""/>
         </div>
-        <ul>
-            <li><a href=""> left </a></li>
-            <li><a href=""> right </a></li>
-        </ul>
+        </div>
     </div>
-
-    <div class="related-products">
-        <h1>Relaterede produkter...</h1>
-    </div>
-
+        <section-- class="container-svg">
+            <h2>Pris på carport</h2>
+        </section-->
     </div>
 
     <footer>
-        <p>Johannes Fog A/S<span>Firskovvej 20, 2800 Lyngby</span>CVR-nr. 16314439</p>
+        <p>&nbsp;&nbsp;&nbsp;Johannes Fog A/S<span>Firskovvej 20, 2800 Lyngby</span>CVR-nr. 16314439</p>
     </footer>
 
 </div>

@@ -17,7 +17,6 @@ html {
 
 header {
     position: fixed; /* Set the navbar to fixed position */
-    z-index: 100; /*PUT THIS THING ON TOP OF EVERYTHING ON SITE*/
     top: 0; /* Position the navbar at the top of the page */
     width: 99%; /* Full width */
 
@@ -155,7 +154,7 @@ header {
 }
 .nav-search-button:hover {
     cursor: pointer;
-    /* border: #003d76 solid 2px; */
+    border: #003d76 solid 2px;
 }
 
 .main {
@@ -163,9 +162,44 @@ header {
     margin-bottom: 140px;
 }
 
+.search-result {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.search-result-list {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+   /* grid-template-rows: 80px 160px;*/
+    gap: 10px;
+
+    a, a:visited {
+        color: black;
+    }
+
+    .search-result-element {
+        background-color: white;
+        padding: 10px;
+        width: 220px;
+        height: 360px;
+        text-decoration: none;
+
+        img {
+            width: 200px;
+        }
+    }
+}
+
 footer {
     text-align: center;
     position: fixed; /* Set the navbar to fixed position */
     bottom: 0; /* Position the navbar at the bottom of the page */
     width: 100%; /* Full width */
+}
+
+footer span {
+    margin-left: 24rem;
+    margin-right: 24rem;
 }
