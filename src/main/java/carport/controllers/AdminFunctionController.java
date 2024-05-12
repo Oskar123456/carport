@@ -31,6 +31,13 @@ public class AdminFunctionController
     }
 
     private static void renderNewProduct(@NotNull Context ctx, ConnectionPool cp) {
+        try {
+            List<ProductCategory> categoryList = CarportMapper.SelectAllCategories(cp);
+            ctx.attribute("categorylist", categoryList);
+        }
+        catch (DatabaseException e) {
+            System.err.println(e.getMessage());
+        }
         ctx.render("createproduct.html");
     }
 
@@ -67,10 +74,11 @@ public class AdminFunctionController
         String description = ctx.formParam("description");
         String price = ctx.formParam("price");
         String links = ctx.formParam("links");
-        String categories = ctx.formParam("categories");
+        List<String> categories = ctx.formParams("categories");
+        System.err.println(categories.toString());
 
         if (name == null || description == null || categories == null || price == null
-                || name.length() < 1 || description.length() < 1 || categories.length() < 1
+                || name.length() < 1 || description.length() < 1 || categories.size() < 1
                 || price.length() < 1) {
             ctx.attribute("message", "ugyldige værdier ved produktoprettelse");
             ctx.render("createproduct.html");
@@ -78,16 +86,13 @@ public class AdminFunctionController
         }
 
         BigDecimal priceBigDecimal = null;
-        List<Integer> catIds = null;
+        List<Integer> catIds = new ArrayList<>();
         List<Long> specIds = null;
         List<ProductCategory> cats = new ArrayList<>();
         try {
-            String[] categoriesSplit = categories.split(",");
-            for (int i = 0; i < categoriesSplit.length; ++i)
-                categoriesSplit[i] = categoriesSplit[i].trim();
-            catIds = CarportMapper.SearchCategory(cp, Arrays.asList(categoriesSplit));
-            if (catIds != null)
-                specIds = ProductCategory.GetCommonSpecIdsFromCategoryIdList(cp, catIds);
+            for (String s : categories)
+                catIds.add(Integer.parseInt(s));
+            specIds = ProductCategory.GetCommonSpecIdsFromCategoryIdList(cp, catIds);
             if (specIds != null){
                 for (Integer cId : catIds){
                     cats.add(CarportMapper.SelectCategoryById(cp, cId.intValue()));

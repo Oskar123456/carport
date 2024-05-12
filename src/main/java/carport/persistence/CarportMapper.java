@@ -435,6 +435,25 @@ public class CarportMapper {
     /*
      * Category and Specification
      */
+    public static List<ProductCategory> SelectAllCategories(ConnectionPool cp) throws DatabaseException{
+        List<ProductCategory> cats = new ArrayList<>() ;
+
+        String sql = "SELECT * from category";
+
+        try (
+                Connection c = cp.getConnection();
+                PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next())
+                cats.add(new ProductCategory(rs.getInt("id"), rs.getString("name"), null));
+        } catch (SQLException e) {
+            String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+            throw new DatabaseException(thisMethodName + "::error (" + e.getMessage() + ")");
+        }
+
+        return cats;
+    }
+
     public static ProductCategory SelectCategoryById(ConnectionPool cp,
                                                      int id) throws DatabaseException{
         ProductCategory cat = null;

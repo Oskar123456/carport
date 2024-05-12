@@ -124,7 +124,11 @@
         <label for="links">links</label>
         <input type="text" id="links" name="links" placeholder="comma-separated list">
         <label for="categories">kategorier</label>
-        <input type="text" id="categories" name="categories" placeholder="comma-separated list">
+        <h2>Kategorier</h2>
+        <div class="category-checkbox" th:each="category : ${categorylist}">
+            <input type="checkbox" th:id="${category.Id}"  name="categories" th:value="${category.Id}">
+            <label th:for="${category.Id}" th:text="${category.Name}">
+        </div>
         <input type="submit" formaction="/createproductdetails" value="bekræft">
     </form>
     <p class="statusmessage" th:if="${message != null}" th:text="${message}"></p>
