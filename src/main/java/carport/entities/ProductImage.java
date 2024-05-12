@@ -4,5 +4,6 @@ public record ProductImage(int Id,
         String Name,
         String Source,
         byte[] Data,
-        String Format) {
+        String Format,
+        boolean Downscaled) {
 }

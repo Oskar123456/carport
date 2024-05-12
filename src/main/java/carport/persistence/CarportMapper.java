@@ -10,10 +10,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import carport.entities.Product;
 import carport.entities.ProductCategory;
+import carport.entities.ProductDocumentation;
 import carport.entities.ProductImage;
 import carport.entities.ProductSpecification;
 import carport.exceptions.DatabaseException;
@@ -49,6 +52,200 @@ public class CarportMapper {
     /*
      * Product
      */
+    public static int InsertProduct(ConnectionPool cp,
+            Product prod) throws DatabaseException {
+        // TODO: ensure prod is correct? although database fkeys will cause this
+        // function to fail I suppose
+        String sql = """
+                INSERT INTO public.product(
+                id, name, description, links, price)
+                VALUES (DEFAULT, ?, ?, ?, ?) """;
+
+        int generatedKey = -1;
+        try (Connection c = cp.getConnection();
+                PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
+            int argNum = 1;
+            ps.setString(argNum++, prod.Name);
+            ps.setString(argNum++, prod.Description);
+            ps.setArray(argNum++, c.createArrayOf("varchar", prod.Links));
+            ps.setBigDecimal(argNum++, prod.Price);
+            System.err.println(ps.toString());
+            int success = ps.executeUpdate();
+            if (success > 0) {
+                ResultSet generatedKeys = ps.getGeneratedKeys();
+                if (generatedKeys.next())
+                    generatedKey = (int) generatedKeys.getLong(1);
+                if (generatedKey < 0)
+                    return generatedKey;
+                for (int i = 0; i < prod.ImageIds.length; ++i)
+                    InsertProductToImageLink(cp, generatedKey,
+                            prod.ImageIds[i].intValue(),
+                            prod.ImageDownscaledIds[i].intValue());
+                for (int i = 0; i < prod.CatIds.length; ++i)
+                    InsertProductToCategoryLink(cp, generatedKey, prod.CatIds[i].intValue());
+                for (int i = 0; i < prod.SpecIds.length; ++i)
+                    InsertProductToSpecificationLink(cp, generatedKey, prod.SpecIds[i].intValue(), prod.SpecDetails[i]);
+                if (prod.CompIds != null)
+                    for (int i = 0; i < prod.CompIds.length; ++i)
+                        InsertProductToComponentLink(cp, generatedKey, prod.CompIds[i].intValue(),
+                                                     prod.CompQuants[i].intValue());
+            }
+        } catch (SQLException e) {
+            String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
+            throw new DatabaseException(funcName + "::" + e.getMessage());
+        }
+        return generatedKey;
+    }
+
+    public static int InsertProductToImageLink(ConnectionPool cp,
+            int prodId,
+            int imageId,
+            int imageDownscaledId) throws DatabaseException {
+        String sql = """
+                INSERT INTO public.product_image(
+                id, product_id, image_id, image_downscaled_id)
+                VALUES (DEFAULT, ?, ?, ?); """;
+
+        int generatedKey = -1;
+        try (Connection c = cp.getConnection();
+                PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
+            int argNum = 1;
+            ps.setInt(argNum++, prodId);
+            ps.setInt(argNum++, imageId);
+            ps.setInt(argNum++, imageDownscaledId);
+            System.err.println(ps.toString());
+            int success = ps.executeUpdate();
+            if (success > 0) {
+                ResultSet generatedKeys = ps.getGeneratedKeys();
+                if (generatedKeys.next())
+                    generatedKey = (int) generatedKeys.getLong(1);
+            }
+        } catch (SQLException e) {
+            String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
+            throw new DatabaseException(funcName + "::" + e.getMessage());
+        }
+        return generatedKey;
+    }
+
+    public static int InsertProductToCategoryLink(ConnectionPool cp,
+            int prodId,
+            int categoryId) throws DatabaseException {
+        String sql = """
+                INSERT INTO product_category(
+                id, product_id, category_id)
+                VALUES (DEFAULT, ?, ?) """;
+
+        int generatedKey = -1;
+        try (Connection c = cp.getConnection();
+                PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
+            int argNum = 1;
+            ps.setInt(argNum++, prodId);
+            ps.setInt(argNum++, categoryId);
+            System.err.println(ps.toString());
+            int success = ps.executeUpdate();
+            if (success > 0) {
+                ResultSet generatedKeys = ps.getGeneratedKeys();
+                if (generatedKeys.next())
+                    generatedKey = (int) generatedKeys.getLong(1);
+            }
+        } catch (SQLException e) {
+            String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
+            throw new DatabaseException(funcName + "::" + e.getMessage());
+        }
+        return generatedKey;
+    }
+
+    public static int InsertProductToSpecificationLink(ConnectionPool cp,
+            int prodId,
+            int specificationId,
+            String details) throws DatabaseException {
+        String sql = """
+                INSERT INTO public.product_specification(
+                id, product_id, specification_id, details)
+                VALUES (DEFAULT, ?, ?, ?); """;
+
+        int generatedKey = -1;
+        try (Connection c = cp.getConnection();
+                PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
+            int argNum = 1;
+            ps.setInt(argNum++, prodId);
+            ps.setInt(argNum++, specificationId);
+            ps.setString(argNum++, details);
+            System.err.println(ps.toString());
+            int success = ps.executeUpdate();
+            if (success > 0) {
+                ResultSet generatedKeys = ps.getGeneratedKeys();
+                if (generatedKeys.next())
+                    generatedKey = (int) generatedKeys.getLong(1);
+            }
+        } catch (SQLException e) {
+            String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
+            throw new DatabaseException(funcName + "::" + e.getMessage());
+        }
+        return generatedKey;
+    }
+
+    public static int InsertProductToDocumentationLink(ConnectionPool cp,
+            ProductDocumentation doc) throws DatabaseException {
+        String sql = """
+                INSERT INTO public.product_documentation(
+                id, name, description, data, product_id, type, format)
+                VALUES (DEFAULT, ?, ?, ?, ?, ?, ?); """;
+
+        int generatedKey = -1;
+        try (Connection c = cp.getConnection();
+                PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
+            int argNum = 1;
+            ps.setString(argNum++, doc.Name());
+            ps.setString(argNum++, doc.Description());
+            ps.setBytes(argNum++, doc.Data());
+            ps.setInt(argNum++, doc.ProductId());
+            ps.setString(argNum++, doc.Type());
+            ps.setString(argNum++, doc.Format());
+
+            System.err.println(ps.toString());
+            int success = ps.executeUpdate();
+            if (success > 0) {
+                ResultSet generatedKeys = ps.getGeneratedKeys();
+                if (generatedKeys.next())
+                    generatedKey = (int) generatedKeys.getLong(1);
+            }
+        } catch (SQLException e) {
+            String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
+            throw new DatabaseException(funcName + "::" + e.getMessage());
+        }
+        return generatedKey;
+    }
+
+    public static int InsertProductToComponentLink(ConnectionPool cp,
+            int prodId,
+            int componentId,
+            int quantity) throws DatabaseException {
+        String sql = """
+                INSERT INTO public.product_component(
+                id, product_id, component_id, quantity)
+                VALUES (DEFAULT, ?, ?, ?) """;
+
+        int generatedKey = -1;
+        try (Connection c = cp.getConnection();
+                PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
+            int argNum = 1;
+            ps.setInt(argNum++, prodId);
+            ps.setInt(argNum++, componentId);
+            ps.setInt(argNum++, quantity);
+            int success = ps.executeUpdate();
+            if (success > 0) {
+                ResultSet generatedKeys = ps.getGeneratedKeys();
+                if (generatedKeys.next())
+                    generatedKey = (int) generatedKeys.getLong(1);
+            }
+        } catch (SQLException e) {
+            String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
+            throw new DatabaseException(funcName + "::" + e.getMessage());
+        }
+        return generatedKey;
+    }
+
     /*
      * Main search function for products. Simple substring search
      * through optionally name, description & categories. Can filter
@@ -98,10 +295,11 @@ public class CarportMapper {
             for (int i = 0; i < categoryIds.size(); ++i)
                 sqlPredicate += " pcat.category_id = ? OR ";
         if (shouldFilter && specIds != null) {
-            for (int i = 0; i < specIds.size() ; ++i){
+            for (int i = 0; i < specIds.size(); ++i) {
                 if (specDetails.get(i) != null)
                     for (int j = 0; j < specDetails.get(i).size(); ++j)
-                        sqlSpecPredicate += " (specification_id = ? AND details = ?) OR ";            }
+                        sqlSpecPredicate += " (specification_id = ? AND details = ?) OR ";
+            }
         } else
             sql = sql.replaceAll("should_filter(.|\s)*should_filter", System.lineSeparator());
         if (sqlPredicate.length() > 0) {
@@ -117,10 +315,11 @@ public class CarportMapper {
         sql = sql.replace("predicate_position_specification", sqlSpecPredicate);
 
         /* DEBUG PRINTING */
-        // String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+        // String thisMethodName =
+        // Thread.currentThread().getStackTrace()[1].getMethodName();
         // System.err.printf("%s::%n%s%n%n%n%n%n%n",
-        //         thisMethodName,
-        //      sql);
+        // thisMethodName,
+        // sql);
         /* DEBUG PRINTING */
 
         try (Connection c = cp.getConnection();
@@ -144,7 +343,6 @@ public class CarportMapper {
                     ps.setInt(argNum++, categoryIds.get(i));
             ps.setInt(argNum++, pageSize);
             ps.setInt(argNum++, pageNum);
-            System.err.println(ps.toString());
             ResultSet rs = ps.executeQuery();
             while (rs.next())
                 ids.add(rs.getInt("id"));
@@ -207,7 +405,7 @@ public class CarportMapper {
             int newWidth) throws DatabaseException {
         int dbGeneratedImgId = 0;
 
-        String sql = "INSERT INTO image (id, data, source, name, format) VALUES (DEFAULT, ?, ?, ?, ?)";
+        String sql = "INSERT INTO image (id, data, source, name, format, downscaled) VALUES (DEFAULT, ?, ?, ?, ?, ?)";
 
         if (downscaled) {
             img = ProductImageFactory.Resize(img, newWidth);
@@ -220,6 +418,7 @@ public class CarportMapper {
             ps.setString(2, img.Source());
             ps.setString(3, img.Name());
             ps.setString(4, img.Format());
+            ps.setBoolean(5, img.Downscaled());
             int success = ps.executeUpdate();
             if (success < 1)
                 return -1;
@@ -236,14 +435,36 @@ public class CarportMapper {
     /*
      * Category and Specification
      */
+    public static ProductCategory SelectCategoryById(ConnectionPool cp,
+                                                     int id) throws DatabaseException{
+        ProductCategory cat = null;
+
+        String sql = "SELECT * from category WHERE id = ? ";
+
+        try (
+                Connection c = cp.getConnection();
+                PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next())
+                cat = new ProductCategory(rs.getInt("id"), rs.getString("name"), null);
+        } catch (SQLException e) {
+            String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+            throw new DatabaseException(thisMethodName + "::error (" + e.getMessage() + ")");
+        }
+
+        return cat;
+    }
+
     public static List<Integer> SearchCategory(ConnectionPool cp,
-                                               String needle) throws DatabaseException {
+            String needle) throws DatabaseException {
         if (needle == null)
             return null;
         List<String> needleAsList = new ArrayList<>();
         needleAsList.add(needle);
         return SearchCategory(cp, needleAsList);
     }
+
     public static List<Integer> SearchCategory(ConnectionPool cp,
             List<String> needles) throws DatabaseException {
         List<Integer> ids = new ArrayList<>();
@@ -265,11 +486,12 @@ public class CarportMapper {
         }
 
         /* DEBUG PRINTING */
-        // String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+        // String thisMethodName =
+        // Thread.currentThread().getStackTrace()[1].getMethodName();
         // System.err.printf("%s::%n\tsqlCatPredicate : %s%n\tFULL:%n%s%n%n",
-        //         thisMethodName,
-        //         sqlCatPredicate,
-        //         sql);
+        // thisMethodName,
+        // sqlCatPredicate,
+        // sql);
         /* DEBUG PRINTING */
 
         try (Connection c = cp.getConnection();
@@ -331,19 +553,61 @@ public class CarportMapper {
         return specs;
     }
 
+    public static Map<Integer, Long[]> SelectSpecificationsByCategory(ConnectionPool cp,
+            List<Integer> catIds) throws DatabaseException {
+        if (catIds == null || catIds.size() < 1)
+            return null;
+        int[] catIdsArray = new int[catIds.size()];
+        for (int i = 0; i < catIds.size(); ++i)
+            catIdsArray[i] = catIds.get(i);
+        return SelectSpecificationsByCategory(cp, catIdsArray);
+    }
+
+    public static Map<Integer, Long[]> SelectSpecificationsByCategory(ConnectionPool cp,
+            int... catIds) throws DatabaseException {
+        if (catIds == null)
+            return null;
+        Map<Integer, Long[]> catIdsWithSpecIds = new HashMap<>();
+
+        String sql = """
+                SELECT c.id, ARRAY_AGG(specification_id) specification_ids
+                FROM (SELECT * FROM category
+                    -- predicate_position_category
+                    ) as c
+                INNER JOIN category_specification as cs ON c.id = cs.category_id
+                GROUP BY c.id
+                ORDER BY c.id""";
+        String sqlPredicate = "";
+        for (int i = 0; i < catIds.length; ++i)
+            sqlPredicate += " id = ? OR ";
+        if (sqlPredicate.length() > 0)
+            sqlPredicate = System.lineSeparator() + " WHERE " +
+                    sqlPredicate.substring(0, sqlPredicate.lastIndexOf("OR")) + System.lineSeparator();
+        sql = sql.replace("predicate_position_category", sqlPredicate);
+
+        try (Connection c = cp.getConnection();
+                PreparedStatement ps = c.prepareStatement(sql);) {
+            int argNum = 1;
+            for (int i = 0; i < catIds.length; ++i)
+                ps.setInt(argNum++, catIds[i]);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Array sqlSpecIds = rs.getArray("specification_ids");
+                if (sqlSpecIds != null) {
+                    Long[] specIds = (Long[]) sqlSpecIds.getArray();
+                    catIdsWithSpecIds.put(rs.getInt("id"), specIds);
+                }
+            }
+        } catch (SQLException e) {
+            String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
+            throw new DatabaseException(funcName + "::" + e.getMessage());
+        }
+        return catIdsWithSpecIds;
+    }
+
     /*
      * Selects unique category ids based on provided array of product ids.
      * Will select only common denominators if desired.
-     *
-     * @param cp
-     *
-     * @param commonDenominatorOnly
-     *
-     * @param ids
-     *
-     * @return
-     *
-     * @throws DatabaseException
      */
     public static int[] SelectCategoryIdsFromProductIds(ConnectionPool cp,
             boolean commonDenominatorOnly,
@@ -374,7 +638,8 @@ public class CarportMapper {
         for (int i = 0; i < ids.length; ++i)
             sqlPredicate += " id = ? OR ";
         if (sqlPredicate.length() > 0)
-            sqlPredicate = System.lineSeparator() + " WHERE " + sqlPredicate.substring(0, sqlPredicate.lastIndexOf("OR")) + System.lineSeparator();
+            sqlPredicate = System.lineSeparator() + " WHERE "
+                    + sqlPredicate.substring(0, sqlPredicate.lastIndexOf("OR")) + System.lineSeparator();
 
         sql = sql.replace("predicate_position_product", sqlPredicate);
 
@@ -432,14 +697,6 @@ public class CarportMapper {
 
     /*
      * Return array of unique spec ids from provided array of category ids
-     *
-     * @param cp
-     *
-     * @param ids
-     *
-     * @return
-     *
-     * @throws DatabaseException
      */
     public static int[] SelectSpecIdsFromCategoryIds(ConnectionPool cp,
             int... ids) throws DatabaseException {
@@ -473,7 +730,8 @@ public class CarportMapper {
         for (int i = 0; i < ids.length; ++i)
             sqlPredicate += " category_id = ? OR ";
         if (sqlPredicate.length() > 0)
-            sqlPredicate = System.lineSeparator() + " WHERE " + sqlPredicate.substring(0, sqlPredicate.lastIndexOf("OR")) + System.lineSeparator();
+            sqlPredicate = System.lineSeparator() + " WHERE "
+                    + sqlPredicate.substring(0, sqlPredicate.lastIndexOf("OR")) + System.lineSeparator();
 
         sql = sql.replace("predicater_position_category", sqlPredicate);
 
@@ -508,6 +766,24 @@ public class CarportMapper {
     /*
      * Images
      */
+    public static List<Integer> SelectProductImageIds(ConnectionPool cp,
+                                                      boolean downscaled) throws DatabaseException {
+        List<Integer> ids = new ArrayList<>();
+        String sql = "SELECT id FROM image WHERE downscaled = ?";
+        try (
+                Connection c = cp.getConnection();
+                PreparedStatement ps = c.prepareStatement(sql);) {
+            ps.setBoolean(1, downscaled);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next())
+                ids.add(rs.getInt("id"));
+        } catch (SQLException e) {
+            String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+            throw new DatabaseException("fejl ved søgning i databasen (" + thisMethodName + ")");
+        }
+        return ids;
+    }
+
     public static ProductImage SelectProductImageById(ConnectionPool cp,
             int id) throws DatabaseException {
         ProductImage img = null;
@@ -522,12 +798,42 @@ public class CarportMapper {
                         rs.getString("name"),
                         rs.getString("source"),
                         rs.getBytes("data"),
-                        rs.getString("format"));
+                        rs.getString("format"),
+                        rs.getBoolean("downscaled"));
             }
         } catch (SQLException e) {
             String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException("fejl ved søgning i databasen (" + thisMethodName + ")");
         }
         return img;
+    }
+
+    /*
+     * Documentation
+     */
+    public static ProductDocumentation SelectProductDocumentationById(ConnectionPool cp,
+            int id) throws DatabaseException {
+        ProductDocumentation doc = null;
+
+        String sql = "SELECT * FROM product_documentation WHERE id = ?";
+
+        try (
+                Connection c = cp.getConnection();
+                PreparedStatement ps = c.prepareStatement(sql);) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next())
+                doc = new ProductDocumentation(id, rs.getString("name"),
+                        rs.getString("description"),
+                        rs.getBytes("data"),
+                        rs.getInt("product_id"),
+                        rs.getString("type"),
+                        rs.getString("format"));
+        } catch (SQLException e) {
+            String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+            throw new DatabaseException("fejl ved søgning i databasen (" + thisMethodName + ")");
+        }
+
+        return doc;
     }
 }

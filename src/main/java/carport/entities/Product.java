@@ -25,10 +25,26 @@ public class Product {
     public Long[] ImageDownscaledIds;
     public Long[] CatIds;
     public Long[] SpecIds;
+    public String[] SpecNames;
     public String[] SpecDetails;
+    public String[] SpecUnits;
     public Long[] DocIds;
     public Long[] CompIds;
     public Long[] CompQuants;
+
+    public Product(String name, String description,
+                   BigDecimal price, String[] links,
+                   Long[] catIds, Long[] specIds){
+        this.Name = name;
+        this.Description = description;
+        this.Price = price;
+        this.Links = links;
+        this.CatIds = catIds;
+        this.SpecIds = specIds;
+        this.SpecNames = new String[specIds.length];
+        this.SpecDetails = new String[specIds.length];
+        this.SpecUnits = new String[specIds.length];
+    }
 
     public Product(int id, String name,
             String description, BigDecimal price,
@@ -58,6 +74,21 @@ public class Product {
 
     public int GetFirstImageDownscaledId() {
         return (ImageDownscaledIds != null) ? ImageDownscaledIds[0].intValue() : PlaceholderImageIdMini;
+    }
+
+    public void AddImages(boolean downscaled,
+                          int... ids){
+        if (ids == null) {return;}
+        if (downscaled){
+            ImageIds = new Long[ids.length];
+            for (int i = 0; i < ids.length; ++i)
+                ImageIds[i] = Long.valueOf(ids[i]);
+        }
+        else{
+            ImageDownscaledIds = new Long[ids.length];
+            for (int i = 0; i < ids.length; ++i)
+                ImageDownscaledIds[i] = Long.valueOf(ids[i]);
+        }
     }
 
     /*
@@ -93,7 +124,7 @@ public class Product {
         PlaceholderImageId = regular;
         PlaceholderImageIdMini = downscaled;
     }
-    // TODO: MOST LIKELY BUGGED
+
     public static List<Long> MapProductsToCommonSpecIds(List<Product> products) {
         if (products == null || products.size() < 1 || products.get(0).SpecIds.length < 1)
             return null;
@@ -119,7 +150,6 @@ public class Product {
         return commonSpecIds;
     }
 
-    // TODO: MOST LIKELY BUGGED
     public static List<String> MapProductsToUniqueSpecDetails(List<Product> products, int specId) {
         if (products == null || products.size() < 1 || specId < 0)
             return null;

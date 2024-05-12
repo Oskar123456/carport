@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="">
 <head>
-<title>Frontpage</title>
+<title>CreateProduct</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
-<link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/fogicon32x32.png}">
-<link rel="icon" type="image/png" sizes="48x48" th:href="@{/images/fogicon48x48.png}">
+<link href="../public/css/createproduct.css" th:href="@{/css/createproduct.css}" rel="stylesheet"/>
+<link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/cupcakefavico32x32.png}">
+<link rel="icon" type="image/png" sizes="48x48" th:href="@{/images/cupcakefavico48x48.png}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@100..800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 </head>
 
 <body>
-<div class="page">
 <!-- BEGINNING OF NAV BAR -->
+<div class="page">
 <header>
     <div class="header-info">
         <ul>
@@ -51,19 +52,19 @@
                             </div>
                         </li>
                         <li class="nav-categories-element">
-                            <a href="" class="dropdown-button">Tilbehør</a>
+                            <a href="" class="dropdown-button">Kategori 3</a>
                             <div class="dropdown-content">
-                                <a href="#" th:href="@{/kategori?category=skruer}" >Skruer</a>
-                                <a href="#" th:href="@{/kategori?category=søm}" >Søm</a>
-                                <a href="#" th:href="@{/kategori?category=lægte}" >andet til carport LOL</a>
+                                <a href="#">Link 1</a>
+                                <a href="#">Link 2</a>
+                                <a href="#">Link 3</a>
                             </div>
                         </li>
                         <li class="nav-categories-element">
-                            <a href="" class="dropdown-button">Byggematerialer</a>
+                            <a href="" class="dropdown-button">Kategori 4</a>
                             <div class="dropdown-content">
-                                <a href="#" th:href="@{/kategori?category=lægte}" >Lægter</a>
-                                <a href="#" th:href="@{/kategori?category=brædde}" >Brædder</a>
-                                <a href="#" th:href="@{/kategori?category=tagplade}" >Tagplader</a>
+                                <a href="#">Link 1</a>
+                                <a href="#">Link 2</a>
+                                <a href="#">Link 3</a>
                             </div>
                         </li>
                         <li class="nav-categories-element">
@@ -112,29 +113,23 @@
 </header>
 <!-- END OF NAV BAR -->
 <div class="main">
-<div class="text">
-    <p>
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris pulvinar mauris vel pellentesque maximus. Donec dignissim magna eget pretium ultrices. Suspendisse potenti. Donec lobortis, leo et bibendum interdum, sapien magna vestibulum arcu, euismod condimentum arcu nisl sit amet est. Etiam a ligula sit amet eros molestie pellentesque at et urna. Curabitur nisl tortor, consectetur id facilisis et, maximus at magna. Phasellus purus ipsum, varius non sodales ornare, dignissim et lacus. Duis bibendum arcu sit amet lorem venenatis malesuada. Donec quis mollis erat. Maecenas iaculis, nibh at rutrum iaculis, tellus lectus finibus ligula, imperdiet porta mi purus nec felis. Sed egestas pellentesque tortor, quis maximus mauris fringilla at.
-
-Nam in ipsum in justo aliquam venenatis. Proin dui odio, suscipit in neque ut, imperdiet aliquet sem. Sed egestas dolor at est lobortis vulputate. In vel euismod nibh, ac lobortis nisl. Praesent pharetra ante vel congue fringilla. Maecenas sed sagittis nisi. Phasellus non nunc id tellus bibendum dapibus non eget nisi. Vivamus in neque sed massa volutpat pulvinar sed in velit. Integer pellentesque lacus ipsum, nec porta nisl dapibus non. Proin sodales sed lectus in finibus. Fusce laoreet dolor ut dolor congue lobortis.
-
-Donec porttitor lorem sit amet dapibus semper. Donec eu ipsum consectetur nulla volutpat blandit ut at enim. Donec vel dignissim magna, a tincidunt turpis. Etiam dictum vitae dui id iaculis. Maecenas rutrum nunc purus, eu elementum nunc placerat nec. Proin rutrum eleifend euismod. Pellentesque eu maximus velit, sit amet bibendum quam. Sed eu tortor laoreet odio congue venenatis id in augue.
-
-Duis non nisl ac metus feugiat ornare et quis lacus. Ut quis commodo massa. Sed maximus elementum nulla congue accumsan. Phasellus sit amet metus ac ipsum auctor lobortis. Integer vel porta mauris, id maximus tortor. Mauris vehicula arcu vitae metus finibus ultricies. Nulla facilisi. Suspendisse sed lectus luctus, pellentesque mauris id, consequat diam. Vestibulum malesuada efficitur tincidunt. Phasellus eu magna felis. Donec gravida laoreet sem, in vehicula odio tincidunt ac. Suspendisse imperdiet sem in massa semper, et finibus metus pretium. In hac habitasse platea dictumst.
-
-Quisque semper ligula sit amet augue malesuada, a tincidunt tellus bibendum. Pellentesque ipsum leo, dictum sed diam ac, pulvinar vestibulum purus. Phasellus vestibulum facilisis sapien et sollicitudin. Sed velit ante, luctus eget metus vel, rhoncus efficitur ex. Proin commodo diam enim, vel fringilla sem aliquet aliquam. Ut ornare, ex nec tempus feugiat, velit augue pretium turpis, sed cursus ligula arcu at nulla. Donec vitae ultrices ante. Sed id congue dolor. Donec tincidunt aliquam orci, ut lobortis sapien pellentesque ut. Cras aliquam, justo et aliquam pretium, dolor massa scelerisque sem, non sodales dui dui eu nulla. Integer sed enim aliquet, tincidunt nibh vitae, tempus nisl. Nunc vel lectus vel enim vehicula ultricies. Pellentesque id sapien ut lectus mollis tincidunt. Donec dictum nulla sed quam mollis, id suscipit tortor aliquet. Nulla id nisi consectetur, porta quam eget, vehicula leo.
-
-    </p>
-
+<div class="create-product-div">
+    <form class="create-product-form" method="post">
+        <label for="name">Navn</label>
+        <input type="text" id="name" name="name">
+        <label for="description">beskrivelse</label>
+        <input type="text" id="description" name="description">
+        <label for="price">pris</label>
+        <input type="number" id="price" name="price">
+        <label for="links">links</label>
+        <input type="text" id="links" name="links" placeholder="comma-separated list">
+        <label for="categories">kategorier</label>
+        <input type="text" id="categories" name="categories" placeholder="comma-separated list">
+        <input type="submit" formaction="/createproductdetails" value="bekræft">
+    </form>
+    <p class="statusmessage" th:if="${message != null}" th:text="${message}"></p>
 </div>
 
-</div>
-
-<div class="admin-functions" >
-    <h2>ADMINISTRATOR FUNKTIONER</h2>
-    <a th:href="@{/newproduct}">Tilføj nyt produkt</a>
-    <a th:href="@{/uploadimage}">Tilføj nyt billede</a>
 </div>
 
 <footer>

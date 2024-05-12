@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
     <link href="../public/css/soegning.css" th:href="@{/css/soegning.css}" rel="stylesheet"/>
-    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/cupcakefavico32x32.png}">
-    <link rel="icon" type="image/png" sizes="48x48" th:href="@{/images/cupcakefavico48x48.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/fogicon32x32.png}">
+    <link rel="icon" type="image/png" sizes="48x48" th:href="@{/images/fogicon48x48.png}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@100..800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
@@ -19,7 +19,6 @@
 
 <div class="page">
 <!-- BEGINNING OF NAV BAR -->
-<div class="page">
 <header>
     <div class="header-info">
         <ul>
@@ -56,36 +55,36 @@
                             </div>
                         </li>
                         <li class="nav-categories-element">
-                            <a href="" class="dropdown-button">Kategori 3</a>
+                            <a href="" class="dropdown-button">Tilbehør</a>
                             <div class="dropdown-content">
-                                <a href="#">Link 1</a>
-                                <a href="#">Link 2</a>
-                                <a href="#">Link 3</a>
+                                <a href="#" th:href="@{/kategori?category=skruer}" >Skruer</a>
+                                <a href="#" th:href="@{/kategori?category=søm}" >Søm</a>
+                                <a href="#" th:href="@{/kategori?category=lægte}" >andet til carport LOL</a>
                             </div>
                         </li>
                         <li class="nav-categories-element">
-                            <a href="" class="dropdown-button">Kategori 4</a>
+                            <a href="" class="dropdown-button">Byggematerialer</a>
                             <div class="dropdown-content">
-                                <a href="#">Link 1</a>
-                                <a href="#">Link 2</a>
-                                <a href="#">Link 3</a>
+                                <a href="#" th:href="@{/kategori?category=lægte}" >Lægter</a>
+                                <a href="#" th:href="@{/kategori?category=brædde}" >Brædder</a>
+                                <a href="#" th:href="@{/kategori?category=tagplade}" >Tagplader</a>
                             </div>
                         </li>
                         <li class="nav-categories-element">
                             <a href="" class="dropdown-button">Maling</a>
                             <div class="dropdown-content">
-                                <a href="#" th:href="@{/kategori?category=indendørs}" >Indendørs</a>
+                                <a href="#" th:href="@{/kategori?category=indendoers}" >Indendørs</a>
                                 <a href="#"></a>
                                 <a href="#"></a>
                             </div>
                         </li>
                         <li class="nav-categories-element">
-                            <a href="" class="dropdown-button">Carporte</a>
+                            <a href="" th:href="@{/kategori?category=carport}" class="dropdown-button">Carporte</a>
                             <div class="dropdown-content">
                                 <a href="#">Link 1</a>
                                 <a href="#">Link 2</a>
                                 <!-- SPECIAL RULE FOR BYGSELV -->
-                                <a href="#" th:href="@{/bygselvcarport}">Byg selv</a>
+                                <a href="byg-carport.html" th:href="@{/bygselvcarport}">Byg selv</a>
                             </div>
                         </li>
                     </ul>

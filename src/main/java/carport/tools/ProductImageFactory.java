@@ -42,7 +42,7 @@ public class ProductImageFactory {
                byte[] data = c.getInputStream().readAllBytes();
                 String imgFormat = c.getContentType();
                 if (imgFormat.contains("image") && imgFormat.split("/").length == 2){
-                    pic = new ProductImage(0, url.getFile(), Url, data, imgFormat.split("/")[1]);
+                    pic = new ProductImage(0, url.getFile(), Url, data, imgFormat.split("/")[1], false);
                 }
                 else {
                     String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
@@ -76,6 +76,6 @@ public class ProductImageFactory {
         catch (IOException e) {
             System.err.println(e.getMessage());
         }
-        return new ProductImage(0, Pic.Name(), Pic.Source(), imgResizedAsBytes, Pic.Format());
+        return new ProductImage(0, Pic.Name(), Pic.Source(), imgResizedAsBytes, Pic.Format(), true);
     }
 }

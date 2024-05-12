@@ -1,0 +1,21 @@
+.create-product-div {
+
+}
+
+.create-product-form {
+    display: flex;
+    flex-direction: column;
+}
+.select-image-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    img {
+        max-width: 140px;
+    }
+}
+
+.imgselectbox {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto auto;
+}
