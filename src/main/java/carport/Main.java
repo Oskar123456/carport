@@ -4,7 +4,7 @@ import java.util.List;
 
 import carport.config.SessionConfig;
 import carport.config.ThymeleafConfig;
-import carport.controllers.CarportController;
+import carport.controllers.MainController;
 import carport.entities.ProductCategory;
 import carport.exceptions.DatabaseException;
 import carport.persistence.CarportMapper;
@@ -31,7 +31,7 @@ public class Main {
             }).start(7070);
 
         // Routing
-        CarportController.addRoutes(jav, connectionPool);
+        MainController.addRoutes(jav, connectionPool);
         // Other setup
 
         // Test
