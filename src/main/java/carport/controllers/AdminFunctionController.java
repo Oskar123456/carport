@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class AdminFunctionController
+public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYMENT; NOT NECESSARY WHEN TESTING
 {
     public static void addRoutes(Javalin app, ConnectionPool cp) {
         /* GET */
@@ -42,14 +42,14 @@ public class AdminFunctionController
     }
 
     private static void renderUploadImage(@NotNull Context ctx, ConnectionPool cp) {
-        if (ctx.sessionAttribute("admin") == null)
-            return;
+        // if (ctx.sessionAttribute("admin") == null)
+        //     return;
         ctx.render("uploadimage.html");
     }
 
     private static void storeImage(@NotNull Context ctx, ConnectionPool cp) {
-        if (ctx.sessionAttribute("admin") == null)
-            return;
+        // if (ctx.sessionAttribute("admin") == null)
+        //     return;
         String imgUrl = ctx.formParam("imageURL");
         ProductImage img = ProductImageFactory.FromURL(imgUrl);
         if (img != null) {
