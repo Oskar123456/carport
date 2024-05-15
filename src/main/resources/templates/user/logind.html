@@ -123,7 +123,8 @@
             <label><b>Adgangskode</b></label>
             <input type="password" placeholder="Indtast adgangskode" name="psw" required>
 
-            <button type="submit">Login</button>
+            <!-- skal sendes tilbage til den side man kom fra, efter man er logget ind-->
+            <button type="submit" formaction="/login">Login</button>
             <label>
                 <input type="checkbox" checked="checked" name="husk"> Husk mig
             </label>

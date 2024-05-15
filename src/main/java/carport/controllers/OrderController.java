@@ -32,8 +32,8 @@ public class OrderController {
 
             ctx.redirect("/calculate");
         } catch (NumberFormatException e) {
-            ctx.attribute("error", "Ugyldigt. Venligst indtast gyldige tal for bredde og længde.");
-            ctx.redirect("/order");
+            ctx.attribute("error", "Ugyldigt. Vælg venligst både bredde og længde.");
+            ctx.render("byg-selv.html");
         }
     }
 

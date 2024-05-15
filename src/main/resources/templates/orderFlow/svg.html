@@ -135,11 +135,14 @@
                         <h3>Pris:<br><br>
                             17.590 kr,-</h3>
                         <div class="carport-btn">
-                        <button><a href="byg-selv.html" th:href="@{/change}">Ret i tilbud</button>
+                            <!-- kan man bare sende kunde tilbage til byg-selv.html, hvis de ønsker at rette i tilbud
+                            eller skal man bruge formaction og lave en metode i OrderController som håndtere dette? -->
+                        <button><a href="byg-selv.html" th:href="@{/change}">Ret i tilbud</a></button>
                             <!-- skal forsvinde når bruger er logget ind -->
-                        <button><a href="logind.html" th:href="@{/logind}">Log ind</button>
-                            <!-- skal først vises når kunden er logget ind -->
-                        <button id="submit-request" type="submit" formaction="forespoergelse">Send forespørgelse</button>
+                        <button><a href="logind.html" th:href="@{/logind}">Log ind</a></button>
+                            <!-- skal først vises når kunden er logget ind og sendes tilbage til denne side -->
+                            <!-- når kunden har trykket send forespørgsel, skal der vises en takke besked på siden -->
+                        <button id="submit-request" type="submit" formaction="sendrequest">Send forespørgelse</button>
                         </div>
                     </div>
                 </div>
