@@ -118,7 +118,11 @@
             <img src="null"
                  th:src="'billeder?id=' + ${product.GetFirstImageDownscaledId()}"
                  alt="productimage">
-
+            <p th:text="'dkk' + ${product.Price}"></p>
+            <h2>Beskrivelse</h2>
+            <p th:text="${product.Description}"></p>
+            <h2>Specifikationer</h2>
+            <p th:each="spec,iterStat : ${product.SpecIds}" th:text="${spec} + ' : ' + 'detaljer' "></p>
         </div>
 
     </div>
