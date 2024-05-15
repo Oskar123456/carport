@@ -5,12 +5,15 @@ import java.util.List;
 import carport.config.SessionConfig;
 import carport.config.ThymeleafConfig;
 import carport.controllers.MainController;
+import carport.entities.Carport;
+import carport.entities.CustomCarport;
 import carport.entities.ProductCategory;
 import carport.exceptions.DatabaseException;
 import carport.persistence.CarportMapper;
 import carport.persistence.ConnectionPool;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
+import org.joml.Vector3f;
 
 public class Main {
     private static final String USER = "postgres";
@@ -42,6 +45,14 @@ public class Main {
                           System.getenv("JDBC_CONNECTION_STRING_STARTCODE"),
                           System.getenv("JDBC_DB"),
                           System.getenv("test"));
+
+        CustomCarport cc = new CustomCarport();
+        int slX = 100; int slY = 100; int rlX = 50; int rlY = 50; int splX = 40; int splY = 40;
+        int shedlX = 2200; int shedlY = 2800;
+        cc.LenX = 3800; cc.LenY = 3100;
+        cc.Make(slX, slY, rlX, rlY, splX, splX, shedlX, shedlY);
+
+        System.err.println(cc.svgDraw());
         // Todos
         // TODO: seperate SQL files to clean mapper, one per function, specialized. Much better idea imo.
         // TODO: sql predicates move to the nested table-gluers
