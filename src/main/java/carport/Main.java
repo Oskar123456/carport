@@ -5,7 +5,6 @@ import java.util.List;
 import carport.config.SessionConfig;
 import carport.config.ThymeleafConfig;
 import carport.controllers.MainController;
-import carport.entities.Carport;
 import carport.entities.CustomCarport;
 import carport.entities.ProductCategory;
 import carport.exceptions.DatabaseException;
@@ -17,8 +16,8 @@ import org.joml.Vector3f;
 
 public class Main {
     private static final String USER = "postgres";
-    private static final String PASSWORD = "postgres";
-    private static final String URL = "jdbc:postgresql://db:5432/%s?currentSchema=public";
+    private static final String PASSWORD = "bwQc)89P";
+    private static final String URL = "jdbc:postgresql://104.248.251.153:5432/%s?currentSchema=public";
     private static final String DB = "carport";
 
     private static final ConnectionPool connectionPool = ConnectionPool.getInstance(USER, PASSWORD, URL, DB);
