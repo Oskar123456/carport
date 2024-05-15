@@ -1,5 +1,7 @@
 package carport;
 
+import java.util.Random;
+
 import carport.config.SessionConfig;
 import carport.config.ThymeleafConfig;
 import carport.controllers.MainController;
@@ -40,8 +42,12 @@ public class Main {
 
         CustomCarport cc = new CustomCarport();
         int slX = 100; int slY = 100; int rlX = 50; int rlY = 50; int splX = 40; int splY = 40;
-        int shedlX = 2200; int shedlY = 2800;
-        cc.LenX = 3800; cc.LenY = 3100;
+        Random r = new Random(System.currentTimeMillis());
+        int shedlX = Math.abs(r.nextInt()) % 5000;
+        int shedlY = Math.abs(r.nextInt()) % 5000;
+        cc.LenX = Math.abs(r.nextInt()) % 10000;
+        cc.LenY = Math.abs(r.nextInt()) % 10000;
+        System.err.printf("shedlX: %d, shedlY: %d, LenX: %d, LenY: %d%n%n", shedlX, shedlY, cc.LenX, cc.LenY);
         cc.Make(slX, slY, rlX, rlY, splX, splX, shedlX, shedlY);
 
         System.err.println(cc.svgDraw());
