@@ -1,4 +1,4 @@
-package main.java.carport.controllers;
+package carport.controllers;
 
 import carport.entities.Product;
 
