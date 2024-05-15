@@ -43,7 +43,7 @@ public class OrderController {
 
         if (width == null || length == null) {
             ctx.attribute("error", "Mål ikke fundet i sessionen. Venligst indtast målene igen.");
-            ctx.redirect("/order");
+            ctx.render("/order");
         } else {
             int price = calculateTotalPrice(width, length);
 
@@ -53,5 +53,7 @@ public class OrderController {
     }
 
     private static int calculateTotalPrice(int width, int length) {
+        return width * length * 5; //Det bare lige en hurtig logik, skal ændres.
+        //Spørg jon i morgen, om vi skal lave den også?
     }
 }
