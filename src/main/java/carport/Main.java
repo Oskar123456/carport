@@ -9,6 +9,7 @@ import carport.entities.ProductCategory;
 import carport.exceptions.DatabaseException;
 import carport.persistence.CarportMapper;
 import carport.persistence.ConnectionPool;
+import carport.persistence.ProductMapper;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
 
@@ -42,6 +43,12 @@ public class Main {
                           System.getenv("JDBC_CONNECTION_STRING_STARTCODE"),
                           System.getenv("JDBC_DB"),
                           System.getenv("test"));
+
+        try {
+            ProductMapper.InsertCarportCustomBase(connectionPool, 100, 200, 300);
+        } catch (DatabaseException e) {
+            throw new RuntimeException(e);
+        }
         // Todos
         // TODO: seperate SQL files to clean mapper, one per function, specialized. Much better idea imo.
         // TODO: sql predicates move to the nested table-gluers

@@ -426,7 +426,7 @@ public class ProductMapper {
 
             ps.setString(argNum++, "customcarport");
             ps.setString(argNum++, "customcarport");
-            ps.setString(argNum++, "");
+            ps.setArray(argNum++, null);
             ps.setBigDecimal(argNum++, new BigDecimal(0));
 
             System.err.println(ps.toString());
