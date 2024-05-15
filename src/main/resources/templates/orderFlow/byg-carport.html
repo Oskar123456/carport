@@ -4,7 +4,7 @@
   <title>Byg-selv carport på specialmål - få tilbud omgående</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="../public/css/byg-selv.css" th:href="@{/css/byg-selv.css}" rel="stylesheet"/>
+  <link href="../../public/css/orderFlow/byg-selv.css" th:href="@{/css/orderFlow/byg-selv.css}" rel="stylesheet"/>
   <link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/cupcakefavico32x32.png}">
   <link rel="icon" type="image/png" sizes="48x48" th:href="@{/images/cupcakefavico48x48.png}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,8 +27,8 @@
     <div class="nav">
       <div class="nav-left">
         <div class="nav-logo">
-          <a href="index.html">
-            <img src="../public/images/foglogo.png" th:src="@{/images/foglogo.png}" alt=""/>
+          <a href="../index.html">
+            <img src="../../public/images/foglogo.png" th:src="@{/images/foglogo.png}" alt=""/>
           </a>
         </div>
         <div class="nav-categories">
@@ -91,7 +91,7 @@
         <div class="nav-search">
           <form class="nav-search-form">
             <button class="nav-search-button" type="submit" formaction="soegning">
-              <img src="../public/images/magnifyingglass64x64.png" th:src="@{/images/magnifyingglass64x64.png}"  alt=""/>
+              <img src="../../public/images/magnifyingglass64x64.png" th:src="@{/images/magnifyingglass64x64.png}" alt=""/>
             </button>
             <label>
               <input type="text" placeholder="Søg på produkter eller kategorier" name="searchString" id="searchString">
@@ -122,14 +122,54 @@
       <h2>Carport med fladt tag</h2>
       <p>Udfyld nedstående omhyggeligt og tryk "Beregn tilbud".<br>
       Så generes et tilbud til dig som du kan rette i, indtil det ønskede resultat er fundet.</p>
-      <form action="#" class="form">
+      <form action="#" class="form" method="post">
         <div class="input-box">
           <label>Carport bredde*</label>
-          <input type="text" placeholder="Indtast ønskede bredde i meter" required/>
+          <div class="select-box">
+            <select required>
+              <option></option>
+              <option value="240">240 cm</option>
+              <option value="270">270 cm</option>
+              <option value="300">300 cm</option>
+              <option value="330">330 cm</option>
+              <option value="360">360 cm</option>
+              <option value="390">390 cm</option>
+              <option value="420">420 cm</option>
+              <option value="450">450 cm</option>
+              <option value="480">480 cm</option>
+              <option value="510">510 cm</option>
+              <option value="540">540 cm</option>
+              <option value="570">570 cm</option>
+              <option value="600">600 cm</option>
+            </select>
+          </div>
         </div>
         <div class="input-box">
           <label>Carport længde*</label>
-          <input type="text" placeholder="Indtast ønskede længde i meter" required/>
+          <div class="select-box">
+            <select required>
+              <option></option>
+              <option value="240">240 cm</option>
+              <option value="270">270 cm</option>
+              <option value="300">300 cm</option>
+              <option value="330">330 cm</option>
+              <option value="360">360 cm</option>
+              <option value="390">390 cm</option>
+              <option value="420">420 cm</option>
+              <option value="450">450 cm</option>
+              <option value="480">480 cm</option>
+              <option value="510">510 cm</option>
+              <option value="540">540 cm</option>
+              <option value="570">570 cm</option>
+              <option value="600">600 cm</option>
+              <option value="630">630 cm</option>
+              <option value="660">660 cm</option>
+              <option value="690">690 cm</option>
+              <option value="720">720 cm</option>
+              <option value="750">750 cm</option>
+              <option value="780">780 cm</option>
+            </select>
+          </div>
         </div>
         <div class="column">
           <label>Carport trapeztag*</label>
@@ -169,7 +209,7 @@
           </div>
         </div>
 
-        <button type="submit" formaction="tilbud">Beregn tilbud</button>
+        <button type="submit" formaction="savemeasurements">Beregn tilbud</button>
       </form>
     </section>
   </div>

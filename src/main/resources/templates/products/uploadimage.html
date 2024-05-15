@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="">
 <head>
-<title>CreateProduct</title>
+<title>Frontpage</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
-<link href="../public/css/createproduct.css" th:href="@{/css/createproduct.css}" rel="stylesheet"/>
+<link href="../../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
 <link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/cupcakefavico32x32.png}">
 <link rel="icon" type="image/png" sizes="48x48" th:href="@{/images/cupcakefavico48x48.png}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,17 +18,17 @@
 <header>
     <div class="header-info">
         <ul>
-            <li><a href="">30 dages returret</a></li>
-            <li><a href="">Klik og hent inden for 3 timer*</a></li>
-            <li><a href="">1-3 dages levering*</a></li>
-            <li><a href="">Lån en trailer gratis</a></li>
+            <li><a href="">extra info</a></li>
+            <li><a href="">extra info</a></li>
+            <li><a href="">extra info</a></li>
+            <li><a href="">extra info</a></li>
         </ul>
     </div>
         <div class="nav">
             <div class="nav-left">
                 <div class="nav-logo">
-                    <a href="index.html" th:href="@{/}">
-                        <img src="../public/images/foglogo.png" th:src="@{/images/foglogo.png}" alt=""/>
+                    <a href="../index.html">
+                        <img src="../../public/images/foglogo.png" th:src="@{/images/foglogo.png}" alt=""/>
                     </a>
                 </div>
                 <div class="nav-categories">
@@ -70,18 +69,18 @@
                         <li class="nav-categories-element">
                             <a href="" class="dropdown-button">Maling</a>
                             <div class="dropdown-content">
-                                <a href="#" th:href="@{/kategori?category=indendoers}" >Indendørs</a>
+                                <a href="#" th:href="@{/kategori?category=indendørs}" >Indendørs</a>
                                 <a href="#"></a>
                                 <a href="#"></a>
                             </div>
                         </li>
                         <li class="nav-categories-element">
-                            <a href="" th:href="@{/kategori?category=carport}" class="dropdown-button">Carporte</a>
+                            <a href="" class="dropdown-button">Carporte</a>
                             <div class="dropdown-content">
                                 <a href="#">Link 1</a>
                                 <a href="#">Link 2</a>
                                 <!-- SPECIAL RULE FOR BYGSELV -->
-                                <a href="byg-carport.html" th:href="@{/bygselvcarport}">Byg selv</a>
+                                <a href="#" th:href="@{/bygselvcarport}">Byg selv</a>
                             </div>
                         </li>
                     </ul>
@@ -91,8 +90,8 @@
             <div class="nav-right">
                 <div class="nav-search">
                     <form class="nav-search-form">
-                        <button class="nav-search-button" type="submit" formaction="/soegning">
-                            <img src="../public/images/magnifyingglass64x64.png" th:src="@{/images/magnifyingglass64x64.png}"  alt=""/>
+                        <button class="nav-search-button" type="submit" formaction="soegning">
+                            <img src="../../public/images/magnifyingglass64x64.png" th:src="@{/images/magnifyingglass64x64.png}" alt=""/>
                         </button>
                         <label>
                             <input type="text" placeholder="Søg på produkter eller kategorier" name="searchString" id="searchString">
@@ -113,55 +112,24 @@
 </header>
 <!-- END OF NAV BAR -->
 <div class="main">
-<div th:if="@{session.admin == true && session.productinmaking != null}"
-     class="create-product-select-specs-div">
-    <div class="product-so-far">
-        <h2>Navn</h2>
-        <p th:text="${session.productinmaking.Name}" ></p>
-        <h2>Beskrivelse</h2>
-        <p th:text="${session.productinmaking.Description}" ></p>
-        <h2>Pris</h2>
-        <p th:text="${session.productinmaking.Price}"></p>
-        <h2>Links</h2>
-        <p th:if="${session.productinmaking.Links != null}"
-           th:each="link : ${session.productinmaking.Links}"
-           th:text="${link}"></p>
-        <h2>Kategorier</h2>
-        <div th:each="cat : ${cats}">
-            <h3 th:text="${cat.Name}" ></h3>
-        </div>
-        <h2>Specs</h2>
-        <div th:each="spec,iterStat : ${session.productinmaking.SpecIds}">
-            <span th:text="${session.productinmaking.SpecNames[__${iterStat.index}__]}" ></span>
-            <span th:text="${session.productinmaking.SpecDetails[__${iterStat.index}__]}" ></span>
-            <span th:text="${session.productinmaking.SpecUnits[__${iterStat.index}__]}" ></span>
-        </div>
-    </div>
-    <form class="select-image-form" method="post">
-    <h2>Vælg billede (stort)</h2>
-    <div class="imgselectbox">
-        <div th:each="imgid : ${imageids}">
-            <input type="radio" th:id="${imgid}" th:name="regular" th:value="${imgid}">
-            <label th:for="${imgid}"></label>
-            <img src="null" th:src="'billeder?id=' + ${imgid}" alt="productimage">
-        </div>
-    </div>
-    <h2>Vælg billede (lille)</h2>
-    <div class="imgselectbox">
-        <div th:each="imgid : ${imagedownscaledids}">
-            <input type="radio" th:id="${imgid}" th:name="downscaled" th:value="${imgid}">
-            <label th:for="${imgid}"></label>
-            <img src="null" th:src="'billeder?id=' + ${imgid}" alt="productimage">
-        </div>
-    </div>
-       <input type="submit" formaction="/createproductselectimages" value="bekræft">
+    <h2>Upload billede</h2>
+    <form class="nav-search-form" method="post" action="uploadimage">
+        <input type="text" placeholder="indtast billedets URL" name="imageURL" id="imageURL">
+        <button class="nav-search-button" type="submit"> </button>
     </form>
-</div>
-
+    <div th:if="${message != null}" >
+    <h2 class="status-message" th:text="${message}"></h2>
+    <div th:if="${uploadedImgId != null && uploadedImgIdDownscaled != null}">
+    <h3>Uploadet billede:</h3>
+    <img th:src="'billeder?id=' + ${uploadedImgId}" alt=""/>
+    <h3>Uploadet billede (nedskaleret):</h3>
+    <img th:src="'billeder?id=' + ${uploadedImgIdDownscaled}" alt=""/>
+    </div>
+    </div>
 </div>
 
 <footer>
-    <p>Johannes Fog A/S<span>Firskovvej 20, 2800 Lyngby</span>CVR-nr. 16314439</p>
+this is a footer
 </footer>
 
 </div>

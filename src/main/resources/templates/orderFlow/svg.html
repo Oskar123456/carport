@@ -4,7 +4,7 @@
     <title>Tilbud</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="../public/css/byg-selv.css" th:href="@{/css/byg-selv.css}" rel="stylesheet"/>
+    <link href="../../public/css/orderFlow/byg-selv.css" th:href="@{/css/orderFlow/byg-selv.css}" rel="stylesheet"/>
     <link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/cupcakefavico32x32.png}">
     <link rel="icon" type="image/png" sizes="48x48" th:href="@{/images/cupcakefavico48x48.png}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,8 +27,8 @@
         <div class="nav">
             <div class="nav-left">
                 <div class="nav-logo">
-                    <a href="index.html">
-                        <img src="../public/images/foglogo.png" th:src="@{/images/foglogo.png}" alt=""/>
+                    <a href="../index.html">
+                        <img src="../../public/images/foglogo.png" th:src="@{/images/foglogo.png}" alt=""/>
                     </a>
                 </div>
                 <div class="nav-categories">
@@ -91,7 +91,7 @@
                 <div class="nav-search">
                     <form class="nav-search-form">
                         <button class="nav-search-button" type="submit" formaction="soegning">
-                            <img src="../public/images/magnifyingglass64x64.png" th:src="@{/images/magnifyingglass64x64.png}"  alt=""/>
+                            <img src="../../public/images/magnifyingglass64x64.png" th:src="@{/images/magnifyingglass64x64.png}" alt=""/>
                         </button>
                         <label>
                             <input type="text" placeholder="Søg på produkter eller kategorier" name="searchString" id="searchString">
@@ -101,7 +101,7 @@
                 </div>
                 <div class="nav-personal">
                     <ul>
-                        <li><a href="">Fog Konto</a></li>
+                        <li><a href="logind.html" th:href="@{/shop}">Fog Konto</a></li>
                         <li><a href="">Find Fog</a></li>
                         <li><a href="">Kurv</a></li>
                     </ul>
@@ -121,8 +121,8 @@
             <div class="contain d-flex">
                 <div class="carport-container d-flex">
                     <div class="carport">
-                        <img src="../public/images/carport.png" th:src="@{/images/carport.png}"  alt=""/>
-                        <img src="../public/images/carport-measurements.png" th:src="@{/images/carport-measurements.png}"  alt=""/>
+                        <img src="../../public/images/carport.png" th:src="@{/images/carport.png}" alt=""/>
+                        <img src="../../public/images/carport-measurements.png" th:src="@{/images/carport-measurements.png}" alt=""/>
                     </div>
                     <div class="carport-offer">
                         <h2>Pris på carport</h2>
@@ -134,27 +134,17 @@
                         <p>Med redskabsrum</p>
                         <h3>Pris:<br><br>
                             17.590 kr,-</h3>
-                        <button type="submit" formaction="byg-selv">Ret i tilbud</button>
+                        <div class="carport-btn">
+                        <button><a href="byg-selv.html" th:href="@{/change}">Ret i tilbud</button>
+                            <!-- skal forsvinde når bruger er logget ind -->
+                        <button><a href="logind.html" th:href="@{/logind}">Log ind</button>
+                            <!-- skal først vises når kunden er logget ind -->
                         <button id="submit-request" type="submit" formaction="forespoergelse">Send forespørgelse</button>
+                        </div>
                     </div>
                 </div>
             </div>
-
         </section>
-
-
-        <!--div class="carport">
-            <div class="carport-img">
-                <img src="../public/images/carport.png" th:src="@{/images/carport.png}"  alt=""/>
-            </div>
-        <div class="carport-img">
-            <img src="../public/images/carport-measurements.png" th:src="@{/images/carport-measurements.png}"  alt=""/>
-        </div>
-        </div>
-    </div>
-        <section-- class="container-svg">
-            <h2>Pris på carport</h2>
-        </section-->
     </div>
 
     <footer>
