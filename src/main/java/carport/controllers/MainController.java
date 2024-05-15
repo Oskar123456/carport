@@ -86,8 +86,24 @@ public class MainController {
     }
 
     private static void renderProduct(Context ctx, ConnectionPool cp) {
-        System.out.println("renderProduct::qparams:\t" + ctx.queryParam("name") + " / " + ctx.queryParam("id"));
-        ctx.render("soegning.html");
+        String pStr = ctx.queryParam("id");
+        System.err.println("renderProduct - id: " + pStr);
+        int id = -1;
+        if ( pStr != null){
+            id = Integer.parseInt(pStr);
+            List<Product> products = null;
+            try {
+                products = CarportMapper.SelectProductsById(cp, -1, id);
+            } catch (DatabaseException e) {
+                ctx.attribute("message", "product not found");
+            }
+            if (products.size() == 1)
+                ctx.attribute("product", products.get(0));
+            else
+                ctx.attribute("message", "product not found");
+            System.err.println(products.size() + " " + id);
+        }
+        ctx.render("viewproduct.html");
     }
     private static void renderIndex(Context ctx, ConnectionPool cp) {
         ctx.render("index.html");

@@ -375,10 +375,11 @@ public class CarportMapper {
             for (int i = 0; i < ids.length; ++i)
                 sqlPredicate += " id = ? OR ";
         }
-        if (sqlPredicate.length() > 0)
+        if (!sqlPredicate.isEmpty())
             sqlPredicate = System.lineSeparator() + " WHERE "
                     + sqlPredicate.substring(0, sqlPredicate.lastIndexOf("OR")) + System.lineSeparator();
-        sql = sql.replace("predicate_position_product", sqlPredicate);
+        sql = sql.replace("predicate_position_product",
+                System.lineSeparator() + sqlPredicate + System.lineSeparator());
 
         try (Connection c = cp.getConnection();
                 PreparedStatement ps = c.prepareStatement(sql);) {

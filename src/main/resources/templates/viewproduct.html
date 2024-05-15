@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
-    <link href="../public/css/soegning.css" th:href="@{/css/soegning.css}" rel="stylesheet"/>
     <link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/fogicon32x32.png}">
     <link rel="icon" type="image/png" sizes="48x48" th:href="@{/images/fogicon48x48.png}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,20 +13,17 @@
 </head>
 
 <body>
-
-
-
 <div class="page">
-<!-- BEGINNING OF NAV BAR -->
-<header>
-    <div class="header-info">
-        <ul>
-            <li><a href="">30 dages returret</a></li>
-            <li><a href="">Klik og hent inden for 3 timer*</a></li>
-            <li><a href="">1-3 dages levering*</a></li>
-            <li><a href="">Lån en trailer gratis</a></li>
-        </ul>
-    </div>
+    <!-- BEGINNING OF NAV BAR -->
+    <header>
+        <div class="header-info">
+            <ul>
+                <li><a href="">30 dages returret</a></li>
+                <li><a href="">Klik og hent inden for 3 timer*</a></li>
+                <li><a href="">1-3 dages levering*</a></li>
+                <li><a href="">Lån en trailer gratis</a></li>
+            </ul>
+        </div>
         <div class="nav">
             <div class="nav-left">
                 <div class="nav-logo">
@@ -113,74 +109,25 @@
             </div>
 
         </div>
-</header>
-<!-- END OF NAV BAR -->
+    </header>
+    <!-- END OF NAV BAR -->
     <div class="main">
-    <div class="search-result">
-        <h1 th:text="'Søgning: ' + ${searchStringPrev}"></h1>
-        <!-- BEGINNING OF SORTER -->
-        <h2>Filtre:</h2>
-        <form class="search-result-filter-form" th:if="${commonSpecList != null && commonSpecListOptions != null}" action="filter">
-            <ul th:each="spec,iterStat : ${commonSpecList}">
-                <input type="hidden" selected="selected" id="specIds" name="specIds" th:value="${spec.Id()}">
-                <li class="search-result-filters">
-                    <button class="search-result-filter-form-button" th:text="${spec.Name()}"></button>
-                    <div class="search-result-filter-form-dropdown">
-                        <div class="search-result-filter-form-dropdown-div"
-                             th:each="specOption : ${commonSpecListOptions.get(__${iterStat.index}__)}">
-                        <input type="checkbox"
-                               th:id="${spec.Id()}"
-                               th:value="${specOption}" th:name="${spec.Id()}">
-                        <label th:for="${spec.Id()}" th:text="${specOption} + ' ' + ${spec.Unit()}"></label>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-            <ul class="search-result-hidden-ul">
-                <li>
-                    <input type="hidden" selected="selected" id="searchString" name="searchString" th:value="${searchStringPrev}">
-                </li>
-            </ul>
-            <ul class="search-result-submit-ul">
-                <li>
-                    <input type="submit" value="søg">
-                </li>
-            </ul>
-        </form>
-        <!-- END OF SORTER -->
-        <h2>Resultater:</h2>
-        <div class="search-result-list">
-            <a th:if="${productList != null && !productList.isEmpty()}"
-               class="search-result-element"
-               th:each="product,iterStat : ${productList}"
-               th:href="'produkt' + '?name=' + ${product.Name} + '&id=' + ${product.Id}">
-              <img src="null"
-                   th:src="'billeder?id=' + ${product.GetFirstImageDownscaledId()}"
-                   alt="productimage">
-              <p class="search-result-title"
-                 th:text="${product.Name}"></p>
-              <p class="search-result-price"
-                 th:text="'pris: ' + ${product.Price}"></p>
-            </a>
-            <div th:if="${productList == null || productList.isEmpty()}">Ingen resultater :(</div>
+
+        <div th:if="${product != null}" class="viewproduct">
+            <h2 th:text="${product.Name}"></h2>
+            <img src="null"
+                 th:src="'billeder?id=' + ${product.GetFirstImageDownscaledId()}"
+                 alt="productimage">
+
         </div>
-        <ul>
-            <li><a href=""> left </a></li>
-            <li><a href=""> right </a></li>
-        </ul>
-    </div>
-
-    <div class="related-products">
-        <h1>Relaterede produkter...</h1>
-    </div>
 
     </div>
 
-<div class="admin-functions" >
-    <h2>ADMINISTRATOR FUNKTIONER</h2>
-    <a th:href="@{/newproduct}">Tilføj nyt produkt</a>
-    <a th:href="@{/uploadimage}">Tilføj nyt billede</a>
-</div>
+    <div class="admin-functions" >
+        <h2>ADMINISTRATOR FUNKTIONER</h2>
+        <a th:href="@{/newproduct}">Tilføj nyt produkt</a>
+        <a th:href="@{/uploadimage}">Tilføj nyt billede</a>
+    </div>
 
     <footer>
         <p>Johannes Fog A/S<span>Firskovvej 20, 2800 Lyngby</span>CVR-nr. 16314439</p>
