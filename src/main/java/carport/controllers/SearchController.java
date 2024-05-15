@@ -1,18 +1,14 @@
 package carport.controllers;
 
 import carport.entities.Product;
-import carport.entities.ProductCategory;
-import carport.entities.ProductImage;
 import carport.entities.ProductSpecification;
 import carport.exceptions.DatabaseException;
-import carport.persistence.CarportMapper;
+import carport.persistence.CatAndSpecMapper;
 import carport.persistence.ConnectionPool;
-import carport.tools.ProductImageFactory;
+import carport.persistence.ProductMapper;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
-import org.jetbrains.annotations.NotNull;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -69,16 +65,16 @@ public class SearchController
         try {
             searchString = searchString.toLowerCase();
             String[] searchStringSplit = searchString.split(" ");
-            List<Integer> searchCategories = CarportMapper.SearchCategory(cp, Arrays.asList(searchStringSplit));
+            List<Integer> searchCategories = CatAndSpecMapper.SearchCategory(cp, Arrays.asList(searchStringSplit));
             List<Product> productList = null;
-            productList = CarportMapper.SelectProductsById(cp,
-                    pageNumber, CarportMapper.SearchProducts(cp,
+            productList = ProductMapper.SelectProductsById(cp,
+                    pageNumber, ProductMapper.SearchProducts(cp,
                             pageNumber, PAGE_SIZE,
                             Arrays.asList(searchStringSplit), Arrays.asList(searchStringSplit),
                             searchCategories, searchWithFilters,
                             filterSpecIds, filterSpecDetails));
             List<Long> commonSpecIds = Product.MapProductsToCommonSpecIds(productList);
-            List<ProductSpecification> commonSpecs = CarportMapper.SelectSpecificationsById(cp, commonSpecIds);
+            List<ProductSpecification> commonSpecs = CatAndSpecMapper.SelectSpecificationsById(cp, commonSpecIds);
             List<List<String>> commonSpecUniqueDetails = new ArrayList<>();
             if (commonSpecs != null)
                 for (ProductSpecification commonSpec : commonSpecs)
@@ -106,9 +102,9 @@ public class SearchController
             }
         }
         try {
-            List<Integer> catIds = CarportMapper.SearchCategory(cp, searchString);
-            List<Product> productList = CarportMapper.SelectProductsById(cp,
-                    pageNumber, CarportMapper.SearchProducts(cp, pageNumber, PAGE_SIZE,
+            List<Integer> catIds = CatAndSpecMapper.SearchCategory(cp, searchString);
+            List<Product> productList = ProductMapper.SelectProductsById(cp,
+                    pageNumber, ProductMapper.SearchProducts(cp, pageNumber, PAGE_SIZE,
                                                              null, null,
                                                              catIds, false,
                                                              null, null));

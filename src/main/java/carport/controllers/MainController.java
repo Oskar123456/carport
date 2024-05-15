@@ -24,7 +24,7 @@ public class MainController {
         /*
         * Set up
         * */
-        CarportMapper.Init(cp);
+        CarportMapper.Init();
         AdminFunctionController.addRoutes(app, cp);
         SearchController.addRoutes(app, cp);
         /*

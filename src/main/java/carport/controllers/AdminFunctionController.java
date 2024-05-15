@@ -6,7 +6,9 @@ import carport.entities.ProductImage;
 import carport.entities.ProductSpecification;
 import carport.exceptions.DatabaseException;
 import carport.persistence.CarportMapper;
+import carport.persistence.CatAndSpecMapper;
 import carport.persistence.ConnectionPool;
+import carport.persistence.ProductMapper;
 import carport.tools.ProductImageFactory;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -14,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYMENT; NOT NECESSARY WHEN TESTING
@@ -32,7 +33,7 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
 
     private static void renderNewProduct(@NotNull Context ctx, ConnectionPool cp) {
         try {
-            List<ProductCategory> categoryList = CarportMapper.SelectAllCategories(cp);
+            List<ProductCategory> categoryList = CatAndSpecMapper.SelectAllCategories(cp);
             ctx.attribute("categorylist", categoryList);
         }
         catch (DatabaseException e) {
@@ -54,8 +55,8 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
         ProductImage img = ProductImageFactory.FromURL(imgUrl);
         if (img != null) {
             try {
-                int uploadedImgId = CarportMapper.InsertProductImage(cp, img, false, 0);
-                int uploadedImgIdDownscaled = CarportMapper.InsertProductImage(cp, img, true, 200);
+                int uploadedImgId = ProductMapper.InsertProductImage(cp, img, false, 0);
+                int uploadedImgIdDownscaled = ProductMapper.InsertProductImage(cp, img, true, 200);
                 ctx.attribute("message", "success");
                 ctx.attribute("uploadedImgId", uploadedImgId);
                 ctx.attribute("uploadedImgIdDownscaled", uploadedImgIdDownscaled);
@@ -95,7 +96,7 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
             specIds = ProductCategory.GetCommonSpecIdsFromCategoryIdList(cp, catIds);
             if (specIds != null){
                 for (Integer cId : catIds){
-                    cats.add(CarportMapper.SelectCategoryById(cp, cId.intValue()));
+                    cats.add(CatAndSpecMapper.SelectCategoryById(cp, cId.intValue()));
                 }
             }
             priceBigDecimal = new BigDecimal(price);
@@ -148,7 +149,7 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
             int downscaledImgId = Integer.parseInt(downscaledImgStr);
             product.AddImages(false, regularImgId);
             product.AddImages(true, downscaledImgId);
-            CarportMapper.InsertProduct(cp, product);
+            ProductMapper.InsertProduct(cp, product);
         }
         catch (NumberFormatException | DatabaseException e){
             System.err.println(e.getMessage());
@@ -168,7 +169,7 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
             List<ProductCategory> pCats = new ArrayList<>();
             for (int i = 0; i < product.SpecIds.length; ++i){
                 List<ProductSpecification> pSpec =
-                        CarportMapper.SelectSpecificationsById(cp, product.SpecIds[i].intValue());
+                        CatAndSpecMapper.SelectSpecificationsById(cp, product.SpecIds[i].intValue());
                 if (pSpec == null || pSpec.size() != 1)
                     return;
                 String pDetails = ctx.formParam(pSpec.get(0).Name());
@@ -177,7 +178,7 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
                 product.SpecNames[i] = pSpec.get(0).Name();
                 product.SpecDetails[i] = pDetails;
                 product.SpecUnits[i] = pSpec.get(0).Unit();
-                pCats.add(CarportMapper.SelectCategoryById(cp, product.SpecIds[i].intValue()));
+                pCats.add(CatAndSpecMapper.SelectCategoryById(cp, product.SpecIds[i].intValue()));
             }
             ctx.attribute("pcats", pCats);
             ctx.attribute("imageids", imageIds);

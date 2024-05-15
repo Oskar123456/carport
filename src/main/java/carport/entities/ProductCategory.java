@@ -1,13 +1,12 @@
 package carport.entities;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import carport.exceptions.DatabaseException;
-import carport.persistence.CarportMapper;
+import carport.persistence.CatAndSpecMapper;
 import carport.persistence.ConnectionPool;
 
 /**
@@ -33,7 +32,7 @@ public class ProductCategory {
         List<ProductSpecification> specs = new ArrayList<>();
         try {
             List<Long> specIds = new ArrayList<>();
-            Map<Integer, Long[]> catsWithSpecIds = CarportMapper.SelectSpecificationsByCategory(cp, catIds);
+            Map<Integer, Long[]> catsWithSpecIds = CatAndSpecMapper.SelectSpecificationsByCategory(cp, catIds);
             if (catsWithSpecIds == null)
                 return specs;
             for (Entry<Integer, Long[]> e : catsWithSpecIds.entrySet()){
@@ -43,7 +42,7 @@ public class ProductCategory {
             }
             if (specIds.size() < 1)
                 return specs;
-            specs = CarportMapper.SelectSpecificationsById(cp, specIds);
+            specs = CatAndSpecMapper.SelectSpecificationsById(cp, specIds);
         }
         catch (DatabaseException e){
             System.err.println(e.getMessage());
@@ -54,7 +53,7 @@ public class ProductCategory {
             ConnectionPool cp, List<Integer> catIds) {
         List<Long> specIds = new ArrayList<>();
         try {
-            Map<Integer, Long[]> catsWithSpecIds = CarportMapper.SelectSpecificationsByCategory(cp, catIds);
+            Map<Integer, Long[]> catsWithSpecIds = CatAndSpecMapper.SelectSpecificationsByCategory(cp, catIds);
             if (catsWithSpecIds == null)
                 return specIds;
             for (Entry<Integer, Long[]> e : catsWithSpecIds.entrySet()){
