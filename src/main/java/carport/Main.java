@@ -5,7 +5,6 @@ import java.util.List;
 import carport.config.SessionConfig;
 import carport.config.ThymeleafConfig;
 import carport.controllers.MainController;
-import carport.entities.Carport;
 import carport.entities.CustomCarport;
 import carport.entities.ProductCategory;
 import carport.exceptions.DatabaseException;
