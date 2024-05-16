@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="">
 <head>
-  <title>Byg-selv carport på specialmål - få tilbud omgående</title>
+  <title>Kunde ordre</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="../public/css/byg-selv.css" th:href="@{/css/byg-selv.css}" rel="stylesheet"/>
+  <link href="../../public/css/orders/order.css" th:href="@{/css/orders/order.css}" rel="stylesheet"/>
   <link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/cupcakefavico32x32.png}">
   <link rel="icon" type="image/png" sizes="48x48" th:href="@{/images/cupcakefavico48x48.png}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@100..800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 </head>
-
 <body>
 <!-- BEGINNING OF NAV BAR -->
 <div class="page">
@@ -27,8 +26,8 @@
     <div class="nav">
       <div class="nav-left">
         <div class="nav-logo">
-          <a href="index.html">
-            <img src="../public/images/foglogo.png" th:src="@{/images/foglogo.png}" alt=""/>
+          <a href="../index.html">
+            <img src="../../public/images/foglogo.png" th:src="@{/images/foglogo.png}" alt=""/>
           </a>
         </div>
         <div class="nav-categories">
@@ -91,7 +90,7 @@
         <div class="nav-search">
           <form class="nav-search-form">
             <button class="nav-search-button" type="submit" formaction="soegning">
-              <img src="../public/images/magnifyingglass64x64.png" th:src="@{/images/magnifyingglass64x64.png}"  alt=""/>
+              <img src="../../public/images/magnifyingglass64x64.png" th:src="@{/images/magnifyingglass64x64.png}" alt=""/>
             </button>
             <label>
               <input type="text" placeholder="Søg på produkter eller kategorier" name="searchString" id="searchString">
@@ -101,7 +100,7 @@
         </div>
         <div class="nav-personal">
           <ul>
-            <li><a href="">Fog Konto</a></li>
+            <li><a href="showorder.html" th:href="@{/shop}">Fog Konto</a></li>
             <li><a href="">Find Fog</a></li>
             <li><a href="">Kurv</a></li>
           </ul>
@@ -112,68 +111,42 @@
   </header>
   <!-- END OF NAV BAR -->
   <div class="main">
-    <div class="headline">
-      <h2>Byg-selv tilbud - carport med fladt tag</h2>
-      <p>Med et nyt og forberedt computerprogram kan DU, som kunde, nu selv lynhurtigt beregne prisen<br>
-        og udskrive en skitsetegning på en carport indenfor vores standardprogram.<br>
-        Ved bestilling medfølger standardbyggevejledning.</p>
-      <p>Felter markeret med * SKAL udfyldes!</p><br>
-    <section class="container">
-      <h2>Carport med fladt tag</h2>
-      <p>Udfyld nedstående omhyggeligt og tryk "Beregn tilbud".<br>
-      Så generes et tilbud til dig som du kan rette i, indtil det ønskede resultat er fundet.</p>
-      <form action="#" class="form">
-        <div class="input-box">
-          <label>Carport bredde*</label>
-          <input type="text" placeholder="Indtast ønskede bredde i meter" required/>
-        </div>
-        <div class="input-box">
-          <label>Carport længde*</label>
-          <input type="text" placeholder="Indtast ønskede længde i meter" required/>
-        </div>
-        <div class="column">
-          <label>Carport trapeztag*</label>
-          <div class="select-box">
-            <select>
-              <option></option>
-              <option>Uden tagplader</option>
-              <option>Plasttrapezplader</option>
-            </select>
-          </div>
-        </div>
+    <div class="order-container">
+      <div class="headline">
+        <h2>Ordre</h2><br>
+      </div>
+      <table class="order-list">
+        <thead>
+        <tr>
+          <th>Ordrenr.</th>
+          <th>Beskrivelse</th>
+          <th>Bredde</th>
+          <th>Længde</th>
+          <th>Beløb</th>
+          <th>Status</th>
+          <th>Stykliste</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order: ${session.cart.cartItems}">
+          <td th:text="${order.getOrderId()}">1</td>
+          <td>"Byg-selv" carport u. skur</td>
+          <td th:text="${order.getWidth()}">600</td>
+          <td th:text="${order.getLength()}">780</td>
+          <td th:text="${order.getPrice()}">17.590,00</td>
+          <td th:text="${order.getStatusCode()}">Venter betaling</td>
+          <td th:text="${order.getStatusCode()}"><button class="show-bom">Se stykliste</button></td>
+        </tr>
+        </tbody>
+      </table>
 
-        <div class="shed-box">
-          <h5>Redskabsrum</h5>
-          <div class="shed-option">
-            <div class="shed">
-              <input type="radio" id="check-yes" name="shed" checked/>
-              <label for="check-yes">JA</label>
-            </div>
-            <div class="shed">
-              <input type="radio" id="check-no" name="shed">
-              <label for="check-no">NEJ</label>
-            </div>
-          </div>
-          <p>NB! Der skal beregnes 15 cm tagudhæng på hver side af redskabsrummet*.</p>
-          <div class="input-box">
-            <label>Redskabsrum bredde*</label>
-            <input type="text" placeholder="Indtast ønskede bredde i meter" required/>
-          </div>
-          <div class="input-box">
-            <label>Redskabsrum længde*</label>
-            <input type="text" placeholder="Indtast ønskede længde i meter" required/>
-          </div>
-          <div class="input-box-comments">
-            <label>Evt. bemærkninger / særlige ønsker</label>
-            <input type="text" placeholder="">
-          </div>
-        </div>
-
-        <button type="submit" formaction="tilbud">Beregn tilbud</button>
-      </form>
-    </section>
+      <div class="order-btn">
+        <button class="contact-salesman"><a href="order.html" th:href="@{/shop}">Kontakt sælger</a></button>
+        <button class="pay"><a href="checkout.html" th:href="@{/checkout}">Betal for ordre</a></button>
+        <button class="go-back"><a href="index.html" th:href="@{/checkout}">Tilbage til forside</a></button>
+      </div>
+    </div>
   </div>
-</div>
 
   <footer>
     <p>&nbsp;&nbsp;&nbsp;Johannes Fog A/S<span>Firskovvej 20, 2800 Lyngby</span>CVR-nr. 16314439</p>

@@ -54,7 +54,7 @@ public class UserController {
 
     public static void login(Context ctx, ConnectionPool cp) {
         String email = ctx.formParam("email");
-        String password = ctx.formParam("password");
+        String password = ctx.formParam("psw");
 
         try {
             User user = UserMapper.login(email, password, cp);
