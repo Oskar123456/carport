@@ -39,13 +39,13 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
         catch (DatabaseException e) {
             System.err.println(e.getMessage());
         }
-        ctx.render("createproduct.html");
+        ctx.render("products/createproduct.html");
     }
 
     private static void renderUploadImage(@NotNull Context ctx, ConnectionPool cp) {
         // if (ctx.sessionAttribute("admin") == null)
         //     return;
-        ctx.render("uploadimage.html");
+        ctx.render("products/uploadimage.html");
     }
 
     private static void storeImage(@NotNull Context ctx, ConnectionPool cp) {
@@ -104,7 +104,7 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
         catch (DatabaseException | NumberFormatException e) {
             System.err.println(e.getMessage());
             ctx.attribute("message", "ugyldige værdier ved produktoprettelse");
-            ctx.render("createproduct.html");
+            ctx.render("products/createproduct.html");
             return;
         }
 
@@ -132,7 +132,7 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
             return;
         }
         System.err.println(cats.toString());
-        ctx.render("createproductselectspecs.html");
+        ctx.render("products/createproductselectspecs.html");
     }
 
 
@@ -186,6 +186,6 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
         }
         catch (DatabaseException e) {System.err.println(e.getMessage()); return;}
         ctx.sessionAttribute("productinmaking", product);
-        ctx.render("createproductselectimage.html");
+        ctx.render("products/createproductselectimage.html");
     }
 }

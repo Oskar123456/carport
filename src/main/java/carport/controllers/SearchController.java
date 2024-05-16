@@ -85,7 +85,7 @@ public class SearchController {
             System.err.println(e.getMessage());
         }
         ctx.attribute("searchStringPrev", searchString);
-        ctx.render("soegning.html");
+        ctx.render("products/soegning.html");
     }
 
     private static void renderCategorySearch(Context ctx, ConnectionPool cp) {
@@ -114,6 +114,6 @@ public class SearchController {
             System.err.println(e.getMessage());
         }
         ctx.attribute("searchStringPrev", searchString);
-        ctx.render("soegning.html");
+        ctx.render("products/soegning.html");
     }
 }
