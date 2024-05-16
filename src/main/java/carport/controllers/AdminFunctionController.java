@@ -172,12 +172,12 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
                         CatAndSpecMapper.SelectSpecificationsById(cp, product.SpecIds[i].intValue());
                 if (pSpec == null || pSpec.size() != 1)
                     return;
-                String pDetails = ctx.formParam(pSpec.get(0).Name());
+                String pDetails = ctx.formParam(pSpec.get(0).Name);
                 if (pDetails == null || pDetails.length() < 1)
                     return;
-                product.SpecNames[i] = pSpec.get(0).Name();
+                product.SpecNames[i] = pSpec.get(0).Name;
                 product.SpecDetails[i] = pDetails;
-                product.SpecUnits[i] = pSpec.get(0).Unit();
+                product.SpecUnits[i] = pSpec.get(0).Unit;
                 pCats.add(CatAndSpecMapper.SelectCategoryById(cp, product.SpecIds[i].intValue()));
             }
             ctx.attribute("pcats", pCats);

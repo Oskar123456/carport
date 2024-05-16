@@ -134,9 +134,9 @@
     <h2>Tildel specifikationer</h2>
     <form class="create-product-form" method="post">
         <div th:each="spec,iterStat : ${requiredspecs}">
-            <input type="text" th:id="${spec.Id()}" th:name="${spec.Name()}"
+            <input type="text" th:id="${spec.Id}" th:name="${spec.Name}"
             required>
-            <label th:for="${spec.Id()}" th:text="${spec.Name()} + ' (' + ${spec.Unit()} + ')'"></label>
+            <label th:for="${spec.Id}" th:text="${spec.Name} + ' (' + ${spec.Unit} + ')'"></label>
         </div>
        <input type="submit" formaction="/createproductselectspecs" value="bekræft">
     </form>

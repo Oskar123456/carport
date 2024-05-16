@@ -10,6 +10,7 @@ import java.util.List;
 
 import carport.exceptions.DatabaseException;
 import carport.persistence.CarportMapper;
+import carport.persistence.CatAndSpecMapper;
 import carport.persistence.ConnectionPool;
 
 public class Product {
@@ -66,6 +67,20 @@ public class Product {
         this.DocIds = docIds;
         this.CompIds = compIds;
         this.CompQuants = compQuants;
+
+    }
+
+    public List<ProductSpecification> GetSpecs(ConnectionPool cp) throws DatabaseException{
+        int[] specIds = new int[SpecIds.length];
+        for (int i = 0; i < specIds.length; ++i)
+            specIds[i] = SpecIds[i].intValue();
+        List<ProductSpecification> specs =
+            CatAndSpecMapper.SelectSpecificationsById(cp, specIds);
+        for (int i = 0; i < specIds.length; ++i)
+            for (int j = 0; j < specs.size(); ++j)
+                if (specIds[i] == specs.get(j).Id)
+                    specs.get(j).Details = SpecDetails[i];
+        return specs;
     }
 
     public int GetFirstImageId() {

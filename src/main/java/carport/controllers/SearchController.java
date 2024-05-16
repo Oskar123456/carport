@@ -13,8 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SearchController
-{
+public class SearchController {
     private static final int PAGE_SIZE = 16;
 
     public static void addRoutes(Javalin app, ConnectionPool cp) {
@@ -68,7 +67,7 @@ public class SearchController
             List<Integer> searchCategories = CatAndSpecMapper.SearchCategory(cp, Arrays.asList(searchStringSplit));
             List<Product> productList = null;
             productList = ProductMapper.SelectProductsById(cp,
-                    pageNumber, ProductMapper.SearchProducts(cp,
+                    ProductMapper.SearchProducts(cp,
                             pageNumber, PAGE_SIZE,
                             Arrays.asList(searchStringSplit), Arrays.asList(searchStringSplit),
                             searchCategories, searchWithFilters,
@@ -78,7 +77,7 @@ public class SearchController
             List<List<String>> commonSpecUniqueDetails = new ArrayList<>();
             if (commonSpecs != null)
                 for (ProductSpecification commonSpec : commonSpecs)
-                    commonSpecUniqueDetails.add(Product.MapProductsToUniqueSpecDetails(productList, commonSpec.Id()));
+                    commonSpecUniqueDetails.add(Product.MapProductsToUniqueSpecDetails(productList, commonSpec.Id));
             ctx.attribute("commonSpecList", commonSpecs);
             ctx.attribute("commonSpecListOptions", commonSpecUniqueDetails);
             ctx.attribute("productList", productList);
@@ -90,7 +89,8 @@ public class SearchController
     }
 
     private static void renderCategorySearch(Context ctx, ConnectionPool cp) {
-        // TODO: merge this with regular search, so you have filters as well. Should be simple
+        // TODO: merge this with regular search, so you have filters as well. Should be
+        // simple
         String searchString = ctx.queryParam("category");
         searchString = (searchString == null) ? "" : searchString;
         String pageString = ctx.queryParam("page");
@@ -104,10 +104,10 @@ public class SearchController
         try {
             List<Integer> catIds = CatAndSpecMapper.SearchCategory(cp, searchString);
             List<Product> productList = ProductMapper.SelectProductsById(cp,
-                    pageNumber, ProductMapper.SearchProducts(cp, pageNumber, PAGE_SIZE,
-                                                             null, null,
-                                                             catIds, false,
-                                                             null, null));
+                    ProductMapper.SearchProducts(cp, pageNumber, PAGE_SIZE,
+                            null, null,
+                            catIds, false,
+                            null, null));
 
             ctx.attribute("productList", productList);
         } catch (DatabaseException e) {

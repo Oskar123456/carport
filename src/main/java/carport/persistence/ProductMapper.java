@@ -331,18 +331,16 @@ public class ProductMapper {
     }
 
     public static List<Product> SelectProductsById(ConnectionPool cp,
-                                                   int page,
                                                    List<Integer> ids) throws DatabaseException {
         if (ids == null || ids.size() < 1)
             return null;
         int[] idsArray = new int[ids.size()];
         for (int i = 0; i < idsArray.length; ++i)
             idsArray[i] = ids.get(i);
-        return SelectProductsById(cp, page, idsArray);
+        return SelectProductsById(cp, idsArray);
     }
 
     public static List<Product> SelectProductsById(ConnectionPool cp,
-                                                   int page,
                                                    int... ids) throws DatabaseException {
         List<Product> productList = new ArrayList<>();
 
