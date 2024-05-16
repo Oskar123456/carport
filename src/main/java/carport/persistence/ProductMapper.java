@@ -29,13 +29,14 @@ public class ProductMapper {
         Product.SetPlaceholderImgs(PRODUCT_IMG_NOTFOUND_PLACEHOLDER, PRODUCT_IMG_NOTFOUND_PLACEHOLDER_DOWNSCALED);
     }
     public static int InsertProduct(ConnectionPool cp,
+                                    boolean internal,
                                     Product prod) throws DatabaseException
     {
         // TODO: ensure prod is correct? although database fkeys will cause this function to fail I suppose
         String sql = """
                 INSERT INTO public.product(
-                id, name, description, links, price)
-                VALUES (DEFAULT, ?, ?, ?, ?) """;
+                id, name, description, links, price, internal)
+                VALUES (DEFAULT, ?, ?, ?, ?, ?) """;
 
         int generatedKey = -1;
         try (Connection c = cp.getConnection();
@@ -45,6 +46,7 @@ public class ProductMapper {
             ps.setString(argNum++, prod.Description);
             ps.setArray(argNum++, c.createArrayOf("varchar", prod.Links));
             ps.setBigDecimal(argNum++, prod.Price);
+            ps.setBoolean(argNum++, internal);
             System.err.println(ps.toString());
             int success = ps.executeUpdate();
             if (success > 0) {
@@ -89,7 +91,7 @@ public class ProductMapper {
             ps.setInt(argNum++, prodId);
             ps.setInt(argNum++, imageId);
             ps.setInt(argNum++, imageDownscaledId);
-            System.err.println(ps.toString());
+            // System.err.println(ps.toString());
             int success = ps.executeUpdate();
             if (success > 0) {
                 ResultSet generatedKeys = ps.getGeneratedKeys();
@@ -117,7 +119,7 @@ public class ProductMapper {
             int argNum = 1;
             ps.setInt(argNum++, prodId);
             ps.setInt(argNum++, categoryId);
-            System.err.println(ps.toString());
+            // System.err.println(ps.toString());
             int success = ps.executeUpdate();
             if (success > 0) {
                 ResultSet generatedKeys = ps.getGeneratedKeys();
@@ -318,8 +320,14 @@ public class ProductMapper {
             if (categoryIds != null)
                 for (int i = 0; i < categoryIds.size(); ++i)
                     ps.setInt(argNum++, categoryIds.get(i));
-            ps.setInt(argNum++, pageSize);
-            ps.setInt(argNum++, pageNum);
+            if (pageNum >= 0){
+                ps.setInt(argNum++, pageSize);
+                ps.setInt(argNum++, pageNum);
+            } else {
+                ps.setInt(argNum++, 10000);
+                ps.setInt(argNum++, 0);
+            }
+            // System.err.println(ps.toString());
             ResultSet rs = ps.executeQuery();
             while (rs.next())
                 ids.add(rs.getInt("id"));
@@ -362,6 +370,7 @@ public class ProductMapper {
                 for (int i = 0; i < ids.length; ++i)
                     ps.setInt(argNum++, ids[i]);
             ResultSet rs = ps.executeQuery();
+            // System.err.println("select products by id : \n" + ps.toString());
             while (rs.next())
                 productList.add(Product.ImportFromDB(rs));
         } catch (SQLException e) {
@@ -427,7 +436,7 @@ public class ProductMapper {
             ps.setArray(argNum++, null);
             ps.setBigDecimal(argNum++, new BigDecimal(0));
 
-            System.err.println(ps.toString());
+            // System.err.println(ps.toString());
             int success = ps.executeUpdate();
             if (success > 0) {
                 ResultSet generatedKeys = ps.getGeneratedKeys();

@@ -7,6 +7,7 @@ import carport.entities.ProductCategory;
 import carport.exceptions.DatabaseException;
 import carport.persistence.CarportMapper;
 import carport.persistence.ConnectionPool;
+import carport.persistence.ProductMapper;
 import carport.tools.ProductImageFactory;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -27,6 +28,7 @@ public class MainController {
         CarportMapper.Init();
         AdminFunctionController.addRoutes(app, cp);
         SearchController.addRoutes(app, cp);
+        CustomCarportController.addRoutes(app, cp);
         /*
          * get
          */
@@ -86,8 +88,27 @@ public class MainController {
     }
 
     private static void renderProduct(Context ctx, ConnectionPool cp) {
-        System.out.println("renderProduct::qparams:\t" + ctx.queryParam("name") + " / " + ctx.queryParam("id"));
-        ctx.render("soegning.html");
+        // TODO ADMIN RIGHTS IF INTERNAL?
+        String idStr = ctx.queryParam("id");
+        int id = Integer.parseInt(idStr);
+        try {
+            Product product = ProductMapper.SelectProductsById(cp, id).get(0);
+            List<Product> compList = new ArrayList<>();
+            if (product.CompIds != null && product.CompIds.length > 0){
+                for (int i = 0; i < product.CompIds.length; ++i){
+                    Product comp = ProductMapper.SelectProductsById(cp, product.CompIds[i].intValue()).get(0);
+                    compList.add(comp);
+                }
+            }
+            Product.LoadFullSpecs(cp, compList);
+            ctx.attribute("complist", compList);
+            ctx.attribute("product", product);
+            ctx.attribute("baseprice", product.GetSumOfComponentPrices(cp));
+            ctx.render("products/viewproduct.html");
+        } catch (DatabaseException e) {
+            e.printStackTrace();
+        }
+        ctx.render("products/viewproduct.html");
     }
     private static void renderIndex(Context ctx, ConnectionPool cp) {
         ctx.render("index.html");

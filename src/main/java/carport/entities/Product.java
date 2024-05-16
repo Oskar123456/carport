@@ -12,6 +12,7 @@ import carport.exceptions.DatabaseException;
 import carport.persistence.CarportMapper;
 import carport.persistence.CatAndSpecMapper;
 import carport.persistence.ConnectionPool;
+import carport.persistence.ProductMapper;
 
 public class Product {
     static private int PlaceholderImageId;
@@ -29,6 +30,7 @@ public class Product {
     public String[] SpecNames;
     public String[] SpecDetails;
     public String[] SpecUnits;
+    private List<ProductSpecification> fullSpecs;
     public Long[] DocIds;
     public Long[] CompIds;
     public Long[] CompQuants;
@@ -67,20 +69,66 @@ public class Product {
         this.DocIds = docIds;
         this.CompIds = compIds;
         this.CompQuants = compQuants;
-
     }
 
-    public List<ProductSpecification> GetSpecs(ConnectionPool cp) throws DatabaseException{
-        int[] specIds = new int[SpecIds.length];
-        for (int i = 0; i < specIds.length; ++i)
-            specIds[i] = SpecIds[i].intValue();
-        List<ProductSpecification> specs =
-            CatAndSpecMapper.SelectSpecificationsById(cp, specIds);
-        for (int i = 0; i < specIds.length; ++i)
-            for (int j = 0; j < specs.size(); ++j)
-                if (specIds[i] == specs.get(j).Id)
-                    specs.get(j).Details = SpecDetails[i];
-        return specs;
+    public void AddComps(int id, int quant){
+        if (CompIds == null || CompIds.length < 1 ||
+            CompQuants == null || CompQuants.length < 1) {
+                CompIds = new Long[1];
+                CompQuants = new Long[1];
+            }
+        else {
+            Long[] newCompIds = new Long[CompIds.length + 1];
+            Long[] newCompQants = new Long[CompIds.length + 1];
+            for (int i = 0; i < CompIds.length; ++i){
+                newCompIds[i] = CompIds[i];
+                newCompQants[i] = CompQuants[i];
+            }
+            CompIds = newCompIds;
+            CompQuants = newCompQants;
+        }
+        CompIds[CompIds.length - 1] = Long.valueOf(id);
+        CompQuants[CompIds.length - 1] = Long.valueOf(quant);
+    }
+
+    public List<ProductSpecification> GetFullSpecs(ConnectionPool cp) throws DatabaseException{
+        if (fullSpecs == null && SpecIds != null){
+            int[] specIds = new int[SpecIds.length];
+            for (int i = 0; i < specIds.length; ++i)
+                specIds[i] = SpecIds[i].intValue();
+            fullSpecs = CatAndSpecMapper.SelectSpecificationsById(cp, specIds);
+            for (int i = 0; i < specIds.length; ++i)
+                for (int j = 0; j < fullSpecs.size(); ++j)
+                    if (specIds[i] == fullSpecs.get(j).Id)
+                        fullSpecs.get(j).Details = SpecDetails[i];
+        }
+        return fullSpecs;
+    }
+
+    public ProductSpecification GetFullSpec(String name){
+        if (fullSpecs == null)
+            return null;
+        for (ProductSpecification ps : fullSpecs)
+            if (ps.Name.toLowerCase().equals(name.toLowerCase()))
+                return ps;
+        return null;
+    }
+    public ProductSpecification GetFullSpec(int id){
+        if (fullSpecs == null)
+            return null;
+        for (ProductSpecification ps : fullSpecs)
+            if (ps.Id == id)
+                return ps;
+        return null;
+    }
+    public ProductSpecification GetSpecLength(){
+        return GetFullSpec("length");
+    }
+    public ProductSpecification GetSpecWidth(){
+        return GetFullSpec("width");
+    }
+    public ProductSpecification GetSpecHeight(){
+        return GetFullSpec("height");
     }
 
     public int GetFirstImageId() {
@@ -180,5 +228,30 @@ public class Product {
             }
         }
         return uniqueSpecDetails;
+    }
+
+    public static void LoadFullSpecs(ConnectionPool cp, List<Product> products) throws DatabaseException{
+        for (Product p : products)
+            p.GetFullSpecs(cp);
+    }
+    public BigDecimal GetSumOfComponentPrices(ConnectionPool cp) throws DatabaseException{
+        if (CompIds == null || CompIds.length < 1)
+            return new BigDecimal(0);
+        List<Integer> compidsints = new ArrayList<>();
+        for (Long l : CompIds){
+            compidsints.add(l.intValue());
+        }
+        List<Product> components = ProductMapper.SelectProductsById(cp, compidsints);
+        BigDecimal retval = new BigDecimal(0);
+        for (int i = 0; i < components.size(); ++i){
+            for (int j = 0; j < CompIds.length; ++j){
+                BigDecimal compPrice = components.get(i).Price;
+                if (CompIds[j] == components.get(i).Id){
+                    BigDecimal fullPrice = compPrice.multiply(new BigDecimal(CompQuants[j].intValue()));
+                    retval = retval.add(fullPrice);
+                }
+            }
+        }
+        return retval;
     }
 }

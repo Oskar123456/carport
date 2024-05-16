@@ -12,7 +12,6 @@ import carport.persistence.ProductMapper;
 import carport.tools.ProductImageFactory;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
-import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -31,7 +30,7 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
         app.post("uploadimage", ctx -> storeImage(ctx, cp));
     }
 
-    private static void renderNewProduct(@NotNull Context ctx, ConnectionPool cp) {
+    private static void renderNewProduct( Context ctx, ConnectionPool cp) {
         try {
             List<ProductCategory> categoryList = CatAndSpecMapper.SelectAllCategories(cp);
             ctx.attribute("categorylist", categoryList);
@@ -42,13 +41,13 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
         ctx.render("products/createproduct.html");
     }
 
-    private static void renderUploadImage(@NotNull Context ctx, ConnectionPool cp) {
+    private static void renderUploadImage( Context ctx, ConnectionPool cp) {
         // if (ctx.sessionAttribute("admin") == null)
         //     return;
         ctx.render("products/uploadimage.html");
     }
 
-    private static void storeImage(@NotNull Context ctx, ConnectionPool cp) {
+    private static void storeImage( Context ctx, ConnectionPool cp) {
         // if (ctx.sessionAttribute("admin") == null)
         //     return;
         String imgUrl = ctx.formParam("imageURL");
@@ -69,7 +68,7 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
 
         renderUploadImage(ctx, cp);
     }
-    private static void createProductDetailsDone(@NotNull Context ctx, ConnectionPool cp) {
+    private static void createProductDetailsDone( Context ctx, ConnectionPool cp) {
         // TODO: Clean this stuff up LOL
         String name = ctx.formParam("name");
         String description = ctx.formParam("description");
@@ -136,7 +135,7 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
     }
 
 
-    private static void createProductImagesDone(@NotNull Context ctx, ConnectionPool cp) {
+    private static void createProductImagesDone( Context ctx, ConnectionPool cp) {
         Product product = ctx.sessionAttribute("productinmaking");
         if (product == null)
             return;
@@ -149,7 +148,7 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
             int downscaledImgId = Integer.parseInt(downscaledImgStr);
             product.AddImages(false, regularImgId);
             product.AddImages(true, downscaledImgId);
-            ProductMapper.InsertProduct(cp, product);
+            ProductMapper.InsertProduct(cp, false, product);
         }
         catch (NumberFormatException | DatabaseException e){
             System.err.println(e.getMessage());
@@ -159,7 +158,7 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
         ctx.result("success creating product " + product.Name);
     }
 
-    private static void createProductSpecsDone(@NotNull Context ctx, ConnectionPool cp) {
+    private static void createProductSpecsDone( Context ctx, ConnectionPool cp) {
         Product product = ctx.sessionAttribute("productinmaking");
         if (product == null)
             return;

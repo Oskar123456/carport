@@ -1,11 +1,14 @@
 package carport.entities;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import carport.exceptions.DatabaseException;
+import carport.persistence.CatAndSpecMapper;
 import carport.persistence.ConnectionPool;
+import carport.persistence.ProductMapper;
 
 public class CustomCarport {
     /* ALL MEASUREMENTS IN MM */
@@ -25,7 +28,7 @@ public class CustomCarport {
     private List<rectangle> spaer;
     private List<rectangle> remme;
     private List<rectangle> stern;
-    public List<rectangle> tagplader;
+    private List<rectangle> tagplader;
     private rectangle shed;
 
     private int stolpeLenX = 100;
@@ -49,6 +52,8 @@ public class CustomCarport {
     private Product spaerProd;
     private Product sternProd;
     private Product tagpladeProd;
+
+    private boolean made;
 
     public Product GetStolpeProd() {
         return stolpeProd;
@@ -93,22 +98,18 @@ public class CustomCarport {
         return tagplader.size();
     }
 
-    private boolean made;
-
     public void SetStolpe(ConnectionPool cp, Product s) throws DatabaseException{
-        System.err.println(s.toString());
         stolpeProd = s;
-        List<ProductSpecification> specs = s.GetSpecs(cp);
+        List<ProductSpecification> specs = s.GetFullSpecs(cp);
         String lenXStr = null;
         String lenYStr = null;
         String lenZStr = null;
         for (ProductSpecification ps : specs){
-            System.err.println(ps.Id + " " + ps.Name + " " + ps.Details + " " + ps.Unit);
-            if (ps.Name.equals("height"))
+            if (ps.Name.equals("length"))
                 lenYStr = ps.Details;
             if (ps.Name.equals("width"))
                 lenXStr = ps.Details;
-            if (ps.Name.equals("length"))
+            if (ps.Name.equals("height"))
                 lenZStr = ps.Details;
         }
         if (lenXStr == null || lenYStr == null || lenZStr == null)
@@ -118,13 +119,12 @@ public class CustomCarport {
             stolpeLenY = Integer.parseInt(lenYStr);
             stolpeLenZ = Integer.parseInt(lenZStr);
         } catch (NumberFormatException e){
-            System.err.println("SET STOLPE EROROREOROEOROEOR");
             return;
         }
     }
     public void SetSpaer(ConnectionPool cp, Product s) throws DatabaseException{
         spaerProd = s;
-        List<ProductSpecification> specs = s.GetSpecs(cp);
+        List<ProductSpecification> specs = s.GetFullSpecs(cp);
         String lenXStr = null;
         String lenYStr = null;
         String lenZStr = null;
@@ -148,7 +148,7 @@ public class CustomCarport {
     }
     public void SetRem(ConnectionPool cp, Product r) throws DatabaseException{
         remProd = r;
-        List<ProductSpecification> specs = r.GetSpecs(cp);
+        List<ProductSpecification> specs = r.GetFullSpecs(cp);
         String lenXStr = null;
         String lenYStr = null;
         String lenZStr = null;
@@ -172,7 +172,7 @@ public class CustomCarport {
     }
     public void SetStern(ConnectionPool cp, Product s) throws DatabaseException{
         sternProd = s;
-        List<ProductSpecification> specs = s.GetSpecs(cp);
+        List<ProductSpecification> specs = s.GetFullSpecs(cp);
         String lenXStr = null;
         String lenYStr = null;
         String lenZStr = null;
@@ -196,7 +196,7 @@ public class CustomCarport {
     }
     public void SetTagplade(ConnectionPool cp, Product t) throws DatabaseException{
         tagpladeProd = t;
-        List<ProductSpecification> specs = t.GetSpecs(cp);
+        List<ProductSpecification> specs = t.GetFullSpecs(cp);
         String lenXStr = null;
         String lenYStr = null;
         String lenZStr = null;
@@ -242,15 +242,17 @@ public class CustomCarport {
         if (shed != null)
             if (shedLenX > LenX - 2 * stolpeLenX || shedLenY > LenY - 2 * stolpeLenY) {
                 made = false;
+                System.err.println("shed null");
                 return made;
             }
         if (LenX < STOLPE_DISTANCE_MAX + 2 * stolpeLenX ||
                 LenY < STOLPE_DISTANCE_MAX + 2 * stolpeLenY) {
+            System.err.println("measure");
             made = false;
             return made;
         }
         /* FILL LISTS WITH ABSTRACT CARPORT COMPONENTS */
-        int x, y, z, i, j;
+        int x, y, z;
         rectangles = new ArrayList<>();
         stolper = new ArrayList<>();
         remme = new ArrayList<>();
@@ -312,12 +314,6 @@ public class CustomCarport {
             }
         }
 
-        System.err.printf(
-                "\t>>customcarport numbers:%n\t\trects : %d, stolper: %d, remme: %d, spær: %d, stern: %d, tagplader: %d, shed: %b%n",
-                rectangles.size(), stolper.size(),
-                remme.size(), spaer.size(), stern.size(),
-                tagplader.size(), shed != null);
-
         made = true;
         return made;
     }
@@ -326,6 +322,50 @@ public class CustomCarport {
         if (l.contains(r))
             return;
         l.add(r);
+    }
+
+    /* DATABASE INTERACTION */
+    public int WriteToDb(ConnectionPool cp){
+        int retval = -1;
+        if (!made)
+            return retval;
+
+        try {
+            String svg = svgDraw();
+            ProductImage svgImg = new ProductImage(-1, "customcarportSvg", "cphbusiness", svg.getBytes(), "svg+xml", false);
+            int svgImgId = ProductMapper.InsertProductImage(cp, svgImg, false, 0);
+            if (svgImgId <= 0)
+                return retval;
+            Long[] catIds = {Long.valueOf(1)};
+            Long[] specIds = {Long.valueOf(1), Long.valueOf(2), Long.valueOf(3), Long.valueOf(8), Long.valueOf(9)};
+            Long[] imgIds = {Long.valueOf(svgImgId)};
+            Product thisAsProduct = new Product("customcarport", String.format("custom made carport w %d l %d h %d", LenX, LenY, LenZ),
+                                                                               null, null, catIds, specIds);
+            thisAsProduct.SpecDetails[0] = String.valueOf(LenX);
+            thisAsProduct.SpecDetails[1] = String.valueOf(LenY);
+            thisAsProduct.SpecDetails[2] = String.valueOf(LenZ); // TODO: function for this stuff in product ?
+            thisAsProduct.SpecDetails[3] = String.valueOf(GetNParkingSpots());
+            thisAsProduct.SpecDetails[4] = String.valueOf(shed != null);
+
+            thisAsProduct.AddComps(stolpeProd.Id, GetNStolpeProd());
+            thisAsProduct.AddComps(remProd.Id, GetNRemProd());
+            thisAsProduct.AddComps(spaerProd.Id, GetNSpaerProd());
+            thisAsProduct.AddComps(sternProd.Id, GetNSternProd());
+            thisAsProduct.AddComps(tagpladeProd.Id, GetNTagpladeProd());
+
+            thisAsProduct.ImageIds = imgIds;
+            thisAsProduct.ImageDownscaledIds = imgIds;
+
+            thisAsProduct.Price = thisAsProduct.GetSumOfComponentPrices(cp);
+
+            retval = ProductMapper.InsertProduct(cp, true, thisAsProduct);
+        }
+        catch (DatabaseException e) {
+            return retval;
+        }
+
+
+        return retval;
     }
 
     /* SVG */
@@ -339,10 +379,10 @@ public class CustomCarport {
 
         List<String> markings = new ArrayList<>(); // MARKS PARKING/SHED AREAS
 
-        String svg = "<svg></svg>";
+        String svg = "<svg  ></svg>";
 
         if (shed != null) {
-            String shedSvg = (shed == null) ? "" : svgObjectAddAttributes(shed.toSvg(svg), "class=\"shed\"");
+            String shedSvg = (shed == null) ? "" : svgObjectAddAttributes(shed.toSvg(""), "class=\"shed\"");
             svg = svgAddObject(svg, shedSvg);
             markings.add(svgText("marking", shed.LenX / 2, shed.LenY / 2, "Skur"));
         }
@@ -428,6 +468,12 @@ public class CustomCarport {
         rectangle viewBox = svgGetDims(svg);
         svg = svgSetViewBox(svg, viewBox.Corners[0].x - 200, viewBox.Corners[0].y, viewBox.LenX + 200,
                 viewBox.LenY + 200);
+
+        viewBox = svgGetDims(svg);
+        svg = svg.substring(0, svg.indexOf("viewBox")) +
+            String.format(" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"  width=\"%d\" height=\"%d\" ",
+                          viewBox.LenX / 10, viewBox.LenY / 10) +
+            svg.substring(svg.indexOf("viewBox"));
 
         return svg;
     }

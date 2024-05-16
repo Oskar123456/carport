@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
+<link href="../../public/css/products/createproduct.css" th:href="@{/css/products/createproduct.css}" rel="stylesheet"/>
 <link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/fogicon32x32.png}">
 <link rel="icon" type="image/png" sizes="48x48" th:href="@{/images/fogicon48x48.png}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -113,19 +114,74 @@
 <!-- END OF NAV BAR -->
 <div class="main">
 <div class="text">
-    <p>
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris pulvinar mauris vel pellentesque maximus. Donec dignissim magna eget pretium ultrices. Suspendisse potenti. Donec lobortis, leo et bibendum interdum, sapien magna vestibulum arcu, euismod condimentum arcu nisl sit amet est. Etiam a ligula sit amet eros molestie pellentesque at et urna. Curabitur nisl tortor, consectetur id facilisis et, maximus at magna. Phasellus purus ipsum, varius non sodales ornare, dignissim et lacus. Duis bibendum arcu sit amet lorem venenatis malesuada. Donec quis mollis erat. Maecenas iaculis, nibh at rutrum iaculis, tellus lectus finibus ligula, imperdiet porta mi purus nec felis. Sed egestas pellentesque tortor, quis maximus mauris fringilla at.
 
-Nam in ipsum in justo aliquam venenatis. Proin dui odio, suscipit in neque ut, imperdiet aliquet sem. Sed egestas dolor at est lobortis vulputate. In vel euismod nibh, ac lobortis nisl. Praesent pharetra ante vel congue fringilla. Maecenas sed sagittis nisi. Phasellus non nunc id tellus bibendum dapibus non eget nisi. Vivamus in neque sed massa volutpat pulvinar sed in velit. Integer pellentesque lacus ipsum, nec porta nisl dapibus non. Proin sodales sed lectus in finibus. Fusce laoreet dolor ut dolor congue lobortis.
+    <form class="create-product-form">
+        <h1>Carport med fladt tag</h1>
+        <h2>Vælg dimensioner</h2>
+        <label for="length">Længde (cm): </label>
+        <input type="number" placeholder="længde i cm" id="length" name="length">
+        <label for="width">Bredde (cm): </label>
+        <input type="number" placeholder="bredde i cm" id="width" name="width">
+        <label for="height">Højde (cm): </label>
+        <input type="number" placeholder="højde i cm" id="height" name="height">
+        <h2>Vælg skur</h2>
+        <label for="shedbool">Med skur: </label>
+        <input type="checkbox" id="shedbool" name="shedbool">
+        <label for="shedlength">Længde (cm): </label>
+        <input type="number" placeholder="bredde i cm" id="shedlength" name="shedlength">
+        <label for="shedwidth">Bredde (cm): </label>
+        <input type="number" placeholder="bredde i cm" id="shedwidth" name="shedwidth">
+        <h1>Materialer</h1>
+        <h2>Vælg stolper</h2>
+        <select name="stolpe">
+            <option th:each= "s : ${stolpeList}" th:text="${s.Name} +
+                              ' ( længde: ' + ${s.GetSpecLength().Details} + ' ' + ${s.GetSpecLength().Unit} +
+                              ' højde: ' + ${s.GetSpecHeight().Details} + ' ' + ${s.GetSpecHeight().Unit} +
+                              ' bredde: ' + ${s.GetSpecWidth().Details} + ' ' + ${s.GetSpecWidth().Unit} +
+                              ' pris: dkk.' + ${s.Price} + ' )' "  th:value="${s.Id}">
+            </option>
+        </select>
+        <h2>Vælg spær</h2>
+        <select name="spaer">
+            <option th:each= "s : ${spaerList}" th:text="${s.Name} +
+                              ' ( længde: ' + ${s.GetSpecLength().Details} + ' ' + ${s.GetSpecLength().Unit} +
+                              ' højde: ' + ${s.GetSpecHeight().Details} + ' ' + ${s.GetSpecHeight().Unit} +
+                              ' bredde: ' + ${s.GetSpecWidth().Details} + ' ' + ${s.GetSpecWidth().Unit} +
+                              ' pris: dkk.' + ${s.Price} + ' )' "  th:value="${s.Id}">
+            </option>
+        </select>
+        <h2>Vælg remme</h2>
+        <select name="rem">
+            <option th:each= "s : ${remList}" th:text="${s.Name} +
+                              ' ( længde: ' + ${s.GetSpecLength().Details} + ' ' + ${s.GetSpecLength().Unit} +
+                              ' højde: ' + ${s.GetSpecHeight().Details} + ' ' + ${s.GetSpecHeight().Unit} +
+                              ' bredde: ' + ${s.GetSpecWidth().Details} + ' ' + ${s.GetSpecWidth().Unit} +
+                              ' pris: dkk.' + ${s.Price} + ' )' "  th:value="${s.Id}">
+            </option>
+        </select>
+        <h2>Vælg stern</h2>
+        <select name="stern">
+            <option th:each= "s : ${sternList}" th:text="${s.Name} +
+                              ' ( længde: ' + ${s.GetSpecLength().Details} + ' ' + ${s.GetSpecLength().Unit} +
+                              ' højde: ' + ${s.GetSpecHeight().Details} + ' ' + ${s.GetSpecHeight().Unit} +
+                              ' bredde: ' + ${s.GetSpecWidth().Details} + ' ' + ${s.GetSpecWidth().Unit} +
+                              ' pris: dkk.' + ${s.Price} + ' )' " th:value="${s.Id}">
+            </option>
+        </select>
+        <h2>Vælg tagplade</h2>
+        <select name="tagplader">
+            <option th:each= "s : ${tagpladeList}" th:text="${s.Name} +
+                              ' ( længde: ' + ${s.GetSpecLength().Details} + ' ' + ${s.GetSpecLength().Unit} +
+                              ' højde: ' + ${s.GetSpecHeight().Details} + ' ' + ${s.GetSpecHeight().Unit} +
+                              ' bredde: ' + ${s.GetSpecWidth().Details} + ' ' + ${s.GetSpecWidth().Unit} +
+                              ' pris: dkk.' + ${s.Price} + ' )' "  th:value="${s.Id}">
+            </option>
+        </select>
+        <input type="submit" formaction="/customcarportcreate" value="Bekræft">
+    </form>
 
-Donec porttitor lorem sit amet dapibus semper. Donec eu ipsum consectetur nulla volutpat blandit ut at enim. Donec vel dignissim magna, a tincidunt turpis. Etiam dictum vitae dui id iaculis. Maecenas rutrum nunc purus, eu elementum nunc placerat nec. Proin rutrum eleifend euismod. Pellentesque eu maximus velit, sit amet bibendum quam. Sed eu tortor laoreet odio congue venenatis id in augue.
 
-Duis non nisl ac metus feugiat ornare et quis lacus. Ut quis commodo massa. Sed maximus elementum nulla congue accumsan. Phasellus sit amet metus ac ipsum auctor lobortis. Integer vel porta mauris, id maximus tortor. Mauris vehicula arcu vitae metus finibus ultricies. Nulla facilisi. Suspendisse sed lectus luctus, pellentesque mauris id, consequat diam. Vestibulum malesuada efficitur tincidunt. Phasellus eu magna felis. Donec gravida laoreet sem, in vehicula odio tincidunt ac. Suspendisse imperdiet sem in massa semper, et finibus metus pretium. In hac habitasse platea dictumst.
-
-Quisque semper ligula sit amet augue malesuada, a tincidunt tellus bibendum. Pellentesque ipsum leo, dictum sed diam ac, pulvinar vestibulum purus. Phasellus vestibulum facilisis sapien et sollicitudin. Sed velit ante, luctus eget metus vel, rhoncus efficitur ex. Proin commodo diam enim, vel fringilla sem aliquet aliquam. Ut ornare, ex nec tempus feugiat, velit augue pretium turpis, sed cursus ligula arcu at nulla. Donec vitae ultrices ante. Sed id congue dolor. Donec tincidunt aliquam orci, ut lobortis sapien pellentesque ut. Cras aliquam, justo et aliquam pretium, dolor massa scelerisque sem, non sodales dui dui eu nulla. Integer sed enim aliquet, tincidunt nibh vitae, tempus nisl. Nunc vel lectus vel enim vehicula ultricies. Pellentesque id sapien ut lectus mollis tincidunt. Donec dictum nulla sed quam mollis, id suscipit tortor aliquet. Nulla id nisi consectetur, porta quam eget, vehicula leo.
-
-    </p>
 
 </div>
 
@@ -135,7 +191,6 @@ Quisque semper ligula sit amet augue malesuada, a tincidunt tellus bibendum. Pel
     <h2>ADMINISTRATOR FUNKTIONER</h2>
     <a th:href="@{/newproduct}">Tilføj nyt produkt</a>
     <a th:href="@{/uploadimage}">Tilføj nyt billede</a>
-    <a th:href="@{/customcarport}">Custom carport</a>
 </div>
 
 <footer>

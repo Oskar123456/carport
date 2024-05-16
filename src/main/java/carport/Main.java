@@ -3,8 +3,6 @@ package carport;
 import java.util.Random;
 import java.util.Scanner;
 
-import org.eclipse.jetty.server.Authentication.User;
-
 import carport.config.SessionConfig;
 import carport.config.ThymeleafConfig;
 import carport.controllers.MainController;
@@ -114,6 +112,5 @@ public class Main {
         System.err.println("stern: " + cc.GetNSternProd());
         System.err.println("tagplader: " +  cc.GetNTagpladeProd());
         System.err.println("Parking Spots: " +  cc.GetNParkingSpots());
-        System.err.println("Tagplader: " +  cc.tagplader);
     }
 }
