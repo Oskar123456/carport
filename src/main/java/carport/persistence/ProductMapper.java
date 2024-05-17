@@ -1,17 +1,21 @@
 package carport.persistence;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
 import carport.entities.Product;
 import carport.entities.ProductDocumentation;
 import carport.entities.ProductImage;
 import carport.exceptions.DatabaseException;
 import carport.tools.ProductImageFactory;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ProductMapper {
     static private String SQL_SELECT_PRODUCTS_BY_ID;

@@ -1,15 +1,9 @@
 package carport;
 
-import java.util.Random;
-import java.util.Scanner;
-
 import carport.config.SessionConfig;
 import carport.config.ThymeleafConfig;
 import carport.controllers.MainController;
-import carport.entities.CustomCarport;
-import carport.exceptions.DatabaseException;
 import carport.persistence.ConnectionPool;
-import carport.persistence.ProductMapper;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
 public class Main {
