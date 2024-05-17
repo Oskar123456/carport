@@ -28,6 +28,10 @@ public class TestProductMapper
     static void setup(){
         c = ConnectionPool.getInstance("", "", "", "");
         assertEquals(ConnectionPool.dbName, "testcarport");
+        if (!ConnectionPool.dbName.equals("testcarport")){
+            c = null;
+            return;
+        }
 
         ClassLoader classLoader = TestProductMapper.class.getClassLoader();
         File file = new File(classLoader.getResource("sql/carport-db-tables-create-script.sql").getFile());
