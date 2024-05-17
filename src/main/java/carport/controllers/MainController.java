@@ -29,6 +29,7 @@ public class MainController {
         AdminFunctionController.addRoutes(app, cp);
         SearchController.addRoutes(app, cp);
         CustomCarportController.addRoutes(app, cp);
+        UserController.addRoutes(app, cp);
         // TODO: MAKE SURE THIS WORKS
         if (System.getenv("DEPLOYED") == null || !System.getenv("DEPLOYED").equals("true"))
             app.before(ctx -> ctx.sessionAttribute("admin", true));

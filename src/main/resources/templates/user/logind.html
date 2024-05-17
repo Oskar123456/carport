@@ -4,7 +4,7 @@
     <title>logind</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="../../public/css/user/logind.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
+    <link href="../../public/css/user/logind.css" th:href="@{/css/user/logind.css}" rel="stylesheet"/>
     <link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/cupcakefavico32x32.png}">
     <link rel="icon" type="image/png" sizes="48x48" th:href="@{/images/cupcakefavico48x48.png}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -131,7 +131,7 @@
         </div>
 
         <div class="container" style="background-color:#f1f1f1">
-            <span class="psw">Glemt <a href="#">adgangskode?</a></span>
+            <span class="psw"><a href="/user/brugeroprettelse.html" th:href="@{/createuser}">Opret bruger</a></span>
         </div>
     </form>
 </body>
