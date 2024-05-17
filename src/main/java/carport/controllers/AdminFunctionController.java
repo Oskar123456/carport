@@ -17,17 +17,36 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYMENT; NOT NECESSARY WHEN TESTING
 {
     public static void addRoutes(Javalin app, ConnectionPool cp) {
         /* GET */
         app.get("/uploadimage", ctx -> renderUploadImage(ctx, cp));
         app.get("/newproduct", ctx -> renderNewProduct(ctx, cp));
+        app.get("/deleteproduct", ctx -> deleteProduct(ctx, cp));
         /* POST */
         app.post("createproductdetails", ctx -> createProductDetailsDone(ctx, cp));
         app.post("createproductselectspecs", ctx -> createProductSpecsDone(ctx, cp));
         app.post("createproductselectimages", ctx -> createProductImagesDone(ctx, cp));
         app.post("uploadimage", ctx -> storeImage(ctx, cp));
+    }
+
+    private static void deleteProduct(Context ctx, ConnectionPool cp) {
+        if (ctx.sessionAttribute("admin") == null)
+            return;
+        try {
+            String idStr = ctx.queryParam("id");
+            int id = Integer.parseInt(idStr);
+            ProductMapper.DeleteProduct(cp, id);
+            ctx.result("successfully delete product [ID:" + id + "]");
+            return;
+        }
+        catch (NumberFormatException | DatabaseException e) {
+            ctx.result("could not delete " + e.getMessage());
+            return;
+        }
     }
 
     private static void renderNewProduct( Context ctx, ConnectionPool cp) {

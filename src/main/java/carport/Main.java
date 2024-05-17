@@ -3,7 +3,9 @@ package carport;
 import carport.config.SessionConfig;
 import carport.config.ThymeleafConfig;
 import carport.controllers.MainController;
+import carport.exceptions.DatabaseException;
 import carport.persistence.ConnectionPool;
+import carport.persistence.ProductMapper;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
 public class Main {

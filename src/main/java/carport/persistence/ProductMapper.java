@@ -462,4 +462,61 @@ public class ProductMapper {
         }
         return generatedKey;
     }
+
+    public static void DeleteProduct(ConnectionPool cp,
+                                     int id) throws DatabaseException{
+        String[] sqls = new String[6];
+        String sqlPrecondition = """
+            SELECT * FROM order_product
+            WHERE product_id = ?
+            """;
+        String sqlPCat = """
+            DELETE FROM product_category
+            WHERE product_id = ?
+            """;
+        String sqlPSpec = """
+            DELETE FROM product_specification
+            WHERE product_id = ?
+            """;
+        String sqlPDoc = """
+            DELETE FROM product_documentation
+            WHERE product_id = ?
+            """;
+        String sqlPImg = """
+            DELETE FROM product_image
+            WHERE product_id = ?
+            """;
+        String sqlPComp = """
+            DELETE FROM product_component
+            WHERE product_id = ?
+            """;
+        String sqlP = """
+            DELETE FROM product
+            WHERE id = ?
+            """;
+        sqls[0] = sqlPCat;
+        sqls[1] = sqlPSpec;
+        sqls[2] = sqlPDoc;
+        sqls[3] = sqlPImg;
+        sqls[4] = sqlPComp;
+        sqls[5] = sqlP;
+         try {
+             Connection c = cp.getConnection();
+             PreparedStatement ps = c.prepareStatement(sqlPrecondition);
+             int argNum = 1;
+             ps.setInt(argNum, id);
+             ResultSet rs = ps.executeQuery();
+             if (rs.next()){
+                 return;
+             }
+             for (String sql : sqls){
+                 ps = c.prepareStatement(sql);
+                 ps.setInt(argNum, id);
+                 int success = ps.executeUpdate();
+             }
+         } catch (SQLException e) {
+             String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
+             throw new DatabaseException(funcName + "::" + e.getMessage());
+         }
+    }
 }

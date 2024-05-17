@@ -85,9 +85,9 @@ public class CustomCarport {
     public int GetNSternProd(){
         if (stern == null || shed == null)
             return 0;
-        int factorH = ((int) (Math.ceil((double)shed.LenX / ((double)sternLength))) + 1) / 2;
-        int factorV = ((int) (Math.ceil((double)shed.LenY / ((double)sternLength))) + 1) / 2;
-        return stern.size() * (factorH + factorV);
+        int factorH = ((int) (Math.ceil((double)shed.LenX / ((double)sternLength)))) * 2;
+        int factorV = ((int) (Math.ceil((double)shed.LenY / ((double)sternLength)))) * 2;
+        return (int) (Math.ceil((double)LenZ / (double)sternHeight))  * (factorH + factorV);
     }
     public Product GetTagpladeProd() {
         return tagpladeProd;
