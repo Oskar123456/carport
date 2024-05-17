@@ -3,6 +3,7 @@ package carport;
 import carport.config.SessionConfig;
 import carport.config.ThymeleafConfig;
 import carport.controllers.MainController;
+import carport.controllers.OrderController;
 import carport.persistence.ConnectionPool;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
@@ -26,6 +27,7 @@ public class Main {
 
         // Routing
         MainController.addRoutes(jav, connectionPool);
+        OrderController.addRoutes(jav, connectionPool);
         // Other setup
 
         // Test

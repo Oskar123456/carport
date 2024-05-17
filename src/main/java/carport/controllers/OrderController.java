@@ -14,6 +14,7 @@ public class OrderController {
 
     public static void addRoutes(Javalin app, ConnectionPool connectionPool) {
         app.get("/order", ctx -> ctx.render("showorder.html"));
+        app.get("/orderPage", ctx -> ctx.render("orderFlow/byg-carport.html"));
         app.post("/save-dimensions", ctx -> saveDimensions(ctx));
         app.get("/sendrequest", ctx -> sendRequest(ctx, connectionPool));
         app.get("/calculate", ctx -> calculatePrice(ctx));
@@ -24,10 +25,8 @@ public class OrderController {
             int width = Integer.parseInt(ctx.formParam("width"));
             int length = Integer.parseInt(ctx.formParam("length"));
 
-
             ctx.sessionAttribute("width", width);
             ctx.sessionAttribute("length", length);
-
 
             ctx.redirect("/calculate");
         } catch (NumberFormatException e) {
@@ -37,13 +36,12 @@ public class OrderController {
     }
 
     private static void sendRequest(Context ctx, ConnectionPool connectionPool) throws DatabaseException {
-
         int width = ctx.sessionAttribute("width");
         int length = ctx.sessionAttribute("length");
 
-        try{
-    // TODO: Der skal vel et user objekt eller user_id som argument i InsertCarportCustomBase ellers kan kunden ikke se sin ordre?
-    // TODO: Eller er det først når admin/sælger har godkendt forespørgslen at den gemmes på user_id og kunden kan se ordren?
+        try {
+            // TODO: Der skal vel et user objekt eller user_id som argument i InsertCarportCustomBase ellers kan kunden ikke se sin ordre?
+            // TODO: Eller er det først når admin/sælger har godkendt forespørgslen at den gemmes på user_id og kunden kan se ordren?
 
             /*User user = UserMapper.login(email, password, cp);
             ctx.sessionAttribute("currentUser", user);*/
@@ -52,7 +50,7 @@ public class OrderController {
 
             // TODO: Giv kunde besked om at forespørgslen er sendt
 
-        }catch (DatabaseException e){
+        } catch (DatabaseException e) {
             ctx.attribute("message", "Fejl ved afsendelse af forespørgsel. Prøv igen. " +
                     "Hvis fejlen fortsætter, så kontakt en sælger.");
             ctx.render("svg.html");
