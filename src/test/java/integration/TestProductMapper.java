@@ -79,7 +79,7 @@ public class TestProductMapper
 
     @Test
     @DisplayName("Test Search")
-    void TestProductInsertDelete() {
+    void TestSearch() {
         String name = "test product";
         String description = "test product";
         BigDecimal price = new BigDecimal(1234);
@@ -90,10 +90,10 @@ public class TestProductMapper
         p.SpecDetails[0] = "12";
         p.SpecDetails[1] = "123";
         p.SpecDetails[2] = "1234";
-        try {
-            /* SEARCH FOR THE PRODUCT IN DIFFERENT WAYS */
+/*        try {
+            *//* SEARCH FOR THE PRODUCT IN DIFFERENT WAYS *//*
         } catch (DatabaseException | NullPointerException e) {
             fail("");
-        }
+        }*/
     }
 }
