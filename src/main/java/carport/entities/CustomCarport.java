@@ -268,13 +268,13 @@ public class CustomCarport {
             remme.add(new rectangle(x - stolpeLenX, 0, remLenX, LenY + UDHÆNG_LENGTH_Y));
         }
         remme.add(new rectangle(LenX - stolpeLenX, 0, remLenX, LenY + UDHÆNG_LENGTH_Y));
-        adjustRectangles();
         /* STOLPER */
         for (rectangle r : rectangles) {
             List<rectangle> s = getStolper(r);
             for (rectangle rs : s)
                 rectangleListAddOnlyUnique(rs, stolper);
         }
+        adjustRectangles();
         /* SKUR */
         if (shed != null) { // TODO: SHED NEEDS STOLPER INSIDE TO MATCH
             List<rectangle> s = getStolper(shed);

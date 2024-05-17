@@ -41,7 +41,8 @@ public class CustomCarportController {
         String tagpladerStr = ctx.queryParam("tagplader");
 
         if (lStr == null ||
-            wStr == null){
+            wStr == null ||
+            hStr == null){
             ctx.result("invalid input");
             return;
         }
