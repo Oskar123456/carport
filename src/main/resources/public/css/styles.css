@@ -163,12 +163,13 @@ header {
 }
 
 .main {
-    margin-top: 140px;
-    margin-bottom: 140px;
+    margin-top: 200px;
+    margin-bottom: 200px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: calc(100vh - 280px); /* Adjusting for header and footer */
+    /*height: calc(100vh - 280px)*/; /* Adjusting for header and footer */
 }
 
 .search-result {
@@ -201,9 +202,8 @@ header {
 }
 
 footer {
+    margin-top: 40px;
     text-align: center;
-    position: fixed;
-    bottom: 0;
     width: 100%;
 }
 

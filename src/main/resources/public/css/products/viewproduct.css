@@ -1,5 +1,14 @@
+.productview {
+max-width: 600px;
+    img {
+    max-width: 60%;
+    }
+}
+
+
+
 .viewproductsmallimg {
     img {
-    width: 200px;
+    width: 20%;
     }
 }
