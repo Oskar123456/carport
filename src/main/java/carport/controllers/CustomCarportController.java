@@ -47,8 +47,8 @@ public class CustomCarportController {
         try {
             CustomCarport cc = new CustomCarport();
             int lInt = Integer.parseInt(lStr) * 10;
-            int wInt = Integer.parseInt(lStr) * 10;
-            int hInt = Integer.parseInt(lStr) * 10;
+            int wInt = Integer.parseInt(wStr) * 10;
+            int hInt = Integer.parseInt(hStr) * 10;
             int slInt = (sbStr != null) ? Integer.parseInt(slStr) * 10 : 0;
             int swInt = (sbStr != null) ? Integer.parseInt(swStr) * 10 : 0;
 
@@ -70,7 +70,7 @@ public class CustomCarportController {
             //                   cc.GetSternProd().toString(),
             //                   cc.GetTagpladeProd().toString());
 
-            cc.Make(lInt, wInt, hInt, (sbStr != null), slInt, swInt);
+            cc.Make(wInt, lInt, hInt, (sbStr != null), swInt, slInt);
 
             int success = cc.WriteToDb(cp);
 
@@ -88,7 +88,11 @@ public class CustomCarportController {
                 ctx.attribute("product", product);
                 ctx.attribute("baseprice", product.GetSumOfComponentPrices(cp));
                 ctx.redirect("/produkt?id=" + success);
-                // ctx.render("products/viewproduct.html");
+            }
+
+            else {
+                ctx.redirect("/customcarport");
+                return;
             }
 
             // String svg = cc.svgDraw();

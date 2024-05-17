@@ -93,9 +93,10 @@ public class MainController {
     private static void renderProduct(Context ctx, ConnectionPool cp) {
         // TODO ADMIN RIGHTS IF INTERNAL?
         String idStr = ctx.queryParam("id");
-        int id = Integer.parseInt(idStr);
         try {
+            int id = Integer.parseInt(idStr);
             Product product = ProductMapper.SelectProductsById(cp, id).get(0);
+            List<ProductSpecification> fullSpecs = product.GetFullSpecs(cp);
             List<Product> compList = new ArrayList<>();
             if (product.CompIds != null && product.CompIds.length > 0){
                 for (int i = 0; i < product.CompIds.length; ++i){
@@ -105,13 +106,15 @@ public class MainController {
             }
             Product.LoadFullSpecs(cp, compList);
             ctx.attribute("product", product);
+            ctx.attribute("fullspecs", fullSpecs);
             if (ctx.sessionAttribute("admin") != null){
                 ctx.attribute("complist", compList);
                 ctx.attribute("baseprice", product.GetSumOfComponentPrices(cp));
             }
             ctx.render("products/viewproduct.html");
-        } catch (DatabaseException e) {
-            e.printStackTrace();
+        } catch (DatabaseException | NumberFormatException e) {
+            ctx.result(e.getMessage());
+            return;
         }
         ctx.render("products/viewproduct.html");
     }
