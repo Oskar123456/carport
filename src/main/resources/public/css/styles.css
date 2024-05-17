@@ -3,7 +3,6 @@ html {
     flex-direction: column;
     justify-content: space-around;
     background-color: #f5f5f3;
-
     font-family: "Roboto", sans-serif;
     font-weight: 300;
     font-style: normal;
@@ -16,9 +15,9 @@ html {
 }
 
 header {
-    position: fixed; /* Set the navbar to fixed position */
-    top: 0; /* Position the navbar at the top of the page */
-    width: 99%; /* Full width */
+    position: fixed;
+    top: 0;
+    width: 99%;
 
     ul {
         display: flex;
@@ -26,7 +25,6 @@ header {
         margin: 0;
         padding: 0;
         overflow: hidden;
-
     }
 
     li {
@@ -115,7 +113,9 @@ header {
         text-align: left;
     }
 
-    .dropdown-content a:hover {background-color: #f1f1f1;}
+    .dropdown-content a:hover {
+        background-color: #f1f1f1;
+    }
 
     .nav-categories-element:hover .dropdown-content {
         display: block;
@@ -125,9 +125,11 @@ header {
 .nav-right {
     display: flex;
 }
+
 .nav-left {
     display: flex;
 }
+
 .nav-search-form {
     input {
         width: 20rem;
@@ -136,10 +138,12 @@ header {
         border: #003d76 solid 2px;
         border-radius: 12px;
     }
+
     input:focus {
         outline: none;
     }
 }
+
 .nav-search-button {
     border: none;
     border-radius: 12px;
@@ -152,6 +156,7 @@ header {
         background-color: #003d76;
     }
 }
+
 .nav-search-button:hover {
     cursor: pointer;
     border: #003d76 solid 2px;
@@ -160,6 +165,10 @@ header {
 .main {
     margin-top: 140px;
     margin-bottom: 140px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 280px); /* Adjusting for header and footer */
 }
 
 .search-result {
@@ -172,7 +181,6 @@ header {
 .search-result-list {
     display: grid;
     grid-template-columns: auto auto auto auto;
-   /* grid-template-rows: 80px 160px;*/
     gap: 10px;
 
     a, a:visited {
@@ -194,12 +202,43 @@ header {
 
 footer {
     text-align: center;
-    position: fixed; /* Set the navbar to fixed position */
-    bottom: 0; /* Position the navbar at the bottom of the page */
-    width: 100%; /* Full width */
+    position: fixed;
+    bottom: 0;
+    width: 100%;
 }
 
 footer span {
     margin-left: 24rem;
     margin-right: 24rem;
+}
+
+/* Her laves "bestil nu" knappen */
+.order-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+}
+
+.order-button a {
+    display: inline-block;
+    padding: 20px 80px;
+    font-size: 32px;
+    font-weight: bold;
+    color: white;
+    background-color: #003366;
+    text-decoration: none;
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.order-button a:hover {
+    background-color: #00509e;
+    transform: translateY(-2px);
+}
+
+.order-button a:after {
+    content: ' ➡';
+    font-size: 32px;
 }
