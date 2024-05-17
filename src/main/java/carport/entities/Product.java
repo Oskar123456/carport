@@ -35,6 +35,7 @@ public class Product {
     public Long[] CompIds;
     public Long[] CompQuants;
 
+    public Product(){}
     public Product(String name, String description,
                    BigDecimal price, String[] links,
                    Long[] catIds, Long[] specIds){

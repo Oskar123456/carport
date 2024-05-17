@@ -51,7 +51,9 @@ public class ProductMapper {
             ps.setArray(argNum++, c.createArrayOf("varchar", prod.Links));
             ps.setBigDecimal(argNum++, prod.Price);
             ps.setBoolean(argNum++, internal);
+/*
             System.err.println(ps.toString());
+*/
             int success = ps.executeUpdate();
             if (success > 0) {
                 ResultSet generatedKeys = ps.getGeneratedKeys();
@@ -59,10 +61,11 @@ public class ProductMapper {
                     generatedKey = (int) generatedKeys.getLong(1);
                 if (generatedKey < 0)
                     return generatedKey;
-                for (int i = 0; i < prod.ImageIds.length; ++i)
-                    InsertProductToImageLink(cp, generatedKey,
-                            prod.ImageIds[i].intValue(),
-                            prod.ImageDownscaledIds[i].intValue());
+                for (int i = 0; prod.ImageIds != null && i < prod.ImageIds.length; ++i)
+                    if (!(prod.ImageIds[i] == null || prod.ImageDownscaledIds[i] == null))
+                        InsertProductToImageLink(cp, generatedKey,
+                                        prod.ImageIds[i].intValue(),
+                                        prod.ImageDownscaledIds[i].intValue());
                 for (int i = 0; i < prod.CatIds.length; ++i)
                     InsertProductToCategoryLink(cp, generatedKey, prod.CatIds[i].intValue());
                 for (int i = 0; i < prod.SpecIds.length; ++i)
@@ -153,7 +156,9 @@ public class ProductMapper {
             ps.setInt(argNum++, prodId);
             ps.setInt(argNum++, specificationId);
             ps.setString(argNum++, details);
+/*
             System.err.println(ps.toString());
+*/
             int success = ps.executeUpdate();
             if (success > 0) {
                 ResultSet generatedKeys = ps.getGeneratedKeys();
@@ -185,7 +190,9 @@ public class ProductMapper {
             ps.setString(argNum++, doc.Type());
             ps.setString(argNum++, doc.Format());
 
+/*
             System.err.println(ps.toString());
+*/
             int success = ps.executeUpdate();
             if (success > 0) {
                 ResultSet generatedKeys = ps.getGeneratedKeys();
