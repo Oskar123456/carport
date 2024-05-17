@@ -8,7 +8,6 @@ skinparam linetype ortho
 entity orders {
 * <<pk>> id : serial
 --
-<<fk>> product_id : bigint
 <<fk>> employee_id : bigint
 <<fk>> customer_id : bigint
 <<fk>> status_code : bigint
@@ -154,33 +153,32 @@ details : varchar
 order_product ||--|| orders
 order_product ||--|| product
 
-orders -- shipment
-orders -- payment
-orders -- users
-orders -- status_code
+orders }o--|| shipment
+orders ||--o| payment
+orders }o--|{ "1..2  " users
+orders }o--|| status_code
 
-product -- product_category
-product -- product_documentation
-product -- product_specification
-product -- product_component
-product -- product_image
+product ||--o{ product_category
+product ||--o{ product_documentation
+product ||--o{ product_specification
+product ||--o{ product_component
+product ||--o{ product_image
 
-product_specification -- specification
+product_specification }o--|| specification
 
-category -- category_specification
-category_specification -- specification
+category ||--o{ category_specification
+category_specification }o--|| specification
 
-product_category -- category
+product_category }o--|| category
 
 product_image "0..*   " }o--|{ "1..2  " image
 
-warehouse_product -- product
-warehouse_product -- warehouse
-warehouse -- users
+warehouse_product }o--|| product
+warehouse_product }o--|| warehouse
+warehouse ||--|| address
 
-users -- address
-users -- payment
+users ||--|| address
 
-address -- zip_code
+address }o--|| zip_code
 
 @enduml

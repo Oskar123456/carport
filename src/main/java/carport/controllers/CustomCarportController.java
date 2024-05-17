@@ -25,6 +25,8 @@ public class CustomCarportController {
     }
 
     private static void renderCustomCarportCreate(Context ctx, ConnectionPool cp) {
+        if (ctx.sessionAttribute("admin") == null)
+            return;
         String lStr = ctx.queryParam("length");
         String wStr = ctx.queryParam("width");
         String hStr = ctx.queryParam("height");
@@ -64,12 +66,6 @@ public class CustomCarportController {
             cc.SetStern(cp, stern);
             cc.SetTagplade(cp, tagplade);
 
-            // System.err.printf("%s, %s, %s, %s, %s%n", cc.GetStolpeProd().toString(),
-            //                   cc.GetRemProd().toString(),
-            //                   cc.GetSpaerProd().toString(),
-            //                   cc.GetSternProd().toString(),
-            //                   cc.GetTagpladeProd().toString());
-
             cc.Make(wInt, lInt, hInt, (sbStr != null), swInt, slInt);
 
             int success = cc.WriteToDb(cp);
@@ -88,19 +84,11 @@ public class CustomCarportController {
                 ctx.attribute("product", product);
                 ctx.attribute("baseprice", product.GetSumOfComponentPrices(cp));
                 ctx.redirect("/produkt?id=" + success);
-            }
-
-            else {
+            } else {
                 ctx.redirect("/customcarport");
                 return;
             }
-
-            // String svg = cc.svgDraw();
-            // System.err.println(svg);
-
-            // ctx.contentType("image/svg+xml");
-            // ctx.result(svg);
-        }
+         }
         catch (NumberFormatException | DatabaseException | NullPointerException e) {
             ctx.result("invalid input " + e.getMessage());
             return;
@@ -108,8 +96,8 @@ public class CustomCarportController {
     }
 
     private static void renderCustomCarport(Context ctx, ConnectionPool cp) {
-        // if (ctx.sessionAttribute("admin") == null)
-        // return;
+        if (ctx.sessionAttribute("admin") == null)
+            return;
         try {
             List<Product> stolpeList = ProductMapper.SelectProductsById(cp,
                     ProductMapper.SearchProducts(cp, -1, -1, null, null,

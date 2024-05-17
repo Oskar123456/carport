@@ -31,6 +31,8 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
     }
 
     private static void renderNewProduct( Context ctx, ConnectionPool cp) {
+        if (ctx.sessionAttribute("admin") == null)
+            return;
         try {
             List<ProductCategory> categoryList = CatAndSpecMapper.SelectAllCategories(cp);
             ctx.attribute("categorylist", categoryList);
@@ -42,14 +44,14 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
     }
 
     private static void renderUploadImage( Context ctx, ConnectionPool cp) {
-        // if (ctx.sessionAttribute("admin") == null)
-        //     return;
+        if (ctx.sessionAttribute("admin") == null)
+            return;
         ctx.render("products/uploadimage.html");
     }
 
     private static void storeImage( Context ctx, ConnectionPool cp) {
-        // if (ctx.sessionAttribute("admin") == null)
-        //     return;
+        if (ctx.sessionAttribute("admin") == null)
+            return;
         String imgUrl = ctx.formParam("imageURL");
         ProductImage img = ProductImageFactory.FromURL(imgUrl);
         if (img != null) {
@@ -69,6 +71,8 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
         renderUploadImage(ctx, cp);
     }
     private static void createProductDetailsDone( Context ctx, ConnectionPool cp) {
+        if (ctx.sessionAttribute("admin") == null)
+            return;
         // TODO: Clean this stuff up LOL
         String name = ctx.formParam("name");
         String description = ctx.formParam("description");
@@ -136,6 +140,8 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
 
 
     private static void createProductImagesDone( Context ctx, ConnectionPool cp) {
+        if (ctx.sessionAttribute("admin") == null)
+            return;
         Product product = ctx.sessionAttribute("productinmaking");
         if (product == null)
             return;
@@ -159,6 +165,8 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
     }
 
     private static void createProductSpecsDone( Context ctx, ConnectionPool cp) {
+        if (ctx.sessionAttribute("admin") == null)
+            return;
         Product product = ctx.sessionAttribute("productinmaking");
         if (product == null)
             return;
