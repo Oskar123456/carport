@@ -108,7 +108,14 @@ public class SearchController {
                             null, null,
                             catIds, false,
                             null, null));
-
+            List<Long> commonSpecIds = Product.MapProductsToCommonSpecIds(productList);
+            List<ProductSpecification> commonSpecs = CatAndSpecMapper.SelectSpecificationsById(cp, commonSpecIds);
+            List<List<String>> commonSpecUniqueDetails = new ArrayList<>();
+            if (commonSpecs != null)
+                for (ProductSpecification commonSpec : commonSpecs)
+                    commonSpecUniqueDetails.add(Product.MapProductsToUniqueSpecDetails(productList, commonSpec.Id));
+            ctx.attribute("commonSpecList", commonSpecs);
+            ctx.attribute("commonSpecListOptions", commonSpecUniqueDetails);
             ctx.attribute("productList", productList);
         } catch (DatabaseException e) {
             System.err.println(e.getMessage());

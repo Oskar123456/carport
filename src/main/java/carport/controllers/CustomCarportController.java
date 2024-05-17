@@ -87,7 +87,8 @@ public class CustomCarportController {
                 ctx.attribute("complist", compList);
                 ctx.attribute("product", product);
                 ctx.attribute("baseprice", product.GetSumOfComponentPrices(cp));
-                ctx.render("products/viewproduct.html");
+                ctx.redirect("/produkt?id=" + success);
+                // ctx.render("products/viewproduct.html");
             }
 
             // String svg = cc.svgDraw();

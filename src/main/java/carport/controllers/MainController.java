@@ -29,6 +29,9 @@ public class MainController {
         AdminFunctionController.addRoutes(app, cp);
         SearchController.addRoutes(app, cp);
         CustomCarportController.addRoutes(app, cp);
+        // TODO: MAKE SURE THIS WORKS
+        if (System.getenv("DEPLOYED") == null || !System.getenv("DEPLOYED").equals("true"))
+            app.before(ctx -> ctx.sessionAttribute("admin", true));
         /*
          * get
          */
@@ -101,9 +104,11 @@ public class MainController {
                 }
             }
             Product.LoadFullSpecs(cp, compList);
-            ctx.attribute("complist", compList);
             ctx.attribute("product", product);
-            ctx.attribute("baseprice", product.GetSumOfComponentPrices(cp));
+            if (ctx.sessionAttribute("admin") != null){
+                ctx.attribute("complist", compList);
+                ctx.attribute("baseprice", product.GetSumOfComponentPrices(cp));
+            }
             ctx.render("products/viewproduct.html");
         } catch (DatabaseException e) {
             e.printStackTrace();
