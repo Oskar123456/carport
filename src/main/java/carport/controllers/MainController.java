@@ -27,9 +27,6 @@ public class MainController {
         SearchController.addRoutes(app, cp);
         CustomCarportController.addRoutes(app, cp);
         UserController.addRoutes(app, cp);
-        // TODO: MAKE SURE THIS WORKS
-        if (System.getenv("DEPLOYED") == null || !System.getenv("DEPLOYED").equals("true"))
-            app.before(ctx -> ctx.sessionAttribute("admin", true));
         /*
          * get
          */
@@ -55,13 +52,6 @@ public class MainController {
         /*
          * post
          */
-
-
-        /*
-         * testing only stuff
-         */
-        if (System.getenv("test") != null && System.getenv("test").equals("true"))
-            app.beforeMatched(ctx -> ctx.sessionAttribute("admin", true));
     }
 
 
