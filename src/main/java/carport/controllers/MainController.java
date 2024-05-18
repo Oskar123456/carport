@@ -1,23 +1,17 @@
 package carport.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import carport.entities.Product;
 import carport.entities.ProductImage;
 import carport.entities.ProductSpecification;
-import carport.entities.Product;
-import carport.entities.ProductCategory;
 import carport.exceptions.DatabaseException;
 import carport.persistence.CarportMapper;
 import carport.persistence.ConnectionPool;
 import carport.persistence.ProductMapper;
-import carport.tools.ProductImageFactory;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
 
 public class MainController {
 
@@ -66,10 +60,10 @@ public class MainController {
 
 
 
-    private static void renderAdminPage(@NotNull Context ctx, ConnectionPool cp) {
+    private static void renderAdminPage(Context ctx, ConnectionPool cp) {
     }
 
-    private static void renderBygSelv(@NotNull Context ctx, ConnectionPool cp) {
+    private static void renderBygSelv(Context ctx, ConnectionPool cp) {
         ctx.result("lol");
     }
 

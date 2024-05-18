@@ -184,6 +184,10 @@ public class Product {
                            (sqlCompQuants == null) ? null : (Long[]) sqlCompQuants.getArray());
     }
 
+    public static int[] GetPlaceHolderImageId() {
+        return new int[] {PlaceholderImageId, PlaceholderImageIdMini};
+    }
+
     public static void SetPlaceholderImgs(int regular, int downscaled) {
         PlaceholderImageId = regular;
         PlaceholderImageIdMini = downscaled;

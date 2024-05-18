@@ -1,5 +1,9 @@
 package carport.controllers;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
 import carport.entities.Product;
 import carport.entities.ProductCategory;
 import carport.entities.ProductImage;
@@ -12,12 +16,6 @@ import carport.persistence.ProductMapper;
 import carport.tools.ProductImageFactory;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
 
 public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYMENT; NOT NECESSARY WHEN TESTING
 {
@@ -57,7 +55,7 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
             ctx.attribute("categorylist", categoryList);
         }
         catch (DatabaseException e) {
-            System.err.println(e.getMessage());
+            ctx.attribute("message", e.getMessage());
         }
         ctx.render("products/createproduct.html");
     }
@@ -98,7 +96,6 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
         String price = ctx.formParam("price");
         String links = ctx.formParam("links");
         List<String> categories = ctx.formParams("categories");
-        System.err.println(categories.toString());
 
         if (name == null || description == null || categories == null || price == null
                 || name.length() < 1 || description.length() < 1 || categories.size() < 1
@@ -124,8 +121,7 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
             priceBigDecimal = new BigDecimal(price);
         }
         catch (DatabaseException | NumberFormatException e) {
-            System.err.println(e.getMessage());
-            ctx.attribute("message", "ugyldige værdier ved produktoprettelse");
+            ctx.attribute("message", "ugyldige værdier ved produktoprettelse " + e.getMessage());
             ctx.render("products/createproduct.html");
             return;
         }
@@ -153,7 +149,6 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
             ctx.render("createproduct.html");
             return;
         }
-        System.err.println(cats.toString());
         ctx.render("products/createproductselectspecs.html");
     }
 
@@ -162,21 +157,23 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
         if (ctx.sessionAttribute("admin") == null)
             return;
         Product product = ctx.sessionAttribute("productinmaking");
-        if (product == null)
+        if (product == null) {
+            ctx.result("something went wrong");
             return;
+        }
         String regularImgStr = ctx.formParam("regular");
         String downscaledImgStr = ctx.formParam("downscaled");
-        if (regularImgStr == null || downscaledImgStr == null)
-            return;
         try {
-            int regularImgId = Integer.parseInt(regularImgStr);
-            int downscaledImgId = Integer.parseInt(downscaledImgStr);
+            int regularImgId = (regularImgStr != null) ? Integer.parseInt(regularImgStr) :
+                Product.GetPlaceHolderImageId()[0];
+            int downscaledImgId = (regularImgStr != null) ? Integer.parseInt(downscaledImgStr) :
+                 Product.GetPlaceHolderImageId()[1];
             product.AddImages(false, regularImgId);
             product.AddImages(true, downscaledImgId);
             ProductMapper.InsertProduct(cp, false, product);
         }
         catch (NumberFormatException | DatabaseException e){
-            System.err.println(e.getMessage());
+            ctx.result(e.getMessage());
             return;
         }
         ctx.sessionAttribute("productinmaking", null);
@@ -206,11 +203,11 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
                 product.SpecUnits[i] = pSpec.get(0).Unit;
                 pCats.add(CatAndSpecMapper.SelectCategoryById(cp, product.SpecIds[i].intValue()));
             }
-            ctx.attribute("pcats", pCats);
+            ctx.attribute("cats", pCats);
             ctx.attribute("imageids", imageIds);
             ctx.attribute("imagedownscaledids", imageDownscaledIds);
         }
-        catch (DatabaseException e) {System.err.println(e.getMessage()); return;}
+        catch (DatabaseException e) {ctx.result(e.getMessage()); return;}
         ctx.sessionAttribute("productinmaking", product);
         ctx.render("products/createproductselectimage.html");
     }

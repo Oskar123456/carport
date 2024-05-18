@@ -72,26 +72,17 @@ public class CustomCarportController {
             int success = cc.WriteToDb(cp);
 
             if (success > 0){
-                Product product = ProductMapper.SelectProductsById(cp, success).get(0);
-                List<Product> compList = new ArrayList<>();
-                if (product.CompIds != null && product.CompIds.length > 0){
-                    for (int i = 0; i < product.CompIds.length; ++i){
-                        Product comp = ProductMapper.SelectProductsById(cp, product.CompIds[i].intValue()).get(0);
-                        compList.add(comp);
-                    }
-                }
-                Product.LoadFullSpecs(cp, compList);
-                ctx.attribute("complist", compList);
-                ctx.attribute("product", product);
-                ctx.attribute("baseprice", product.GetSumOfComponentPrices(cp));
                 ctx.redirect("/produkt?id=" + success);
+                return;
             } else {
-                ctx.redirect("/customcarport");
+                ctx.attribute("message", "Error, invalid inputs");
+                renderCustomCarport(ctx, cp);
                 return;
             }
          }
         catch (NumberFormatException | DatabaseException | NullPointerException e) {
-            ctx.result("invalid input " + e.getMessage());
+            ctx.attribute("message", "Error " + e.getMessage());
+            renderCustomCarport(ctx, cp);
             return;
         }
     }

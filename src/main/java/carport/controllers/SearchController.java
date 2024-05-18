@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SearchController {
-    private static final int PAGE_SIZE = 16;
+    private static final int PAGE_SIZE = 100;
 
     public static void addRoutes(Javalin app, ConnectionPool cp) {
         /* GET */

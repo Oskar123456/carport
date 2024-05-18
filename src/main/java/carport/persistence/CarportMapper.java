@@ -30,11 +30,12 @@ public class CarportMapper {
     public static List<Integer> SelectProductImageIds(ConnectionPool cp,
                                                       boolean downscaled) throws DatabaseException {
         List<Integer> ids = new ArrayList<>();
-        String sql = "SELECT id FROM image WHERE downscaled = ?";
+        String sql = "SELECT id FROM image WHERE downscaled = ? AND format <> 'svg+xml' AND format <> 'svg'";
         try (
                 Connection c = cp.getConnection();
                 PreparedStatement ps = c.prepareStatement(sql);) {
             ps.setBoolean(1, downscaled);
+            System.err.println(ps.toString());
             ResultSet rs = ps.executeQuery();
             while (rs.next())
                 ids.add(rs.getInt("id"));
