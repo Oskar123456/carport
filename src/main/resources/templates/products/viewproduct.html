@@ -135,6 +135,10 @@
     <!-- STYKLISTE -->
     <h2>Bestil</h2>
     <p th:text="'Pris : kr. ' + ${product.Price}" ></p>
+    <form class="viewproductput" method="post" >
+        <input type="hidden" selected="selected" id="id" name="id" th:value="${product.Id}">
+        <input type="submit" value="bekræft" th:formaction="putinbasket" >
+    </form>
     <h2>Beskrivelse</h2>
     <p th:text="${product.Description}" ></p>
     <h2>Specifikationer</h2>

@@ -1,28 +1,30 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="">
 <head>
-    <title>Frontpage</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
-    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/fogicon32x32.png}">
-    <link rel="icon" type="image/png" sizes="48x48" th:href="@{/images/fogicon48x48.png}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@100..800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+<title>Frontpage</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
+<link href="../../public/css/products/viewproduct.css" th:href="@{/css/products/viewproduct.css}" rel="stylesheet"/>
+<link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/fogicon32x32.png}">
+<link rel="icon" type="image/png" sizes="48x48" th:href="@{/images/fogicon48x48.png}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@100..800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 </head>
+
 <body>
 <div class="page">
-    <!-- BEGINNING OF NAV BAR -->
-    <header>
-        <div class="header-info">
-            <ul>
-                <li><a href="">30 dages returret</a></li>
-                <li><a href="">Klik og hent inden for 3 timer*</a></li>
-                <li><a href="">1-3 dages levering*</a></li>
-                <li><a href="">Lån en trailer gratis</a></li>
-            </ul>
-        </div>
+<!-- BEGINNING OF NAV BAR -->
+<header>
+    <div class="header-info">
+        <ul>
+            <li><a href="">30 dages returret</a></li>
+            <li><a href="">Klik og hent inden for 3 timer*</a></li>
+            <li><a href="">1-3 dages levering*</a></li>
+            <li><a href="">Lån en trailer gratis</a></li>
+        </ul>
+    </div>
         <div class="nav">
             <div class="nav-left">
                 <div class="nav-logo">
@@ -40,6 +42,7 @@
                                 <a href="#">Link 3</a>
                             </div>
                         </li>
+
                         <li class="nav-categories-element">
                             <a href="" class="dropdown-button">Kategori 2</a>
                             <div class="dropdown-content">
@@ -51,23 +54,23 @@
                         <li class="nav-categories-element">
                             <a href="" class="dropdown-button">Tilbehør</a>
                             <div class="dropdown-content">
-                                <a href="#" th:href="@{/kategori?category=skruer}">Skruer</a>
-                                <a href="#" th:href="@{/kategori?category=søm}">Søm</a>
-                                <a href="#" th:href="@{/kategori?category=lægte}">andet til carport LOL</a>
+                                <a href="#" th:href="@{/kategori?category=skruer}" >Skruer</a>
+                                <a href="#" th:href="@{/kategori?category=søm}" >Søm</a>
+                                <a href="#" th:href="@{/kategori?category=lægte}" >andet til carport LOL</a>
                             </div>
                         </li>
                         <li class="nav-categories-element">
                             <a href="" th:href="@{/kategori?category=byggemateriale}" class="dropdown-button">Byggematerialer</a>
                             <div class="dropdown-content">
-                                <a href="#" th:href="@{/kategori?category=lægte}">Lægter</a>
-                                <a href="#" th:href="@{/kategori?category=brædde}">Brædder</a>
-                                <a href="#" th:href="@{/kategori?category=tagplade}">Tagplader</a>
+                                <a href="#" th:href="@{/kategori?category=lægte}" >Lægter</a>
+                                <a href="#" th:href="@{/kategori?category=brædde}" >Brædder</a>
+                                <a href="#" th:href="@{/kategori?category=tagplade}" >Tagplader</a>
                             </div>
                         </li>
                         <li class="nav-categories-element">
                             <a href="" class="dropdown-button">Maling</a>
                             <div class="dropdown-content">
-                                <a href="#" th:href="@{/kategori?category=indendoers}">Indendørs</a>
+                                <a href="#" th:href="@{/kategori?category=indendoers}" >Indendørs</a>
                                 <a href="#"></a>
                                 <a href="#"></a>
                             </div>
@@ -77,50 +80,52 @@
                             <div class="dropdown-content">
                                 <a href="#">Link 1</a>
                                 <a href="#">Link 2</a>
-                                <a href="orderFlow/byg-carport.html" th:href="@{/orderFlow/byg-carport}">Byg selv</a>
+                                <!-- SPECIAL RULE FOR BYGSELV -->
+                                <a href="orderFlow/byg-carport.html" th:href="@{/bygselvcarport}">Byg selv</a>
                             </div>
                         </li>
                     </ul>
+
                 </div>
             </div>
             <div class="nav-right">
                 <div class="nav-search">
                     <form class="nav-search-form">
                         <button class="nav-search-button" type="submit" formaction="/soegning">
-                            <img src="../public/images/magnifyingglass64x64.png" th:src="@{/images/magnifyingglass64x64.png}" alt=""/>
+                            <img src="../public/images/magnifyingglass64x64.png" th:src="@{/images/magnifyingglass64x64.png}"  alt=""/>
                         </button>
                         <label>
                             <input type="text" placeholder="Søg på produkter eller kategorier" name="searchString" id="searchString">
                         </label>
+                        <!-- <button class="nav-search-cancel-button" type="button">luk</button> -->
                     </form>
                 </div>
                 <div class="nav-personal">
                     <ul>
-                        <li><a th:if="${session.currentUser == null}" th:href="@{/login}">Log ind</a></li>
-                        <li><a th:if="${session.currentUser != null}" th:text="${session.currentUser.getName()}" th:href="@{/}"></a></li>
+                        <li><a href="logind.html" th:href="@{/shop}">Fog Konto</a></li>
                         <li><a href="">Find Fog</a></li>
-                        <li><a href="" th:href="@{/kurv}" >Kurv</a></li>
+                        <li><a href="">Kurv</a></li>
                     </ul>
                 </div>
             </div>
+
         </div>
-    </header>
-    <!-- END OF NAV BAR -->
-    <div class="main">
-        <div class="order-button">
-            <a href="/orderPage" th:href="@{/orderPage}">Bestil Nu</a>
-        </div>
-    </div>
-    <div class="admin-functions">
-        <h2>ADMINISTRATOR FUNKTIONER</h2>
-        <h3 th:if="${session.currentUser != null && session.admin}" th:text="'Velkommen ' + ${session.currentUser.getName()}" ></h3>
-        <a th:href="@{/newproduct}">Tilføj nyt produkt</a>
-        <a th:href="@{/uploadimage}">Tilføj nyt billede</a>
-        <a th:href="@{/customcarport}">Custom carport</a>
-    </div>
-    <footer>
-        <p>Johannes Fog A/S<span>Firskovvej 20, 2800 Lyngby</span>CVR-nr. 16314439</p>
-    </footer>
+</header>
+<!-- END OF NAV BAR -->
+<div class="main" th:if="${session.currentUser != null}">
+    <h2  th:text="${session.currentUser.getName()} + 's kurv:'" ></h2>
+</div>
+
+<div class="admin-functions" >
+    <h2>ADMINISTRATOR FUNKTIONER</h2>
+    <a th:href="@{/newproduct}">Tilføj nyt produkt</a>
+    <a th:href="@{/uploadimage}">Tilføj nyt billede</a>
+</div>
+
+<footer>
+    <p>Johannes Fog A/S<span>Firskovvej 20, 2800 Lyngby</span>CVR-nr. 16314439</p>
+</footer>
+
 </div>
 </body>
 </html>

@@ -59,16 +59,19 @@ public class UserController {
 
         try {
             User user = UserMapper.login(email, password, cp);
-            ctx.sessionAttribute("currentUser", user);
 
-            if (user.getRole().equals("admin")) {
-                ctx.render("adminProfile.html");  // Render til admin profil siden hvis useren er en admin
-            } else {
-                ctx.render("svg.html");  // ellers Render til en standard user side
+            if (user == null){
+                ctx.redirect("/login");
+                return;
             }
-        } catch (DatabaseException e) {
-            ctx.attribute("message", "Login fejlede, tjek din email og adgangskode og prøv igen:)");
-            ctx.render("index.html");
+            ctx.sessionAttribute("currentUser", user);
+            if (user.getRole().equals("admin"))
+                ctx.sessionAttribute("admin", true);
         }
+            catch (DatabaseException e) {
+                ctx.attribute("message", "Login fejlede, tjek din email og adgangskode og prøv igen:)");
+                ctx.render("index.html");
+        }
+        ctx.redirect("/");
     }
 }
