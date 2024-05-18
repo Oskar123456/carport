@@ -157,10 +157,10 @@ header {
     border: #003d76 solid 2px;
 }
 
-/*.main {
-    margin-top: 140px;
+.main {
+    margin-top: 240px;
     margin-bottom: 140px;
-} */
+}
 
 .search-result {
     display: flex;
