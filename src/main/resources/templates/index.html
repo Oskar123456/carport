@@ -111,7 +111,7 @@
             <a href="/orderPage" th:href="@{/orderPage}">Bestil Nu</a>
         </div>
     </div>
-    <div th:if="${session.admin != null && session.admin == true}"  class="admin-functions">
+    <div th:if="${session.currentUser != null && session.admin}" class="admin-functions">
         <h2>ADMINISTRATOR FUNKTIONER</h2>
         <h3 th:if="${session.currentUser != null && session.admin}" th:text="'Velkommen ' + ${session.currentUser.getName()}" ></h3>
         <a th:href="@{/newproduct}">Tilføj nyt produkt</a>
