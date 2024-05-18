@@ -1,0 +1,24 @@
+.main {
+ul {
+    li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 40px;
+        border-bottom: solid black 1px;
+    }
+    .listofthingsbuttons {
+        display: flex;
+        gap: 10px;
+        justify-content: space-between;
+    }
+}
+.basketorder {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 40px;
+}
+
+
+}

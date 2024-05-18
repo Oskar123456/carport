@@ -97,7 +97,7 @@
                 <div class="nav-personal">
                     <ul>
                         <li><a th:if="${session.currentUser == null}" th:href="@{/login}">Log ind</a></li>
-                        <li><a th:if="${session.currentUser != null}" th:text="${session.currentUser.getName()}" th:href="@{/}"></a></li>
+                        <li><a th:if="${session.currentUser != null}" th:text="${session.currentUser.getName()}" th:href="@{/profil}"></a></li>
                         <li><a href="">Find Fog</a></li>
                         <li><a href="" th:href="@{/kurv}" >Kurv</a></li>
                     </ul>
@@ -111,13 +111,16 @@
             <a href="/orderPage" th:href="@{/orderPage}">Bestil Nu</a>
         </div>
     </div>
+    <!-- ADMIN -->
     <div th:if="${session.currentUser != null && session.admin}" class="admin-functions">
         <h2>ADMINISTRATOR FUNKTIONER</h2>
         <h3 th:if="${session.currentUser != null && session.admin}" th:text="'Velkommen ' + ${session.currentUser.getName()}" ></h3>
-        <a th:href="@{/newproduct}">Tilføj nyt produkt</a>
-        <a th:href="@{/uploadimage}">Tilføj nyt billede</a>
-        <a th:href="@{/customcarport}">Custom carport</a>
+        <a class="good-button" th:href="@{/newproduct}">Tilføj nyt produkt</a>
+        <a class="good-button" th:href="@{/uploadimage}">Tilføj nyt billede</a>
+        <a class="good-button" th:href="@{/customcarport}">Custom carport</a>
+        <a class="good-button" th:href="@{/showorders}">Alle bestillinger</a>
     </div>
+    <!-- ADMIN -->
     <footer>
         <p>Johannes Fog A/S<span>Firskovvej 20, 2800 Lyngby</span>CVR-nr. 16314439</p>
     </footer>

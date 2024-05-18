@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
-<link href="../../public/css/products/viewproduct.css" th:href="@{/css/products/viewproduct.css}" rel="stylesheet"/>
+<link href="../../public/css/products/basket.css" th:href="@{/css/products/basket.css}" rel="stylesheet"/>
 <link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/fogicon32x32.png}">
 <link rel="icon" type="image/png" sizes="48x48" th:href="@{/images/fogicon48x48.png}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -108,52 +108,132 @@
         </div>
     </header>
     <!-- END OF NAV BAR -->
-<div class="main">
-<div th:if="${product != null}" class="productview">
+<div class="main" th:if="${session.currentUser != null}">
+    <h1 th:text="'Velkommen tilbage ' + ${session.currentUser.Name}" ></h1>
+    <a class="bad-button" th:href="@{/logout}">Log ud</a>
+    <h1>Her er alle dine bestillinger:</h1>
+    <h2>Afventer svar fra sælger:</h2>
+    <ul class="listofthings">
+        <li th:each="o : ${pending}" >
+            <p th:text="'tidspunkt: ' + ${o.TimeOfOrder}"></p>
+            <p th:text="'sælger: ' + ${o.EmployeeId}"></p>
+            <p th:text="'kunde: ' + ${o.CustomerId}"></p>
+            <p th:text="'pris: kr.' + ${o.GetBasePrice}"></p>
+            <p th:text="'note: ' + ${o.Note}"></p>
+            <ul>
+                <li class="listofthings" th:each="p,iterStat : ${o.ProductList}">
+                    <p th:text="${o.ProductQuants.get(__${iterStat.index}__)}
+                                + ' x ' + ${p.Name} + ' : kr. ' + ${p.Price}" > </p>
+                <div class="listofthingsbuttons">
+                <form action="/produkt">
+                    <button class="good-button" name="id" th:value="${p.Id}">vis</button>
+                </form>
 
-    <h1 th:text="${product.Name}" ></h1>
-    <img src="null" th:src="'/billeder?id=' + ${product.GetFirstImageDownscaledId()}" alt="productimg">
-    <!-- STYKLISTE -->
-    <div th:if="${session.admin != null}" class="adminonly">
-        <h2>Administrator</h2>
-        <a class="bad-button" th:href="'/deleteproduct?id=' + ${product.Id}">Slet dette produkt fra databasen</a>
-    <h2>Stykliste</h2>
-    <div th:class="stykliste" th:if="${product.CompIds != null && complist != null && product.CompIds.length > 0}">
-        <p th:each="s,iterStat : ${complist}" th:text="${product.CompQuants[__${iterStat.index}__].intValue()} + ' x ' + ${s.Name} +
-                              ' ( længde: ' + ${s.GetSpecLength().Details} + ' ' + ${s.GetSpecLength().Unit} +
-                              ' højde: ' + ${s.GetSpecHeight().Details} + ' ' + ${s.GetSpecHeight().Unit} +
-                              ' bredde: ' + ${s.GetSpecWidth().Details} + ' ' + ${s.GetSpecWidth().Unit} +
-                              ' pris: dkk.' + ${s.Price} + ' )' "></p>
-    </div>
-    <h2>Vejledende pris</h2>
-    <p th:text="'Samlet materialepris: kr. ' + ${baseprice}" ></p>
-    </div>
-    <!-- STYKLISTE -->
-    <h2>Køb</h2>
-    <p th:text="'Pris : kr. ' + ${product.Price}" ></p>
-    <form class="viewproductput" method="post" >
-        <input type="hidden" selected="selected" id="id" name="id" th:value="${product.Id}">
-        <input class="good-button" type="submit" value="læg i kurv" formaction="/putinbasket" >
-    </form>
-    <h2>Beskrivelse</h2>
-    <p th:text="${product.Description}" ></p>
-    <h2>Specifikationer</h2>
-    <p th:each="spec : ${fullspecs}" th:text="${spec.Name} + ' : ' + ${spec.Details} + ' ' + ${spec.Unit}" ></p>
-    <h2>Links og dokumentation</h2>
-    <div th:if="${product.Links != null && product.Links.length > 0}" th:each="link : ${product.Links}">
-        <a th:href="${link}"></a>
-    </div>
-    <h2>Kategorier</h2>
-    <p th:if="${cats != null}" th:each="c : ${cats}" th:text="${c.Name}"></p>
-    <h2>Ekstra billeder</h2>
-    <div class="viewproductsmallimg" th:if="${product.ImageDownscaledIds != null && product.ImageDownscaledIds.length > 0}" >
-        <img  th:each="id : ${product.ImageDownscaledIds}" src="null" th:src="'/billeder?id=' + ${id}" alt="productimg">
-    </div>
+                <form action="/customerremoveorderproduct" method="post">
+                    <input type="hidden" selected="selected" name="oid" th:value="${o.Id}">
+                    <button class="bad-button" name="pid" th:value="${p.Id}">fjern</button>
+                </form>
+                </div>
+                </li>
+            </ul>
+            <div class="listofthingsbuttons">
+            <form action="/customerremoveorder" method="post">
+                <button class="bad-button" name="oid" th:value="${o.Id}">fjern</button>
+            </form>
+            </div>
+        </li>
+    </ul>
+    <h2>Afventer svar fra kunde:</h2>
+    <ul class="listofthings">
+        <li th:each="o : ${validated}" >
+            <p th:text="'tidspunkt: ' + ${o.TimeOfOrder}"></p>
+            <p th:text="'sælger: ' + ${o.EmployeeId}"></p>
+            <p th:text="'kunde: ' + ${o.CustomerId}"></p>
+            <p th:text="'pris: kr.' + ${o.GetBasePrice()}"></p>
+            <p th:text="'note: ' + ${o.Note}"></p>
+            <ul>
+                <li class="listofthings" th:each="p,iterStat : ${o.ProductList}">
+                    <p th:text="${o.ProductQuants.get(__${iterStat.index}__)}
+                                + ' x ' + ${p.Name} + ' : kr. ' + ${p.Price}" > </p>
+                <div class="listofthingsbuttons">
+                <form action="/produkt">
+                    <button class="good-button" name="id" th:value="${p.Id}">vis</button>
+                </form>
+                <form action="/customerremoveorderproduct" method="post">
+                    <input type="hidden" selected="selected" name="oid" th:value="${o.Id}">
+                    <button class="bad-button" name="pid" th:value="${p.Id}">fjern</button>
+                </form>
+                </div>
+                </li>
+            </ul>
+            <form action="/customerapprovependingorder" method="post">
+                <button class="good-button" name="id" th:value="${o.Id}">godkend</button>
+            </form>
+            <form action="/customerremoveorder" method="post">
+                <button class="bad-button" name="oid" th:value="${o.Id}">fjern</button>
+            </form>
+        </li>
+    </ul>
+
+    <h2>Afventer betaling:</h2>
+    <ul class="listofthings">
+        <li th:each="o : ${confirmed}" >
+            <p th:text="'tidspunkt: ' + ${o.TimeOfOrder}"></p>
+            <p th:text="'sælger: ' + ${o.EmployeeId}"></p>
+            <p th:text="'kunde: ' + ${o.CustomerId}"></p>
+            <p th:text="'pris: kr.' + ${o.GetBasePrice()}"></p>
+            <p th:text="'note: ' + ${o.Note}"></p>
+            <ul>
+                <li class="listofthings" th:each="p,iterStat : ${o.ProductList}">
+                    <p th:text="${o.ProductQuants.get(__${iterStat.index}__)}
+                                + ' x ' + ${p.Name} + ' : kr. ' + ${p.Price}" > </p>
+                <div class="listofthingsbuttons">
+                <form action="/produkt">
+                    <button class="good-button" name="id" th:value="${p.Id}">vis</button>
+                </form>
+                <form action="/customerremoveorderproduct" method="post">
+                    <input type="hidden" selected="selected" name="oid" th:value="${o.Id}">
+                    <button class="bad-button" name="pid" th:value="${p.Id}">fjern</button>
+                </form>
+                </div>
+                </li>
+            </ul>
+            <div class="listofthingsbuttons">
+            <form action="/customerapprovependingorder" method="post">
+                <button class="good-button" name="id" th:value="${o.Id}">betal</button>
+            </form>
+            <form action="/customerremoveorder" method="post">
+                <button class="bad-button" name="oid" th:value="${o.Id}">fjern</button>
+            </form>
+            </div>
+        </li>
+    </ul>
+
+    <h2>Færdige:</h2>
+    <ul class="listofthings">
+        <li th:each="o : ${done}" >
+            <p th:text="'tidspunkt: ' + ${o.TimeOfOrder}"></p>
+            <p th:text="'sælger: ' + ${o.EmployeeId}"></p>
+            <p th:text="'kunde: ' + ${o.CustomerId}"></p>
+            <p th:text="'pris: kr.' + ${o.GetBasePrice()}"></p>
+            <p th:text="'note: ' + ${o.Note}"></p>
+            <ul>
+                <li class="listofthings" th:each="p,iterStat : ${o.ProductList}">
+                    <p th:text="${o.ProductQuants.get(__${iterStat.index}__)}
+                                + ' x ' + ${p.Name} + ' : kr. ' + ${p.Price}" > </p>
+                <div class="listofthingsbuttons">
+                <form action="/produkt">
+                    <button class="good-button" name="id" th:value="${p.Id}">vis</button>
+                </form>
+                </div>
+                </li>
+            </ul>
+        </li>
+    </ul>
+
 </div>
 
-</div>
-
-<div th:if="${session.currentUser != null && session.admin}" class="admin-functions">
+<div class="admin-functions" >
     <h2>ADMINISTRATOR FUNKTIONER</h2>
     <a th:href="@{/newproduct}">Tilføj nyt produkt</a>
     <a th:href="@{/uploadimage}">Tilføj nyt billede</a>

@@ -1,5 +1,7 @@
 package carport.controllers;
 
+import carport.entities.CustomCarport;
+import carport.entities.Product;
 import carport.entities.User;
 import carport.exceptions.DatabaseException;
 import carport.persistence.ConnectionPool;
@@ -18,6 +20,7 @@ public class OrderController {
         app.post("/save-dimensions", ctx -> saveDimensions(ctx));
         app.get("/sendrequest", ctx -> sendRequest(ctx, connectionPool));
         app.get("/calculate", ctx -> calculatePrice(ctx));
+        app.post("/sendcustomcarportrequest", ctx -> showResult(ctx, connectionPool));
     }
 
     private static void saveDimensions(Context ctx) {
@@ -40,11 +43,15 @@ public class OrderController {
         int length = ctx.sessionAttribute("length");
 
         try {
-            // TODO: Der skal vel et user objekt eller user_id som argument i InsertCarportCustomBase ellers kan kunden ikke se sin ordre?
-            // TODO: Eller er det først når admin/sælger har godkendt forespørgslen at den gemmes på user_id og kunden kan se ordren?
+            // TODO: Der skal vel et user objekt eller user_id som argument i
+            // InsertCarportCustomBase ellers kan kunden ikke se sin ordre?
+            // TODO: Eller er det først når admin/sælger har godkendt forespørgslen at den
+            // gemmes på user_id og kunden kan se ordren?
 
-            /*User user = UserMapper.login(email, password, cp);
-            ctx.sessionAttribute("currentUser", user);*/
+            /*
+             * User user = UserMapper.login(email, password, cp);
+             * ctx.sessionAttribute("currentUser", user);
+             */
 
             ProductMapper.InsertCarportCustomBase(connectionPool, length, width, 200);
 
@@ -73,7 +80,57 @@ public class OrderController {
     }
 
     private static int calculateTotalPrice(int width, int length) {
-        return width * length * 5; //Det bare lige en hurtig logik, skal ændres.
-        //Spørg jon i morgen, om vi skal lave den også?
+        return width * length * 5; // Det bare lige en hurtig logik, skal ændres.
+        // Spørg jon i morgen, om vi skal lave den også?
+    }
+
+    private static void showResult(Context ctx, ConnectionPool cp) {
+        if (ctx.sessionAttribute("currentUser") == null) {
+            ctx.redirect("login");
+            return;
+        }
+
+        String wStr = ctx.formParam("width");
+        String lStr = ctx.formParam("length");
+        String shedStr = ctx.formParam("shed");
+        String swStr = ctx.formParam("shedwidth");
+        String slStr = ctx.formParam("shedlength");
+        try {
+            int w = Integer.parseInt(wStr);
+            int l = Integer.parseInt(lStr);
+            boolean shed = (shedStr != null && shedStr.equals("on")) ? true : false;
+            int sw = Integer.parseInt(swStr);
+            int sl = Integer.parseInt(slStr);
+
+            CustomCarport cc = new CustomCarport();
+
+            Product stolpe = ProductMapper.SelectProductsById(cp,15).get(0);
+            Product rem = ProductMapper.SelectProductsById(cp,11).get(0);
+            Product spaer = ProductMapper.SelectProductsById(cp, 12).get(0);
+            Product stern = ProductMapper.SelectProductsById(cp,21).get(0);
+            Product tagplade = ProductMapper.SelectProductsById(cp,14).get(0);
+
+            cc.SetStolpe(cp, stolpe);
+            cc.SetRem(cp, rem);
+            cc.SetSpaer(cp, spaer);
+            cc.SetStern(cp, stern);
+            cc.SetTagplade(cp, tagplade);
+
+            boolean made = cc.Make(w * 10, l * 10, 2800, shed, sw * 10, sl * 10);
+
+            if (!made){
+                ctx.redirect("orderPage");
+                return;
+            }
+
+            int success = cc.WriteToDb(cp);
+            if (success > 0) {
+                ctx.redirect("/produkt?id=" + success);
+                return;
+            }
+        } catch (NumberFormatException | DatabaseException e) {
+            ctx.redirect("orderPage");
+            return;
+        }
     }
 }

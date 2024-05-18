@@ -10,6 +10,7 @@ import carport.entities.Product;
 import carport.exceptions.DatabaseException;
 import carport.persistence.CatAndSpecMapper;
 import carport.persistence.ConnectionPool;
+import carport.persistence.OrderMapper;
 import carport.persistence.ProductMapper;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -40,9 +41,15 @@ public class CustomCarportController {
         String sternStr = ctx.queryParam("stern");
         String tagpladerStr = ctx.queryParam("tagplader");
 
+        String updateOrderCpPid = ctx.sessionAttribute("updateordercarportPID");
+        String updateOrderCpOid = ctx.sessionAttribute("updateordercarportOID");
+        ctx.sessionAttribute("updateordercarportPID", null);
+        ctx.sessionAttribute("updateordercarportOID", null);
+
         if (lStr == null ||
-            wStr == null ||
-            hStr == null){
+                wStr == null ||
+                hStr == null ||
+                stolpeStr == null) {
             ctx.result("invalid input");
             return;
         }
@@ -71,16 +78,23 @@ public class CustomCarportController {
 
             int success = cc.WriteToDb(cp);
 
-            if (success > 0){
-                ctx.redirect("/produkt?id=" + success);
-                return;
+            if (success > 0) {
+                if (updateOrderCpOid != null && updateOrderCpOid != null) {
+                    OrderMapper.ReplaceOrderProduct(cp,
+                            Integer.parseInt(updateOrderCpOid),
+                            Integer.parseInt(updateOrderCpPid),
+                            success);
+                    ctx.redirect("/showorders");
+                } else {
+                    ctx.redirect("/produkt?id=" + success);
+                    return;
+                }
             } else {
                 ctx.attribute("message", "Error, invalid inputs");
                 renderCustomCarport(ctx, cp);
                 return;
             }
-         }
-        catch (NumberFormatException | DatabaseException | NullPointerException e) {
+        } catch (NumberFormatException | DatabaseException | NullPointerException e) {
             ctx.attribute("message", "Error " + e.getMessage());
             renderCustomCarport(ctx, cp);
             return;

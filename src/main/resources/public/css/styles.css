@@ -242,3 +242,29 @@ footer span {
     content: ' ➡';
     font-size: 32px;
 }
+
+.bad-button {
+    border: none;
+    border-radius: 12px;
+    padding: 8px;
+    background-color: red;
+    color: white;
+    margin-right: 10px;
+    text-decoration: none;
+}
+.bad-button:hover {
+    cursor: pointer;
+}
+.good-button {
+    border: none;
+    border-radius: 12px;
+    padding: 8px;
+    background-color: #003366;
+    color: white;
+    margin-right: 10px;
+    text-decoration: none;
+}
+.good-button:hover {
+    background-color: #00509e;
+    cursor: pointer;
+}

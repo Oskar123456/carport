@@ -102,7 +102,7 @@
                 <div class="nav-personal">
                     <ul>
                         <li><a th:if="${session.currentUser == null}" th:href="@{/login}">Log ind</a></li>
-                        <li><a th:if="${session.currentUser != null}" th:text="${session.currentUser.getName()}" th:href="@{/}"></a></li>
+                        <li><a th:if="${session.currentUser != null}" th:text="${session.currentUser.getName()}" th:href="@{/profil}"></a></li>
                         <li><a href="">Find Fog</a></li>
                         <li><a href="" th:href="@{/kurv}" >Kurv</a></li>
                     </ul>

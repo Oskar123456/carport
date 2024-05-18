@@ -15,14 +15,12 @@ import carport.entities.ProductCategory;
 import carport.entities.ProductSpecification;
 import carport.exceptions.DatabaseException;
 
-public class CatAndSpecMapper
-{
+public class CatAndSpecMapper {
     /*
      * Category and Specification
      */
-    public static List<ProductCategory> SelectAllCategories(ConnectionPool cp) throws DatabaseException
-    {
-        List<ProductCategory> cats = new ArrayList<>() ;
+    public static List<ProductCategory> SelectAllCategories(ConnectionPool cp) throws DatabaseException {
+        List<ProductCategory> cats = new ArrayList<>();
 
         String sql = "SELECT * from category";
 
@@ -41,7 +39,7 @@ public class CatAndSpecMapper
     }
 
     public static ProductCategory SelectCategoryById(ConnectionPool cp,
-                                                     int id) throws DatabaseException{
+            int id) throws DatabaseException {
         ProductCategory cat = null;
 
         String sql = "SELECT * from category WHERE id = ? ";
@@ -61,8 +59,25 @@ public class CatAndSpecMapper
         return cat;
     }
 
+    public static List<ProductCategory> SelectCategoriesById(ConnectionPool cp,
+                                                             List<Integer> ids) throws DatabaseException{
+        int[] idsint = new int[ids.size()];
+        for (int i = 0; i < idsint.length; ++i)
+            idsint[i] = ids.get(i);
+        return SelectCategoriesById(cp, idsint);
+    }
+    public static List<ProductCategory> SelectCategoriesById(ConnectionPool cp,
+            int... ids) throws DatabaseException {
+        List<ProductCategory> cats = new ArrayList<>();
+        if (ids != null) {
+            for (int i : ids)
+                cats.add(SelectCategoryById(cp, i));
+        }
+        return cats;
+    }
+
     public static List<Integer> SearchCategory(ConnectionPool cp,
-                                               String needle) throws DatabaseException {
+            String needle) throws DatabaseException {
         if (needle == null)
             return null;
         List<String> needleAsList = new ArrayList<>();
@@ -71,7 +86,7 @@ public class CatAndSpecMapper
     }
 
     public static List<Integer> SearchCategory(ConnectionPool cp,
-                                               List<String> needles) throws DatabaseException {
+            List<String> needles) throws DatabaseException {
         List<Integer> ids = new ArrayList<>();
 
         String sql = """
@@ -117,7 +132,7 @@ public class CatAndSpecMapper
     }
 
     public static List<ProductSpecification> SelectSpecificationsById(ConnectionPool cp,
-                                                                      List<Long> ids) throws DatabaseException {
+            List<Long> ids) throws DatabaseException {
         if (ids == null || ids.size() < 1)
             return null;
         int[] idsArray = new int[ids.size()];
@@ -127,7 +142,7 @@ public class CatAndSpecMapper
     }
 
     public static List<ProductSpecification> SelectSpecificationsById(ConnectionPool cp,
-                                                                      int... ids) throws DatabaseException {
+            int... ids) throws DatabaseException {
         List<ProductSpecification> specs = new ArrayList<>();
         if (ids == null || ids.length < 1)
             return specs;
@@ -159,7 +174,7 @@ public class CatAndSpecMapper
     }
 
     public static Map<Integer, Long[]> SelectSpecificationsByCategory(ConnectionPool cp,
-                                                                      List<Integer> catIds) throws DatabaseException {
+            List<Integer> catIds) throws DatabaseException {
         if (catIds == null || catIds.size() < 1)
             return null;
         int[] catIdsArray = new int[catIds.size()];
@@ -169,7 +184,7 @@ public class CatAndSpecMapper
     }
 
     public static Map<Integer, Long[]> SelectSpecificationsByCategory(ConnectionPool cp,
-                                                                      int... catIds) throws DatabaseException {
+            int... catIds) throws DatabaseException {
         if (catIds == null)
             return null;
         Map<Integer, Long[]> catIdsWithSpecIds = new HashMap<>();
@@ -366,5 +381,37 @@ public class CatAndSpecMapper
         for (int i = 0; i < specIds.length; ++i)
             specIds[i] = specIdsList.get(i);
         return specIds;
+    }
+
+    public static List<Integer> GetProductCategories(ConnectionPool cp,
+            int pid) throws DatabaseException {
+        List<Integer> cats = new ArrayList<>();
+
+        String sql = """
+                SELECT p.id,
+                    ARRAY_AGG(pc.category_id) cid
+                FROM (SELECT * FROM product WHERE id = ?) as p
+                INNER JOIN product_category as pc
+                ON p.id = pc.product_id
+                GROUP BY p.id""";
+
+        try (Connection c = cp.getConnection();
+                PreparedStatement ps = c.prepareStatement(sql);) {
+            int argNum = 1;
+            ps.setInt(argNum++, pid);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Array cidA = rs.getArray("cid");
+                if (cidA == null)
+                    continue;
+                Long[] cids = (Long[]) cidA.getArray();
+                for (Long l : cids)
+                    cats.add(Integer.valueOf(l.intValue()));
+            }
+        } catch (SQLException e) {
+            String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+            throw new DatabaseException("fejl ved søgning i databasen (" + thisMethodName + ")");
+        }
+        return cats;
     }
 }

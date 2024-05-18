@@ -1,5 +1,7 @@
 package carport.controllers;
 
+import java.util.List;
+
 import carport.entities.*;
 import carport.exceptions.DatabaseException;
 import carport.persistence.*;
@@ -10,11 +12,17 @@ import io.javalin.http.Context;
 public class UserController {
 
     public static void addRoutes(Javalin app, ConnectionPool cp) {
-        app.post("/login", ctx -> login(ctx, cp));
+        /* GET */
         app.get("/login", ctx -> ctx.render("/user/logind.html"));
         app.get("/logout", ctx -> logout(ctx));
         app.get("/createuser", ctx -> ctx.render("/user/brugeroprettelse.html"));
+        app.get("/profil", ctx -> renderProfile(ctx, cp));
+        /* POST */
+        app.post("/login", ctx -> login(ctx, cp));
         app.post("/createuser", ctx -> createUser(ctx, cp));
+        app.post("/customerapprovependingorder", ctx -> approveOrder(ctx, cp));
+        app.post("/customerremoveorderproduct", ctx -> removeOrderProduct(ctx, cp));
+        app.post("/customerremoveorder", ctx -> removeOrder(ctx, cp));
     }
 
     private static void createUser(Context ctx, ConnectionPool cp) {
@@ -73,5 +81,75 @@ public class UserController {
                 ctx.render("index.html");
         }
         ctx.redirect("/");
+    }
+
+    private static void renderProfile(Context ctx, ConnectionPool cp){
+        User user = ctx.sessionAttribute("currentUser");
+        if (user == null){
+            ctx.redirect("login");
+            return;
+        }
+        try {
+            List<Order> pendingOrders = OrderMapper.SelectAllOrders(cp, user.getId(),-1, 4);
+            List<Order> validatedOrders = OrderMapper.SelectAllOrders(cp, user.getId(),-1,3);
+            List<Order> confirmedOrders = OrderMapper.SelectAllOrders(cp, user.getId(),-1,2);
+            List<Order> doneOrders = OrderMapper.SelectAllOrders(cp, user.getId(),-1,1);
+
+            Order.LoadList(cp, pendingOrders);
+            Order.LoadList(cp, confirmedOrders);
+            Order.LoadList(cp, validatedOrders);
+            Order.LoadList(cp, doneOrders);
+
+            ctx.attribute("pending", pendingOrders);
+            ctx.attribute("confirmed", confirmedOrders);
+            ctx.attribute("validated", validatedOrders);
+            ctx.attribute("done", doneOrders);
+        } catch (NumberFormatException | DatabaseException e) {
+            ctx.redirect("/");
+            return;
+        }
+        ctx.render("user/profile.html");
+    }
+
+    private static void approveOrder(Context ctx, ConnectionPool cp) {
+        if (ctx.sessionAttribute("currentUser") == null) {
+            ctx.redirect("/");
+            return;
+        }
+        String id = ctx.formParam("id");
+        try {
+            OrderMapper.ApproveOrder(cp, Integer.parseInt(id));
+        } catch (NumberFormatException | DatabaseException e) {
+        }
+        ctx.redirect("/profil");
+    }
+
+    private static void removeOrderProduct(Context ctx, ConnectionPool cp) {
+        if (ctx.sessionAttribute("currentUser") == null) {
+            ctx.redirect("/");
+            return;
+        }
+        String oid = ctx.formParam("oid");
+        String pid = ctx.formParam("pid");
+        try {
+            OrderMapper.DeleteOrderProduct(cp,
+                    Integer.parseInt(oid),
+                    Integer.parseInt(pid));
+        } catch (NumberFormatException | DatabaseException e) {
+        }
+        ctx.redirect("/profil");
+    }
+
+    private static void removeOrder(Context ctx, ConnectionPool cp) {
+        if (ctx.sessionAttribute("currentUser") == null) {
+            ctx.redirect("/");
+            return;
+        }
+        String oid = ctx.formParam("oid");
+        try {
+            OrderMapper.DeleteOrder(cp, Integer.parseInt(oid));
+        } catch (NumberFormatException | DatabaseException e) {
+        }
+        ctx.redirect("/profil");
     }
 }

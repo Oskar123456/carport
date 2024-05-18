@@ -31,14 +31,17 @@ public class Product {
     public String[] SpecDetails;
     public String[] SpecUnits;
     private List<ProductSpecification> fullSpecs;
+    private List<ProductCategory> cats;
     public Long[] DocIds;
     public Long[] CompIds;
     public Long[] CompQuants;
 
-    public Product(){}
+    public Product() {
+    }
+
     public Product(String name, String description,
-                   BigDecimal price, String[] links,
-                   Long[] catIds, Long[] specIds){
+            BigDecimal price, String[] links,
+            Long[] catIds, Long[] specIds) {
         this.Name = name;
         this.Description = description;
         this.Price = price;
@@ -72,16 +75,15 @@ public class Product {
         this.CompQuants = compQuants;
     }
 
-    public void AddComps(int id, int quant){
+    public void AddComps(int id, int quant) {
         if (CompIds == null || CompIds.length < 1 ||
-            CompQuants == null || CompQuants.length < 1) {
-                CompIds = new Long[1];
-                CompQuants = new Long[1];
-            }
-        else {
+                CompQuants == null || CompQuants.length < 1) {
+            CompIds = new Long[1];
+            CompQuants = new Long[1];
+        } else {
             Long[] newCompIds = new Long[CompIds.length + 1];
             Long[] newCompQants = new Long[CompIds.length + 1];
-            for (int i = 0; i < CompIds.length; ++i){
+            for (int i = 0; i < CompIds.length; ++i) {
                 newCompIds[i] = CompIds[i];
                 newCompQants[i] = CompQuants[i];
             }
@@ -92,8 +94,8 @@ public class Product {
         CompQuants[CompIds.length - 1] = Long.valueOf(quant);
     }
 
-    public List<ProductSpecification> GetFullSpecs(ConnectionPool cp) throws DatabaseException{
-        if (fullSpecs == null && SpecIds != null){
+    public List<ProductSpecification> GetFullSpecs(ConnectionPool cp) throws DatabaseException {
+        if (fullSpecs == null && SpecIds != null) {
             int[] specIds = new int[SpecIds.length];
             for (int i = 0; i < specIds.length; ++i)
                 specIds[i] = SpecIds[i].intValue();
@@ -106,7 +108,7 @@ public class Product {
         return fullSpecs;
     }
 
-    public ProductSpecification GetFullSpec(String name){
+    public ProductSpecification GetFullSpec(String name) {
         if (fullSpecs == null)
             return null;
         for (ProductSpecification ps : fullSpecs)
@@ -114,7 +116,8 @@ public class Product {
                 return ps;
         return null;
     }
-    public ProductSpecification GetFullSpec(int id){
+
+    public ProductSpecification GetFullSpec(int id) {
         if (fullSpecs == null)
             return null;
         for (ProductSpecification ps : fullSpecs)
@@ -122,13 +125,16 @@ public class Product {
                 return ps;
         return null;
     }
-    public ProductSpecification GetSpecLength(){
+
+    public ProductSpecification GetSpecLength() {
         return GetFullSpec("length");
     }
-    public ProductSpecification GetSpecWidth(){
+
+    public ProductSpecification GetSpecWidth() {
         return GetFullSpec("width");
     }
-    public ProductSpecification GetSpecHeight(){
+
+    public ProductSpecification GetSpecHeight() {
         return GetFullSpec("height");
     }
 
@@ -141,24 +147,45 @@ public class Product {
     }
 
     public void AddImages(boolean downscaled,
-                          int... ids){
-        if (ids == null) {return;}
-        if (downscaled){
+            int... ids) {
+        if (ids == null) {
+            return;
+        }
+        if (downscaled) {
             ImageIds = new Long[ids.length];
             for (int i = 0; i < ids.length; ++i)
                 ImageIds[i] = Long.valueOf(ids[i]);
-        }
-        else{
+        } else {
             ImageDownscaledIds = new Long[ids.length];
             for (int i = 0; i < ids.length; ++i)
                 ImageDownscaledIds[i] = Long.valueOf(ids[i]);
         }
     }
 
+    public List<ProductCategory> GetCategories(ConnectionPool cp) throws DatabaseException {
+        if (cats == null)
+            cats = CatAndSpecMapper.SelectCategoriesById(cp,
+                    CatAndSpecMapper.GetProductCategories(cp, Id));
+        return cats;
+    }
+
+    public boolean IsType(String cat) {
+        if (fullSpecs != null)
+            for (ProductCategory c : cats) {
+                if (cat.toLowerCase().equals(c.Name.toLowerCase()))
+                    return true;
+            }
+        return false;
+    }
+
+    public boolean IsCarport(){
+        return IsType("carport");
+    }
+
     /*
      * static
      */
-    public static Product ImportFromDB(ResultSet rs) throws SQLException{
+    public static Product ImportFromDB(ResultSet rs) throws SQLException {
         Array sqlLinks = rs.getArray("links");
         Array sqlImageIds = rs.getArray("image_ids");
         Array sqlImageDownscaledIds = rs.getArray("image_downscaled_ids");
@@ -170,22 +197,22 @@ public class Product {
         Array sqlCompQuants = rs.getArray("component_quantities");
 
         return new Product(rs.getInt("id"),
-                           rs.getString("name"),
-                           rs.getString("description"),
-                           rs.getBigDecimal("price"),
-                           (sqlLinks == null) ? null : (String[]) sqlLinks.getArray(),
-                           (sqlImageIds == null) ? null : (Long[]) sqlImageIds.getArray(),
-                           (sqlImageDownscaledIds == null) ? null : (Long[]) sqlImageDownscaledIds.getArray(),
-                           (sqlCatIds == null) ? null : (Long[]) sqlCatIds.getArray(),
-                           (sqlSpecIds == null) ? null : (Long[]) sqlSpecIds.getArray(),
-                           (sqlSpecDetails == null) ? null : (String[]) sqlSpecDetails.getArray(),
-                           (sqlDocIds == null) ? null : (Long[]) sqlDocIds.getArray(),
-                           (sqlCompIds == null) ? null : (Long[]) sqlCompIds.getArray(),
-                           (sqlCompQuants == null) ? null : (Long[]) sqlCompQuants.getArray());
+                rs.getString("name"),
+                rs.getString("description"),
+                rs.getBigDecimal("price"),
+                (sqlLinks == null) ? null : (String[]) sqlLinks.getArray(),
+                (sqlImageIds == null) ? null : (Long[]) sqlImageIds.getArray(),
+                (sqlImageDownscaledIds == null) ? null : (Long[]) sqlImageDownscaledIds.getArray(),
+                (sqlCatIds == null) ? null : (Long[]) sqlCatIds.getArray(),
+                (sqlSpecIds == null) ? null : (Long[]) sqlSpecIds.getArray(),
+                (sqlSpecDetails == null) ? null : (String[]) sqlSpecDetails.getArray(),
+                (sqlDocIds == null) ? null : (Long[]) sqlDocIds.getArray(),
+                (sqlCompIds == null) ? null : (Long[]) sqlCompIds.getArray(),
+                (sqlCompQuants == null) ? null : (Long[]) sqlCompQuants.getArray());
     }
 
     public static int[] GetPlaceHolderImageId() {
-        return new int[] {PlaceholderImageId, PlaceholderImageIdMini};
+        return new int[] { PlaceholderImageId, PlaceholderImageIdMini };
     }
 
     public static void SetPlaceholderImgs(int regular, int downscaled) {
@@ -235,28 +262,38 @@ public class Product {
         return uniqueSpecDetails;
     }
 
-    public static void LoadFullSpecs(ConnectionPool cp, List<Product> products) throws DatabaseException{
+    public static void LoadFullSpecs(ConnectionPool cp, List<Product> products) throws DatabaseException {
         for (Product p : products)
             p.GetFullSpecs(cp);
     }
-    public BigDecimal GetSumOfComponentPrices(ConnectionPool cp) throws DatabaseException{
+
+    public BigDecimal GetSumOfComponentPrices(ConnectionPool cp) throws DatabaseException {
         if (CompIds == null || CompIds.length < 1)
             return new BigDecimal(0);
         List<Integer> compidsints = new ArrayList<>();
-        for (Long l : CompIds){
+        for (Long l : CompIds) {
             compidsints.add(l.intValue());
         }
         List<Product> components = ProductMapper.SelectProductsById(cp, compidsints);
         BigDecimal retval = new BigDecimal(0);
-        for (int i = 0; i < components.size(); ++i){
-            for (int j = 0; j < CompIds.length; ++j){
+        for (int i = 0; i < components.size(); ++i) {
+            for (int j = 0; j < CompIds.length; ++j) {
                 BigDecimal compPrice = components.get(i).Price;
-                if (CompIds[j] == components.get(i).Id){
+                if (CompIds[j] == components.get(i).Id) {
                     BigDecimal fullPrice = compPrice.multiply(new BigDecimal(CompQuants[j].intValue()));
                     retval = retval.add(fullPrice);
                 }
             }
         }
         return retval;
+    }
+
+    public static BigDecimal GetSumOfProductPrices(List<Product> products) {
+        BigDecimal total = new BigDecimal(0);
+        if (products == null)
+            return total;
+        for (Product p : products)
+            total = total.add(p.Price);
+        return total;
     }
 }

@@ -18,7 +18,7 @@ public class UserMapper {
             ps.setString(2, password);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return new User(rs.getString("name"), rs.getString("surname"), password, rs.getString("role"), rs.getInt("address_id"));
+                return new User(rs.getInt("id"), rs.getString("name"), rs.getString("surname"), password, rs.getString("role"), rs.getInt("address_id"));
             } else {
                 throw new DatabaseException("Fejl i login. Prøv igen.");
             }

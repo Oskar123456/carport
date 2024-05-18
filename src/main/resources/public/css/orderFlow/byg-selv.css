@@ -193,15 +193,14 @@ header {
 }
 
 footer {
-    text-align: start;
-    position: fixed; /* Set the navbar to fixed position */
-    bottom: 0; /* Position the navbar at the bottom of the page */
-    width: 100%; /* Full width */
+    margin-top: 40px;
+    text-align: center;
+    width: 100%;
 }
 
 footer span {
-    margin-left: 25rem;
-    margin-right: 25rem;
+    margin-left: 24rem;
+    margin-right: 24rem;
 }
 
 /************* Form *********************/

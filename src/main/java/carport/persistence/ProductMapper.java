@@ -526,4 +526,11 @@ public class ProductMapper {
              throw new DatabaseException(funcName + "::" + e.getMessage());
          }
     }
+
+    public static void ReplaceProduct(ConnectionPool cp,
+                                      int old,
+                                      Product product){
+
+    }
+
 }

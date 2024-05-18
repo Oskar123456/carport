@@ -15,16 +15,16 @@
 
 <body>
 <div class="page">
-<!-- BEGINNING OF NAV BAR -->
-<header>
-    <div class="header-info">
-        <ul>
-            <li><a href="">30 dages returret</a></li>
-            <li><a href="">Klik og hent inden for 3 timer*</a></li>
-            <li><a href="">1-3 dages levering*</a></li>
-            <li><a href="">Lån en trailer gratis</a></li>
-        </ul>
-    </div>
+    <!-- BEGINNING OF NAV BAR -->
+    <header>
+        <div class="header-info">
+            <ul>
+                <li><a href="">30 dages returret</a></li>
+                <li><a href="">Klik og hent inden for 3 timer*</a></li>
+                <li><a href="">1-3 dages levering*</a></li>
+                <li><a href="">Lån en trailer gratis</a></li>
+            </ul>
+        </div>
         <div class="nav">
             <div class="nav-left">
                 <div class="nav-logo">
@@ -42,7 +42,6 @@
                                 <a href="#">Link 3</a>
                             </div>
                         </li>
-
                         <li class="nav-categories-element">
                             <a href="" class="dropdown-button">Kategori 2</a>
                             <div class="dropdown-content">
@@ -54,23 +53,23 @@
                         <li class="nav-categories-element">
                             <a href="" class="dropdown-button">Tilbehør</a>
                             <div class="dropdown-content">
-                                <a href="#" th:href="@{/kategori?category=skruer}" >Skruer</a>
-                                <a href="#" th:href="@{/kategori?category=søm}" >Søm</a>
-                                <a href="#" th:href="@{/kategori?category=lægte}" >andet til carport LOL</a>
+                                <a href="#" th:href="@{/kategori?category=skruer}">Skruer</a>
+                                <a href="#" th:href="@{/kategori?category=søm}">Søm</a>
+                                <a href="#" th:href="@{/kategori?category=lægte}">andet til carport LOL</a>
                             </div>
                         </li>
                         <li class="nav-categories-element">
                             <a href="" th:href="@{/kategori?category=byggemateriale}" class="dropdown-button">Byggematerialer</a>
                             <div class="dropdown-content">
-                                <a href="#" th:href="@{/kategori?category=lægte}" >Lægter</a>
-                                <a href="#" th:href="@{/kategori?category=brædde}" >Brædder</a>
-                                <a href="#" th:href="@{/kategori?category=tagplade}" >Tagplader</a>
+                                <a href="#" th:href="@{/kategori?category=lægte}">Lægter</a>
+                                <a href="#" th:href="@{/kategori?category=brædde}">Brædder</a>
+                                <a href="#" th:href="@{/kategori?category=tagplade}">Tagplader</a>
                             </div>
                         </li>
                         <li class="nav-categories-element">
                             <a href="" class="dropdown-button">Maling</a>
                             <div class="dropdown-content">
-                                <a href="#" th:href="@{/kategori?category=indendoers}" >Indendørs</a>
+                                <a href="#" th:href="@{/kategori?category=indendoers}">Indendørs</a>
                                 <a href="#"></a>
                                 <a href="#"></a>
                             </div>
@@ -80,38 +79,35 @@
                             <div class="dropdown-content">
                                 <a href="#">Link 1</a>
                                 <a href="#">Link 2</a>
-                                <!-- SPECIAL RULE FOR BYGSELV -->
-                                <a href="orderFlow/byg-carport.html" th:href="@{/bygselvcarport}">Byg selv</a>
+                                <a href="orderFlow/byg-carport.html" th:href="@{/orderFlow/byg-carport}">Byg selv</a>
                             </div>
                         </li>
                     </ul>
-
                 </div>
             </div>
             <div class="nav-right">
                 <div class="nav-search">
                     <form class="nav-search-form">
                         <button class="nav-search-button" type="submit" formaction="/soegning">
-                            <img src="../public/images/magnifyingglass64x64.png" th:src="@{/images/magnifyingglass64x64.png}"  alt=""/>
+                            <img src="../public/images/magnifyingglass64x64.png" th:src="@{/images/magnifyingglass64x64.png}" alt=""/>
                         </button>
                         <label>
                             <input type="text" placeholder="Søg på produkter eller kategorier" name="searchString" id="searchString">
                         </label>
-                        <!-- <button class="nav-search-cancel-button" type="button">luk</button> -->
                     </form>
                 </div>
                 <div class="nav-personal">
                     <ul>
-                        <li><a href="logind.html" th:href="@{/shop}">Fog Konto</a></li>
+                        <li><a th:if="${session.currentUser == null}" th:href="@{/login}">Log ind</a></li>
+                        <li><a th:if="${session.currentUser != null}" th:text="${session.currentUser.getName()}" th:href="@{/profil}"></a></li>
                         <li><a href="">Find Fog</a></li>
-                        <li><a href="">Kurv</a></li>
+                        <li><a href="" th:href="@{/kurv}" >Kurv</a></li>
                     </ul>
                 </div>
             </div>
-
         </div>
-</header>
-<!-- END OF NAV BAR -->
+    </header>
+    <!-- END OF NAV BAR -->
 <div class="main">
 <div class="text">
 
