@@ -80,7 +80,7 @@ public class UserController {
                 ctx.attribute("message", "Login fejlede, tjek din email og adgangskode og prøv igen:)");
                 ctx.render("index.html");
         }
-        ctx.redirect("/");
+        renderProfile(ctx, cp);
     }
 
     private static void renderProfile(Context ctx, ConnectionPool cp){
@@ -121,7 +121,7 @@ public class UserController {
             OrderMapper.ApproveOrder(cp, Integer.parseInt(id));
         } catch (NumberFormatException | DatabaseException e) {
         }
-        ctx.redirect("/profil");
+        renderProfile(ctx, cp);
     }
 
     private static void removeOrderProduct(Context ctx, ConnectionPool cp) {
@@ -137,7 +137,7 @@ public class UserController {
                     Integer.parseInt(pid));
         } catch (NumberFormatException | DatabaseException e) {
         }
-        ctx.redirect("/profil");
+        renderProfile(ctx, cp);
     }
 
     private static void removeOrder(Context ctx, ConnectionPool cp) {
@@ -150,6 +150,6 @@ public class UserController {
             OrderMapper.DeleteOrder(cp, Integer.parseInt(oid));
         } catch (NumberFormatException | DatabaseException e) {
         }
-        ctx.redirect("/profil");
+        renderProfile(ctx, cp);
     }
 }

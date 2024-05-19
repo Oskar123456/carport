@@ -38,13 +38,6 @@ public class MainController {
         app.get("/", ctx -> renderIndex(ctx, cp));
         app.get("/index", ctx -> renderIndex(ctx, cp));
         app.get("/index.html", ctx -> renderIndex(ctx, cp));
-
-        app.get("/bygselv", ctx -> renderBygSelv(ctx, cp));
-        app.get("/bygselvcarport", ctx -> renderBygSelv(ctx, cp));
-
-        app.get("/admin", ctx -> renderAdminPage(ctx, cp));
-        app.get("/administrator", ctx -> renderAdminPage(ctx, cp));
-
         app.get("/kurv", ctx -> renderBasket(ctx, cp));
 
         /*
@@ -72,6 +65,7 @@ public class MainController {
                                     "", 1, Product.GetSumOfProductPrices(basket),
                                     "", "");
             OrderMapper.InsertOrder(cp, order, 4, basket);
+            ctx.sessionAttribute("basket", null);
         }
         catch (DatabaseException e) {}
         ctx.redirect("/profil");
@@ -114,8 +108,9 @@ public class MainController {
             ctx.sessionAttribute("basket", basket);
         } catch (DatabaseException e) {
             ctx.redirect("/");
+            return;
         }
-        ctx.redirect("/kurv");
+        renderBasket(ctx, cp);
     }
 
     private static void renderBasket(Context ctx, ConnectionPool cp) {
@@ -134,13 +129,6 @@ public class MainController {
         ctx.attribute("fullprice", fullprice);
         ctx.sessionAttribute("basket", basket);
         ctx.render("products/viewbasket.html");
-    }
-
-    private static void renderAdminPage(Context ctx, ConnectionPool cp) {
-    }
-
-    private static void renderBygSelv(Context ctx, ConnectionPool cp) {
-        ctx.result("lol");
     }
 
     private static void sendImage(Context ctx, ConnectionPool cp) {
@@ -162,7 +150,6 @@ public class MainController {
     }
 
     private static void renderProduct(Context ctx, ConnectionPool cp) {
-        // TODO ADMIN RIGHTS IF INTERNAL?
         String idStr = ctx.queryParam("id");
         try {
             int id = Integer.parseInt(idStr);

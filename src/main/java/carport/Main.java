@@ -18,7 +18,7 @@ public class Main {
     public static void main(String[] args) {
         // Initializing Javalin and Jetty webserver
 
-        Javalin jav = Javalin.create(config -> {
+       Javalin jav = Javalin.create(config -> {
                 // TODO: figure out hotloading files instead of static
                 config.staticFiles.add("/public");
                 config.jetty.modifyServletContextHandler(handler -> handler.setSessionHandler(SessionConfig.sessionConfig()));

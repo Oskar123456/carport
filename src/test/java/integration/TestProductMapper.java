@@ -94,10 +94,10 @@ public class TestProductMapper
         p.SpecDetails[0] = "12";
         p.SpecDetails[1] = "123";
         p.SpecDetails[2] = "1234";
-/*        try {
-            *//* SEARCH FOR THE PRODUCT IN DIFFERENT WAYS *//*
-        } catch (DatabaseException | NullPointerException e) {
-            fail("");
-        }*/
+//        try {
+//            /* SEARCH FOR THE PRODUCT IN DIFFERENT WAYS */
+//        } catch (DatabaseException | NullPointerException e) {
+//            fail("");
+//        }
     }
 }
