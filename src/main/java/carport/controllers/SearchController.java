@@ -13,10 +13,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SearchController {
+public class SearchController
+{
     private static final int PAGE_SIZE = 100;
 
-    public static void addRoutes(Javalin app, ConnectionPool cp) {
+    public static void addRoutes(Javalin app, ConnectionPool cp)
+    {
         /* GET */
         app.get("/soegning", ctx -> renderSearch(ctx, cp));
         app.get("/soegning.html", ctx -> renderSearch(ctx, cp));
@@ -25,7 +27,8 @@ public class SearchController {
         app.get("/kategori", ctx -> renderCategorySearch(ctx, cp));
     }
 
-    private static void renderSearch(Context ctx, ConnectionPool cp) {
+    private static void renderSearch(Context ctx, ConnectionPool cp)
+    {
         String searchString = ctx.queryParam("searchString");
         searchString = (searchString == null) ? "" : searchString;
         String pageString = ctx.queryParam("page");
@@ -88,7 +91,8 @@ public class SearchController {
         ctx.render("products/soegning.html");
     }
 
-    private static void renderCategorySearch(Context ctx, ConnectionPool cp) {
+    private static void renderCategorySearch(Context ctx, ConnectionPool cp)
+    {
         // TODO: merge this with regular search, so you have filters as well. Should be
         // simple
         String searchString = ctx.queryParam("category");

@@ -1,25 +1,28 @@
 package carport.tools;
 
-import carport.entities.Point;
-import carport.entities.Rectangle;
+import carport.tools.types.Point;
+import carport.tools.types.Rectangle;
 
 public class SvgHelper
 {
 
 
-    public static String svgDrawPolygon(String className, Point... points) {
+    public static String svgDrawPolygon(String className, Point... points)
+    {
         String poly = "";
         for (Point p : points)
             poly += String.format(" %d, %d ", p.x, p.y);
         return String.format("<polygon class=\"%s\" points=\"%s\"/>", className, poly);
     }
 
-    public static String svgText(String className, int x, int y, String text) {
+    public static String svgText(String className, int x, int y, String text)
+    {
         return String.format("<text class=\"%s\" x=\"%d\" y=\"%d\">%s</text>",
                 className, x, y, text);
     }
 
-    public static String svgSetClassStyle(String svg, String className, String... args) {
+    public static String svgSetClassStyle(String svg, String className, String... args)
+    {
         String classStyle = "";
         for (String s : args)
             classStyle += String.format("%n%s;", s);
@@ -37,11 +40,12 @@ public class SvgHelper
         return svg;
     }
 
-    public static String svgAddLenX(String svg, int startX, int lenX, boolean moveRuler) {
+    public static String svgAddLenX(String svg, int startX, int lenX, boolean moveRuler)
+    {
         int h = 20;
         int arrowLen = 40;
 
-       Rectangle viewBox = svgGetDims(svg);
+        Rectangle viewBox = svgGetDims(svg);
 
         Rectangle ruler = new Rectangle(startX + arrowLen, viewBox.Corners[2].y, lenX - 2 * arrowLen, h);
         String text = String.format("<text class=\"textDescr\" x=\"%d\" y=\"%d\">%3.3f m</text>",
@@ -63,7 +67,8 @@ public class SvgHelper
         return svg;
     }
 
-    public static String svgAddLenY(String svg, int startY, int lenY, boolean moveRuler) {
+    public static String svgAddLenY(String svg, int startY, int lenY, boolean moveRuler)
+    {
         int h = 20;
         int arrowLen = 40;
 
@@ -87,7 +92,8 @@ public class SvgHelper
         return svg;
     }
 
-    public static Rectangle svgGetDims(String svg) {
+    public static Rectangle svgGetDims(String svg)
+    {
         int viewBoxIndexStart = svg.indexOf("\"");
         int viewBoxIndexEnd = svg.substring(viewBoxIndexStart + 1).indexOf("\"") + viewBoxIndexStart + 1;
         String dimsStr = svg.substring(viewBoxIndexStart + 1, viewBoxIndexEnd);
@@ -99,16 +105,19 @@ public class SvgHelper
         return b;
     }
 
-    public static String svgSetViewBox(String svg, int x, int y, int lenX, int lenY) {
+    public static String svgSetViewBox(String svg, int x, int y, int lenX, int lenY)
+    {
         svg = svg.substring(svg.indexOf(">") + 1);
         return String.format("<svg viewBox=\"%d %d %d %d\">", x, y, lenX, lenY) + svg;
     }
 
-    public static String svgAddObject(String svg, String... objs) {
+    public static String svgAddObject(String svg, String... objs)
+    {
         return svg.replace("</svg>", " ") + String.join(" ", objs) + "</svg>";
     }
 
-    public static String svgObjectAddAttributes(String obj, String... args) {
+    public static String svgObjectAddAttributes(String obj, String... args)
+    {
         return obj.replace("/>", " ") + String.join(" ", args) + "/>";
     }
 }

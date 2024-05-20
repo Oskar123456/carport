@@ -8,9 +8,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class UserMapper {
+public class UserMapper
+{
 
-        public static User login(String email, String password, ConnectionPool cp) throws DatabaseException {
+    public static User login(String email, String password, ConnectionPool cp) throws DatabaseException
+    {
         String sql = "SELECT * FROM users WHERE email = ? AND password = ?";
         try (Connection conn = cp.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -27,7 +29,8 @@ public class UserMapper {
         }
     }
 
-    public static void createuser(String name, String surname, int addressId, String email, String password, String role, ConnectionPool cp) throws DatabaseException {
+    public static void createuser(String name, String surname, int addressId, String email, String password, String role, ConnectionPool cp) throws DatabaseException
+    {
         String sql = "INSERT INTO users (name, surname, address_id, email, password, role) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = cp.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

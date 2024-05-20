@@ -28,7 +28,6 @@ public class ConnectionPool
     }
 
 
-
     /***
      * Getting a singleton instance of a Hikari Connection Pool with specific credentials
      * and connection string. If an environment variable "DEPLOYED" exists then local
@@ -41,10 +40,8 @@ public class ConnectionPool
      */
     public static ConnectionPool getInstance(String user, String password, String url, String db)
     {
-        if (instance == null)
-        {
-            if (System.getenv("DEPLOYED") != null)
-            {
+        if (instance == null) {
+            if (System.getenv("DEPLOYED") != null) {
                 ds = createHikariConnectionPool(
                         System.getenv("JDBC_USER"),
                         System.getenv("JDBC_PASSWORD"),
@@ -52,8 +49,7 @@ public class ConnectionPool
                         System.getenv("JDBC_DB"));
                 dbName = System.getenv("JDBC_DB"); // TODO: THESE ARE ADDED FOR TESTS
 
-            } else
-            {
+            } else {
                 ds = createHikariConnectionPool(user, password, url, db);
                 dbName = db; // TODO: THESE ARE ADDED FOR TESTS
             }
@@ -95,9 +91,8 @@ public class ConnectionPool
                 String.format("Connection Pool created for: (%s, %s, %s, %s)", user, password, url, db));
         HikariConfig config = new HikariConfig();
 
-        // TODO : ADDED EXTRAS
+        // debugging
         config.setLeakDetectionThreshold(60 * 1000);
-        // TODO : ADDED EXTRAS
 
         config.setDriverClassName("org.postgresql.Driver");
         config.setJdbcUrl(String.format(url, db));
@@ -111,7 +106,8 @@ public class ConnectionPool
         return new HikariDataSource(config);
     }
 
-    public static String GetDBName(){
+    public static String GetDBName()
+    {
         return dbName;
     }
 }

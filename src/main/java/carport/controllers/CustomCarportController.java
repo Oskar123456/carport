@@ -1,10 +1,5 @@
 package carport.controllers;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
-
 import carport.entities.CustomCarport;
 import carport.entities.Product;
 import carport.exceptions.DatabaseException;
@@ -15,17 +10,22 @@ import carport.persistence.ProductMapper;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
+import java.util.List;
+
 /**
  * CustomCarportController
  */
-public class CustomCarportController {
+public class CustomCarportController
+{
 
-    public static void addRoutes(Javalin app, ConnectionPool cp) {
+    public static void addRoutes(Javalin app, ConnectionPool cp)
+    {
         app.get("/customcarport", ctx -> renderCustomCarport(ctx, cp));
         app.get("/customcarportcreate", ctx -> renderCustomCarportCreate(ctx, cp));
     }
 
-    private static void renderCustomCarportCreate(Context ctx, ConnectionPool cp) {
+    private static void renderCustomCarportCreate(Context ctx, ConnectionPool cp)
+    {
         if (ctx.sessionAttribute("admin") == null)
             return;
         String lStr = ctx.queryParam("length");
@@ -101,7 +101,8 @@ public class CustomCarportController {
         }
     }
 
-    private static void renderCustomCarport(Context ctx, ConnectionPool cp) {
+    private static void renderCustomCarport(Context ctx, ConnectionPool cp)
+    {
         if (ctx.sessionAttribute("admin") == null)
             return;
         try {

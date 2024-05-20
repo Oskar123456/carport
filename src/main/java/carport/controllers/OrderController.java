@@ -2,19 +2,20 @@ package carport.controllers;
 
 import carport.entities.CustomCarport;
 import carport.entities.Product;
-import carport.entities.User;
 import carport.exceptions.DatabaseException;
 import carport.persistence.ConnectionPool;
 import carport.persistence.ProductMapper;
-import carport.persistence.UserMapper;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
-public class OrderController {
-    public OrderController() {
+public class OrderController
+{
+    public OrderController()
+    {
     }
 
-    public static void addRoutes(Javalin app, ConnectionPool connectionPool) {
+    public static void addRoutes(Javalin app, ConnectionPool connectionPool)
+    {
         app.get("/order", ctx -> ctx.render("showorder.html"));
         app.get("/orderPage", ctx -> ctx.render("orderFlow/byg-carport.html"));
         app.post("/save-dimensions", ctx -> saveDimensions(ctx));
@@ -23,7 +24,8 @@ public class OrderController {
         app.post("/sendcustomcarportrequest", ctx -> showResult(ctx, connectionPool));
     }
 
-    private static void saveDimensions(Context ctx) {
+    private static void saveDimensions(Context ctx)
+    {
         try {
             int width = Integer.parseInt(ctx.formParam("width"));
             int length = Integer.parseInt(ctx.formParam("length"));
@@ -38,7 +40,8 @@ public class OrderController {
         }
     }
 
-    private static void sendRequest(Context ctx, ConnectionPool connectionPool) throws DatabaseException {
+    private static void sendRequest(Context ctx, ConnectionPool connectionPool) throws DatabaseException
+    {
         int width = ctx.sessionAttribute("width");
         int length = ctx.sessionAttribute("length");
 
@@ -54,7 +57,8 @@ public class OrderController {
         }
     }
 
-    private static void calculatePrice(Context ctx) {
+    private static void calculatePrice(Context ctx)
+    {
         Integer width = ctx.sessionAttribute("width");
         Integer length = ctx.sessionAttribute("length");
 
@@ -69,12 +73,14 @@ public class OrderController {
         }
     }
 
-    private static int calculateTotalPrice(int width, int length) {
+    private static int calculateTotalPrice(int width, int length)
+    {
         return width * length * 5; // Det bare lige en hurtig logik, skal ændres.
         // Spørg jon i morgen, om vi skal lave den også?
     }
 
-    private static void showResult(Context ctx, ConnectionPool cp) {
+    private static void showResult(Context ctx, ConnectionPool cp)
+    {
         if (ctx.sessionAttribute("currentUser") == null) {
             ctx.render("user/logind.html");
             return;
@@ -94,11 +100,11 @@ public class OrderController {
 
             CustomCarport cc = new CustomCarport();
 
-            Product stolpe = ProductMapper.SelectProductsById(cp,15).get(0);
-            Product rem = ProductMapper.SelectProductsById(cp,11).get(0);
+            Product stolpe = ProductMapper.SelectProductsById(cp, 15).get(0);
+            Product rem = ProductMapper.SelectProductsById(cp, 11).get(0);
             Product spaer = ProductMapper.SelectProductsById(cp, 12).get(0);
-            Product stern = ProductMapper.SelectProductsById(cp,21).get(0);
-            Product tagplade = ProductMapper.SelectProductsById(cp,14).get(0);
+            Product stern = ProductMapper.SelectProductsById(cp, 21).get(0);
+            Product tagplade = ProductMapper.SelectProductsById(cp, 14).get(0);
 
             cc.SetStolpe(cp, stolpe);
             cc.SetRem(cp, rem);
@@ -108,7 +114,7 @@ public class OrderController {
 
             boolean made = cc.Make(w * 10, l * 10, 2800, shed, sw * 10, sl * 10);
 
-            if (!made){
+            if (!made) {
                 ctx.render("byg-carport.html");
                 return;
             }

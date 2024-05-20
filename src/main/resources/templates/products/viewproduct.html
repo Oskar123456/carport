@@ -15,6 +15,7 @@
 
 <body>
 <div class="page">
+
     <!-- BEGINNING OF NAV BAR -->
     <header>
         <div class="header-info">
@@ -32,32 +33,10 @@
                         <img src="../public/images/foglogo.png" th:src="@{/images/foglogo.png}" alt=""/>
                     </a>
                 </div>
+                <a class="mobilebygselvlink" href="orderFlow/byg-carport.html" th:href="@{/orderPage}">Byg selv carport</a>
                 <div class="nav-categories">
                     <ul>
-                        <li class="nav-categories-element">
-                            <a href="" class="dropdown-button">Kategori 1</a>
-                            <div class="dropdown-content">
-                                <a href="#">Link 1</a>
-                                <a href="#">Link 2</a>
-                                <a href="#">Link 3</a>
-                            </div>
-                        </li>
-                        <li class="nav-categories-element">
-                            <a href="" class="dropdown-button">Kategori 2</a>
-                            <div class="dropdown-content">
-                                <a href="#">Link 1</a>
-                                <a href="#">Link 2</a>
-                                <a href="#">Link 3</a>
-                            </div>
-                        </li>
-                        <li class="nav-categories-element">
-                            <a href="" class="dropdown-button">Tilbehør</a>
-                            <div class="dropdown-content">
-                                <a href="#" th:href="@{/kategori?category=skruer}">Skruer</a>
-                                <a href="#" th:href="@{/kategori?category=søm}">Søm</a>
-                                <a href="#" th:href="@{/kategori?category=lægte}">andet til carport LOL</a>
-                            </div>
-                        </li>
+
                         <li class="nav-categories-element">
                             <a href="" th:href="@{/kategori?category=byggemateriale}" class="dropdown-button">Byggematerialer</a>
                             <div class="dropdown-content">
@@ -67,19 +46,10 @@
                             </div>
                         </li>
                         <li class="nav-categories-element">
-                            <a href="" class="dropdown-button">Maling</a>
-                            <div class="dropdown-content">
-                                <a href="#" th:href="@{/kategori?category=indendoers}">Indendørs</a>
-                                <a href="#"></a>
-                                <a href="#"></a>
-                            </div>
-                        </li>
-                        <li class="nav-categories-element">
                             <a href="" th:href="@{/kategori?category=carport}" class="dropdown-button">Carporte</a>
                             <div class="dropdown-content">
-                                <a href="#">Link 1</a>
-                                <a href="#">Link 2</a>
-                                <a href="orderFlow/byg-carport.html" th:href="@{/orderFlow/byg-carport}">Byg selv</a>
+                                <a th:href="@{/kategori?category=carport}">Fladt tag</a>
+                                <a href="orderFlow/byg-carport.html" th:href="@{/orderPage}">Byg selv</a>
                             </div>
                         </li>
                     </ul>
@@ -100,7 +70,6 @@
                     <ul>
                         <li><a th:if="${session.currentUser == null}" th:href="@{/login}">Log ind</a></li>
                         <li><a th:if="${session.currentUser != null}" th:text="${session.currentUser.getName()}" th:href="@{/profil}"></a></li>
-                        <li><a href="">Find Fog</a></li>
                         <li><a href="" th:href="@{/kurv}" >Kurv</a></li>
                     </ul>
                 </div>
@@ -108,6 +77,7 @@
         </div>
     </header>
     <!-- END OF NAV BAR -->
+
 <div class="main">
 <div th:if="${product != null}" class="productview">
 
@@ -153,15 +123,22 @@
 
 </div>
 
-<div th:if="${session.currentUser != null && session.admin}" class="admin-functions">
-    <h2>ADMINISTRATOR FUNKTIONER</h2>
-    <a th:href="@{/newproduct}">Tilføj nyt produkt</a>
-    <a th:href="@{/uploadimage}">Tilføj nyt billede</a>
-</div>
-
-<footer>
-    <p>Johannes Fog A/S<span>Firskovvej 20, 2800 Lyngby</span>CVR-nr. 16314439</p>
-</footer>
+    <!-- ADMIN -->
+    <div th:if="${session.currentUser != null && session.admin}" class="admin-functions">
+        <h2>ADMINISTRATOR FUNKTIONER</h2>
+        <h3 th:if="${session.currentUser != null && session.admin}" th:text="'Velkommen ' + ${session.currentUser.getName()}" ></h3>
+        <a class="good-button" th:href="@{/newproduct}">Tilføj nyt produkt</a>
+        <a class="good-button" th:href="@{/uploadimage}">Tilføj nyt billede</a>
+        <a class="good-button" th:href="@{/customcarport}">Custom carport</a>
+        <a class="good-button" th:href="@{/showorders}">Alle bestillinger</a>
+    </div>
+    <!-- ADMIN -->
+    <footer>
+        <p> <span>Johannes Fog A/S</span>
+            <span>Firskovvej 20, 2800 Lyngby</span>
+            <span> CVR-nr. 16314439 </span>
+        </p>
+    </footer>
 
 </div>
 </body>

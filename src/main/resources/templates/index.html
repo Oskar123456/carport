@@ -30,32 +30,10 @@
                         <img src="../public/images/foglogo.png" th:src="@{/images/foglogo.png}" alt=""/>
                     </a>
                 </div>
+                <a class="mobilebygselvlink" href="orderFlow/byg-carport.html" th:href="@{/orderPage}">Byg selv carport</a>
                 <div class="nav-categories">
                     <ul>
-                        <li class="nav-categories-element">
-                            <a href="" class="dropdown-button">Kategori 1</a>
-                            <div class="dropdown-content">
-                                <a href="#">Link 1</a>
-                                <a href="#">Link 2</a>
-                                <a href="#">Link 3</a>
-                            </div>
-                        </li>
-                        <li class="nav-categories-element">
-                            <a href="" class="dropdown-button">Kategori 2</a>
-                            <div class="dropdown-content">
-                                <a href="#">Link 1</a>
-                                <a href="#">Link 2</a>
-                                <a href="#">Link 3</a>
-                            </div>
-                        </li>
-                        <li class="nav-categories-element">
-                            <a href="" class="dropdown-button">Tilbehør</a>
-                            <div class="dropdown-content">
-                                <a href="#" th:href="@{/kategori?category=skruer}">Skruer</a>
-                                <a href="#" th:href="@{/kategori?category=søm}">Søm</a>
-                                <a href="#" th:href="@{/kategori?category=lægte}">andet til carport LOL</a>
-                            </div>
-                        </li>
+
                         <li class="nav-categories-element">
                             <a href="" th:href="@{/kategori?category=byggemateriale}" class="dropdown-button">Byggematerialer</a>
                             <div class="dropdown-content">
@@ -65,19 +43,10 @@
                             </div>
                         </li>
                         <li class="nav-categories-element">
-                            <a href="" class="dropdown-button">Maling</a>
-                            <div class="dropdown-content">
-                                <a href="#" th:href="@{/kategori?category=indendoers}">Indendørs</a>
-                                <a href="#"></a>
-                                <a href="#"></a>
-                            </div>
-                        </li>
-                        <li class="nav-categories-element">
                             <a href="" th:href="@{/kategori?category=carport}" class="dropdown-button">Carporte</a>
                             <div class="dropdown-content">
-                                <a href="#">Link 1</a>
-                                <a href="#">Link 2</a>
-                                <a href="orderFlow/byg-carport.html" th:href="@{/orderFlow/byg-carport}">Byg selv</a>
+                                <a th:href="@{/kategori?category=carport}">Fladt tag</a>
+                                <a href="orderFlow/byg-carport.html" th:href="@{/orderPage}">Byg selv</a>
                             </div>
                         </li>
                     </ul>
@@ -98,7 +67,6 @@
                     <ul>
                         <li><a th:if="${session.currentUser == null}" th:href="@{/login}">Log ind</a></li>
                         <li><a th:if="${session.currentUser != null}" th:text="${session.currentUser.getName()}" th:href="@{/profil}"></a></li>
-                        <li><a href="">Find Fog</a></li>
                         <li><a href="" th:href="@{/kurv}" >Kurv</a></li>
                     </ul>
                 </div>
@@ -122,7 +90,9 @@
     </div>
     <!-- ADMIN -->
     <footer>
-        <p>Johannes Fog A/S<span>Firskovvej 20, 2800 Lyngby</span>CVR-nr. 16314439</p>
+        <p>Johannes Fog A/S</p>
+            <p>Firskovvej 20, 2800 Lyngby</p>
+            <p> CVR-nr. 16314439 </p>
     </footer>
 </div>
 </body>

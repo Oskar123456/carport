@@ -102,3 +102,12 @@
     width: 100%;
     max-width: 100%;
 }
+
+/* MEDIA QUERIES */
+
+@media screen and (max-width: 890px) {
+    .search-result-list {
+        display: flex;
+        flex-direction: column;
+    }
+}

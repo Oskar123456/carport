@@ -3,13 +3,16 @@ package carport.entities;
 import carport.exceptions.DatabaseException;
 import carport.persistence.ConnectionPool;
 import carport.persistence.ProductMapper;
+import carport.tools.types.Point;
+import carport.tools.types.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static carport.tools.SvgHelper.*;
 
-public class CustomCarport {
+public class CustomCarport
+{
     /* ALL MEASUREMENTS IN MM */
     public int SPAER_DISTANCE_MAX = 600;
     public int STOLPE_DISTANCE_MAX = 3000;
@@ -54,56 +57,76 @@ public class CustomCarport {
 
     private boolean made;
 
-    public Product GetStolpeProd() {
+    public Product GetStolpeProd()
+    {
         return stolpeProd;
     }
-    public int GetNStolpeProd(){
+
+    public int GetNStolpeProd()
+    {
         if (stolper == null)
             return 0;
-        return stolper.size() * (int) (Math.ceil((double)LenZ / (double)stolpeLenZ));
+        return stolper.size() * (int) (Math.ceil((double) LenZ / (double) stolpeLenZ));
     }
-    public Product GetRemProd() {
+
+    public Product GetRemProd()
+    {
         return remProd;
     }
-    public int GetNRemProd(){
+
+    public int GetNRemProd()
+    {
         if (remme == null)
             return 0;
-        return remme.size() * (int) ((Math.ceil(((double)LenY + (double) UDHAENG_LENGTH_Y) / (double)remLenY)));
+        return remme.size() * (int) ((Math.ceil(((double) LenY + (double) UDHAENG_LENGTH_Y) / (double) remLenY)));
     }
-    public Product GetSpaerProd() {
+
+    public Product GetSpaerProd()
+    {
         return spaerProd;
     }
-    public int GetNSpaerProd(){
+
+    public int GetNSpaerProd()
+    {
         if (spaer == null)
             return 0;
-        return spaer.size() * (int) ((Math.ceil(((double)LenX + (double) UDHAENG_LENGTH_X * 2.0) / (double)spaerLenX)));
+        return spaer.size() * (int) ((Math.ceil(((double) LenX + (double) UDHAENG_LENGTH_X * 2.0) / (double) spaerLenX)));
     }
-    public Product GetSternProd() {
+
+    public Product GetSternProd()
+    {
         return sternProd;
     }
-    public int GetNSternProd(){
+
+    public int GetNSternProd()
+    {
         if (stern == null || shed == null)
             return 0;
-        int factorH = ((int) (Math.ceil((double)shed.LenX / ((double)sternLength)))) * 2;
-        int factorV = ((int) (Math.ceil((double)shed.LenY / ((double)sternLength)))) * 2;
-        return (int) (Math.ceil((double)LenZ / (double)sternHeight))  * (factorH + factorV);
+        int factorH = ((int) (Math.ceil((double) shed.LenX / ((double) sternLength)))) * 2;
+        int factorV = ((int) (Math.ceil((double) shed.LenY / ((double) sternLength)))) * 2;
+        return (int) (Math.ceil((double) LenZ / (double) sternHeight)) * (factorH + factorV);
     }
-    public Product GetTagpladeProd() {
+
+    public Product GetTagpladeProd()
+    {
         return tagpladeProd;
     }
-    public int GetNTagpladeProd(){
+
+    public int GetNTagpladeProd()
+    {
         if (tagplader == null)
             return 0;
         return tagplader.size();
     }
 
-    public void SetStolpe(ConnectionPool cp, Product s) throws DatabaseException{
+    public void SetStolpe(ConnectionPool cp, Product s) throws DatabaseException
+    {
         stolpeProd = s;
         List<ProductSpecification> specs = s.GetFullSpecs(cp);
         String lenXStr = null;
         String lenYStr = null;
         String lenZStr = null;
-        for (ProductSpecification ps : specs){
+        for (ProductSpecification ps : specs) {
             if (ps.Name.equals("length"))
                 lenYStr = ps.Details;
             if (ps.Name.equals("width"))
@@ -117,17 +140,19 @@ public class CustomCarport {
             stolpeLenX = Integer.parseInt(lenXStr);
             stolpeLenY = Integer.parseInt(lenYStr);
             stolpeLenZ = Integer.parseInt(lenZStr);
-        } catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             return;
         }
     }
-    public void SetSpaer(ConnectionPool cp, Product s) throws DatabaseException{
+
+    public void SetSpaer(ConnectionPool cp, Product s) throws DatabaseException
+    {
         spaerProd = s;
         List<ProductSpecification> specs = s.GetFullSpecs(cp);
         String lenXStr = null;
         String lenYStr = null;
         String lenZStr = null;
-        for (ProductSpecification ps : specs){
+        for (ProductSpecification ps : specs) {
             if (ps.Name.equals("width"))
                 lenYStr = ps.Details;
             if (ps.Name.equals("length"))
@@ -141,17 +166,19 @@ public class CustomCarport {
             spaerLenX = Integer.parseInt(lenXStr);
             spaerLenY = Integer.parseInt(lenYStr);
             spaerLenZ = Integer.parseInt(lenZStr);
-        } catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             return;
         }
     }
-    public void SetRem(ConnectionPool cp, Product r) throws DatabaseException{
+
+    public void SetRem(ConnectionPool cp, Product r) throws DatabaseException
+    {
         remProd = r;
         List<ProductSpecification> specs = r.GetFullSpecs(cp);
         String lenXStr = null;
         String lenYStr = null;
         String lenZStr = null;
-        for (ProductSpecification ps : specs){
+        for (ProductSpecification ps : specs) {
             if (ps.Name.equals("length"))
                 lenYStr = ps.Details;
             if (ps.Name.equals("width"))
@@ -165,17 +192,19 @@ public class CustomCarport {
             remLenX = Integer.parseInt(lenXStr);
             remLenY = Integer.parseInt(lenYStr);
             remLenZ = Integer.parseInt(lenZStr);
-        } catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             return;
         }
     }
-    public void SetStern(ConnectionPool cp, Product s) throws DatabaseException{
+
+    public void SetStern(ConnectionPool cp, Product s) throws DatabaseException
+    {
         sternProd = s;
         List<ProductSpecification> specs = s.GetFullSpecs(cp);
         String lenXStr = null;
         String lenYStr = null;
         String lenZStr = null;
-        for (ProductSpecification ps : specs){
+        for (ProductSpecification ps : specs) {
             if (ps.Name.equals("length"))
                 lenYStr = ps.Details;
             if (ps.Name.equals("width"))
@@ -189,17 +218,19 @@ public class CustomCarport {
             sternWidth = Integer.parseInt(lenXStr);
             sternLength = Integer.parseInt(lenYStr);
             sternHeight = Integer.parseInt(lenZStr);
-        } catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             return;
         }
     }
-    public void SetTagplade(ConnectionPool cp, Product t) throws DatabaseException{
+
+    public void SetTagplade(ConnectionPool cp, Product t) throws DatabaseException
+    {
         tagpladeProd = t;
         List<ProductSpecification> specs = t.GetFullSpecs(cp);
         String lenXStr = null;
         String lenYStr = null;
         String lenZStr = null;
-        for (ProductSpecification ps : specs){
+        for (ProductSpecification ps : specs) {
             if (ps.Name.equals("length"))
                 lenYStr = ps.Details;
             if (ps.Name.equals("width"))
@@ -213,12 +244,13 @@ public class CustomCarport {
             tagpladeLenX = Integer.parseInt(lenXStr);
             tagpladeLenY = Integer.parseInt(lenYStr);
             tagpladeLenZ = Integer.parseInt(lenZStr);
-        } catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             return;
         }
     }
 
-    public int GetNParkingSpots(){
+    public int GetNParkingSpots()
+    {
         if (rectangles == null)
             return 0;
         int n = 0;
@@ -229,7 +261,8 @@ public class CustomCarport {
     }
 
     // TODO: sanity checking
-    public boolean Make(int lenX, int lenY, int lenZ, boolean enableShed, int shedLenX, int shedLenY) {
+    public boolean Make(int lenX, int lenY, int lenZ, boolean enableShed, int shedLenX, int shedLenY)
+    {
         LenX = lenX;
         LenY = lenY;
         LenZ = lenZ;
@@ -279,7 +312,7 @@ public class CustomCarport {
                 rectangleListAddOnlyUnique(rs, stolper);
         }
         /* SPÆR */
-        for (y = 0; y <= LenY + UDHAENG_LENGTH_Y - spaerLenY;) {
+        for (y = 0; y <= LenY + UDHAENG_LENGTH_Y - spaerLenY; ) {
             Rectangle r = new Rectangle(-UDHAENG_LENGTH_X, y, LenX + 2 * UDHAENG_LENGTH_X, spaerLenY);
             spaer.add(r);
             int posY = y + SPAER_DISTANCE_MAX + spaerLenY;
@@ -305,8 +338,8 @@ public class CustomCarport {
                     sternWidth));
         }
         /* TAGPLADER */
-        for (x = -UDHAENG_LENGTH_X; x < LenX + 2 * UDHAENG_LENGTH_X; x += tagpladeLenX){
-            for (y = 0; y < LenY + UDHAENG_LENGTH_Y; y += tagpladeLenY){
+        for (x = -UDHAENG_LENGTH_X; x < LenX + 2 * UDHAENG_LENGTH_X; x += tagpladeLenX) {
+            for (y = 0; y < LenY + UDHAENG_LENGTH_Y; y += tagpladeLenY) {
                 tagplader.add(new Rectangle(x, y, tagpladeLenX, tagpladeLenY));
             }
         }
@@ -315,14 +348,16 @@ public class CustomCarport {
         return true;
     }
 
-    private void rectangleListAddOnlyUnique(Rectangle r, List<Rectangle> l) {
+    private void rectangleListAddOnlyUnique(Rectangle r, List<Rectangle> l)
+    {
         if (l.contains(r))
             return;
         l.add(r);
     }
 
     /* DATABASE INTERACTION */
-    public int WriteToDb(ConnectionPool cp){
+    public int WriteToDb(ConnectionPool cp)
+    {
         int retval = -1;
         if (!made)
             return retval;
@@ -337,7 +372,7 @@ public class CustomCarport {
             Long[] specIds = {1L, 2L, 3L, 8L, 9L};
             Long[] imgIds = {(long) svgImgId};
             Product thisAsProduct = new Product("customcarport", String.format("custom made carport w %d l %d h %d", LenX, LenY, LenZ),
-                                                                               null, null, catIds, specIds);
+                    null, null, catIds, specIds);
             thisAsProduct.SpecDetails[0] = String.valueOf(LenX);
             thisAsProduct.SpecDetails[1] = String.valueOf(LenY);
             thisAsProduct.SpecDetails[2] = String.valueOf(LenZ); // TODO: function for this stuff in product ?
@@ -356,8 +391,7 @@ public class CustomCarport {
             thisAsProduct.Price = thisAsProduct.GetSumOfComponentPrices(cp);
 
             retval = ProductMapper.InsertProduct(cp, true, thisAsProduct);
-        }
-        catch (DatabaseException e) {
+        } catch (DatabaseException e) {
             return retval;
         }
 
@@ -366,7 +400,8 @@ public class CustomCarport {
     }
 
     /* SVG */
-    public String svgDraw() {
+    public String svgDraw()
+    {
         if (!made)
             return "svgDraw: nothing to draw";
 
@@ -450,7 +485,7 @@ public class CustomCarport {
         svg = svgSetClassStyle(svg, "rectangle", "fill:lightgrey", "stroke:black", "stroke-width:6", "opacity:0.3");
         svg = svgSetClassStyle(svg, "stolpe", "fill:dimgray", "stroke:black", "stroke-width:0");
         svg = svgSetClassStyle(svg, "spaer", "fill:none", "stroke:black", "stroke-width:8");
-        svg = svgSetClassStyle(svg, "rem", "fill:none", "stroke:black", "stroke-width:8");
+        svg = svgSetClassStyle(svg, "rem", "fill:none", "stroke:black", "stroke-width:12");
         svg = svgSetClassStyle(svg, "stern", "fill:black", "stroke:black", "stroke-width:0", "opacity:0.5");
         svg = svgSetClassStyle(svg, "shed", "fill:gray", "stroke:black", "stroke-width:12", "opacity:0.3");
         svg = svgSetClassStyle(svg, "tagplade", "fill:none", "stroke:black", "stroke-width:10", "opacity:0.3");
@@ -464,16 +499,17 @@ public class CustomCarport {
 
         viewBox = svgGetDims(svg);
         svg = svg.substring(0, svg.indexOf("viewBox")) +
-            String.format(" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"  width=\"%d\" height=\"%d\" ",
-                          viewBox.LenX / 10, viewBox.LenY / 10) +
-            svg.substring(svg.indexOf("viewBox"));
+                String.format(" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"  width=\"%d\" height=\"%d\" ",
+                        viewBox.LenX / 10, viewBox.LenY / 10) +
+                svg.substring(svg.indexOf("viewBox"));
 
         return svg;
     }
 
     /* INTERNAL HELPERS */
 
-    private void adjustRectangles() {
+    private void adjustRectangles()
+    {
         if (shed == null || rectangles == null || rectangles.size() < 1)
             return;
         for (int i = 0; i < rectangles.size(); ++i) {
@@ -490,7 +526,9 @@ public class CustomCarport {
             }
         }
     }
-    private List<Rectangle> getStolper(Rectangle r) {
+
+    private List<Rectangle> getStolper(Rectangle r)
+    {
         List<Rectangle> stolper = new ArrayList<>();
 
         int x, y;

@@ -1,34 +1,31 @@
 package carport.persistence;
 
-import java.sql.Array;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import carport.entities.ProductCategory;
+import carport.entities.ProductSpecification;
+import carport.exceptions.DatabaseException;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import carport.entities.ProductCategory;
-import carport.entities.ProductSpecification;
-import carport.exceptions.DatabaseException;
-
 import static carport.persistence.CarportMapper.CloseResources;
 
-public class CatAndSpecMapper {
+public class CatAndSpecMapper
+{
     /*
      * Category and Specification
      */
-    public static List<ProductCategory> SelectAllCategories(ConnectionPool cp) throws DatabaseException {
+    public static List<ProductCategory> SelectAllCategories(ConnectionPool cp) throws DatabaseException
+    {
         List<ProductCategory> cats = new ArrayList<>();
 
         String sql = "SELECT * from category";
 
         try (
                 Connection c = cp.getConnection();
-                PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
+                PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next())
                 cats.add(new ProductCategory(rs.getInt("id"), rs.getString("name"), null));
@@ -42,14 +39,15 @@ public class CatAndSpecMapper {
     }
 
     public static ProductCategory SelectCategoryById(ConnectionPool cp,
-            int id) throws DatabaseException {
+                                                     int id) throws DatabaseException
+    {
         ProductCategory cat = null;
 
         String sql = "SELECT * from category WHERE id = ? ";
 
         try (
                 Connection c = cp.getConnection();
-                PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
+                PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next())
@@ -64,14 +62,17 @@ public class CatAndSpecMapper {
     }
 
     public static List<ProductCategory> SelectCategoriesById(ConnectionPool cp,
-                                                             List<Integer> ids) throws DatabaseException{
+                                                             List<Integer> ids) throws DatabaseException
+    {
         int[] idsint = new int[ids.size()];
         for (int i = 0; i < idsint.length; ++i)
             idsint[i] = ids.get(i);
         return SelectCategoriesById(cp, idsint);
     }
+
     public static List<ProductCategory> SelectCategoriesById(ConnectionPool cp,
-            int... ids) throws DatabaseException {
+                                                             int... ids) throws DatabaseException
+    {
         List<ProductCategory> cats = new ArrayList<>();
         if (ids != null) {
             for (int i : ids)
@@ -81,7 +82,8 @@ public class CatAndSpecMapper {
     }
 
     public static List<Integer> SearchCategory(ConnectionPool cp,
-            String needle) throws DatabaseException {
+                                               String needle) throws DatabaseException
+    {
         if (needle == null)
             return null;
         List<String> needleAsList = new ArrayList<>();
@@ -90,7 +92,8 @@ public class CatAndSpecMapper {
     }
 
     public static List<Integer> SearchCategory(ConnectionPool cp,
-            List<String> needles) throws DatabaseException {
+                                               List<String> needles) throws DatabaseException
+    {
         List<Integer> ids = new ArrayList<>();
 
         String sql = """
@@ -110,7 +113,7 @@ public class CatAndSpecMapper {
         }
 
         try (Connection c = cp.getConnection();
-                PreparedStatement ps = c.prepareStatement(sql);) {
+             PreparedStatement ps = c.prepareStatement(sql)) {
             int argNum = 1;
             if (needles != null)
                 for (String s : needles)
@@ -128,7 +131,8 @@ public class CatAndSpecMapper {
     }
 
     public static List<ProductSpecification> SelectSpecificationsById(ConnectionPool cp,
-            List<Long> ids) throws DatabaseException {
+                                                                      List<Long> ids) throws DatabaseException
+    {
         if (ids == null || ids.size() < 1)
             return null;
         int[] idsArray = new int[ids.size()];
@@ -138,7 +142,8 @@ public class CatAndSpecMapper {
     }
 
     public static List<ProductSpecification> SelectSpecificationsById(ConnectionPool cp,
-            int... ids) throws DatabaseException {
+                                                                      int... ids) throws DatabaseException
+    {
         List<ProductSpecification> specs = new ArrayList<>();
         if (ids == null || ids.length < 1)
             return specs;
@@ -152,7 +157,7 @@ public class CatAndSpecMapper {
 
         try (
                 Connection c = cp.getConnection();
-                PreparedStatement ps = c.prepareStatement(sql);) {
+                PreparedStatement ps = c.prepareStatement(sql)) {
             for (int i = 0; i < ids.length; ++i)
                 ps.setInt(i + 1, ids[i]);
             ResultSet rs = ps.executeQuery();
@@ -171,7 +176,8 @@ public class CatAndSpecMapper {
     }
 
     public static Map<Integer, Long[]> SelectSpecificationsByCategory(ConnectionPool cp,
-            List<Integer> catIds) throws DatabaseException {
+                                                                      List<Integer> catIds) throws DatabaseException
+    {
         if (catIds == null || catIds.size() < 1)
             return null;
         int[] catIdsArray = new int[catIds.size()];
@@ -181,7 +187,8 @@ public class CatAndSpecMapper {
     }
 
     public static Map<Integer, Long[]> SelectSpecificationsByCategory(ConnectionPool cp,
-            int... catIds) throws DatabaseException {
+                                                                      int... catIds) throws DatabaseException
+    {
         if (catIds == null)
             return null;
         Map<Integer, Long[]> catIdsWithSpecIds = new HashMap<>();
@@ -203,7 +210,7 @@ public class CatAndSpecMapper {
         sql = sql.replace("predicate_position_category", sqlPredicate);
 
         try (Connection c = cp.getConnection();
-                PreparedStatement ps = c.prepareStatement(sql);) {
+             PreparedStatement ps = c.prepareStatement(sql)) {
             int argNum = 1;
             for (int i = 0; i < catIds.length; ++i)
                 ps.setInt(argNum++, catIds[i]);
@@ -228,8 +235,9 @@ public class CatAndSpecMapper {
      * Will select only common denominators if desired.
      */
     public static int[] SelectCategoryIdsFromProductIds(ConnectionPool cp,
-            boolean commonDenominatorOnly,
-            int... ids) throws DatabaseException {
+                                                        boolean commonDenominatorOnly,
+                                                        int... ids) throws DatabaseException
+    {
         if (ids == null || ids.length < 1)
             return null;
         List<Integer> catIdsList = new ArrayList<>();
@@ -263,7 +271,7 @@ public class CatAndSpecMapper {
 
         try (
                 Connection c = cp.getConnection();
-                PreparedStatement ps = c.prepareStatement(sql);) {
+                PreparedStatement ps = c.prepareStatement(sql)) {
             for (int i = 0; i < ids.length; ++i)
                 ps.setInt(i + 1, ids[i]);
             ResultSet rs = ps.executeQuery();
@@ -285,8 +293,10 @@ public class CatAndSpecMapper {
                         for (int i = 0; i < catIdsList.size(); ++i) {
                             boolean exists = false;
                             for (int j = 0; j < RowCats.length; ++j) {
-                                if (catIdsList.get(i) == RowCats[i].intValue())
+                                if (catIdsList.get(i) == RowCats[i].intValue()) {
                                     exists = true;
+                                    break;
+                                }
                             }
                             if (!exists)
                                 catIdsList.remove(i);
@@ -318,7 +328,8 @@ public class CatAndSpecMapper {
      * Return array of unique spec ids from provided array of category ids
      */
     public static int[] SelectSpecIdsFromCategoryIds(ConnectionPool cp,
-            int... ids) throws DatabaseException {
+                                                     int... ids) throws DatabaseException
+    {
         if (ids == null || ids.length < 1)
             return null;
         List<Integer> specIdsList = new ArrayList<>();
@@ -356,7 +367,7 @@ public class CatAndSpecMapper {
 
         try (
                 Connection c = cp.getConnection();
-                PreparedStatement ps = c.prepareStatement(sql);) {
+                PreparedStatement ps = c.prepareStatement(sql)) {
             for (int i = 0; i < ids.length; ++i)
                 ps.setInt(i + 1, ids[i]);
             ResultSet rs = ps.executeQuery();
@@ -384,7 +395,8 @@ public class CatAndSpecMapper {
     }
 
     public static List<Integer> GetProductCategories(ConnectionPool cp,
-            int pid) throws DatabaseException {
+                                                     int pid) throws DatabaseException
+    {
         List<Integer> cats = new ArrayList<>();
 
         String sql = """
@@ -396,7 +408,7 @@ public class CatAndSpecMapper {
                 GROUP BY p.id""";
 
         try (Connection c = cp.getConnection();
-                PreparedStatement ps = c.prepareStatement(sql);) {
+             PreparedStatement ps = c.prepareStatement(sql)) {
             int argNum = 1;
             ps.setInt(argNum++, pid);
             ResultSet rs = ps.executeQuery();

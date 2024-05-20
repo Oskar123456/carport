@@ -12,3 +12,12 @@
     width: 20%;
     }
 }
+
+@media screen and (max-width: 890px) {
+    .productview {
+        max-width: 400px;
+        img {
+            width: 200px;
+        }
+    }
+}

@@ -2,14 +2,17 @@ package carport.persistence;
 
 import carport.entities.Address;
 import carport.exceptions.DatabaseException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class AddressMapper {
+public class AddressMapper
+{
 
-    public static int saveAddress(Address address, ConnectionPool cp) throws DatabaseException {
+    public static int saveAddress(Address address, ConnectionPool cp) throws DatabaseException
+    {
         String sql = "INSERT INTO addresses (street, number, floor, info, zip) VALUES (?, ?, ?, ?, ?) RETURNING id;";
         try (Connection conn = cp.getConnection(); //Jeg sikre at der er forbindelse til databasen fra poolen
              PreparedStatement ps = conn.prepareStatement(sql)) { // Bare til egen indfo jeg bruger et PreparedStatement for at undgå SQL injektion, den skulle være ret sikker.

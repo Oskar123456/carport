@@ -1,29 +1,20 @@
 package carport.controllers;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
-
-import carport.entities.Order;
-import carport.entities.Product;
-import carport.entities.ProductCategory;
-import carport.entities.ProductImage;
-import carport.entities.ProductSpecification;
+import carport.entities.*;
 import carport.exceptions.DatabaseException;
-import carport.persistence.CarportMapper;
-import carport.persistence.CatAndSpecMapper;
-import carport.persistence.ConnectionPool;
-import carport.persistence.OrderMapper;
-import carport.persistence.ProductMapper;
+import carport.persistence.*;
 import carport.tools.ProductImageFactory;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
 public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYMENT; NOT NECESSARY WHEN TESTING
 {
-    public static void addRoutes(Javalin app, ConnectionPool cp) {
+    public static void addRoutes(Javalin app, ConnectionPool cp)
+    {
         /* GET */
         app.get("/uploadimage", ctx -> renderUploadImage(ctx, cp));
         app.get("/newproduct", ctx -> renderNewProduct(ctx, cp));
@@ -40,12 +31,13 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
         app.post("/updateordercarport", ctx -> updateOrderCarport(ctx, cp));
     }
 
-    private static void updateOrderCarport(Context ctx, ConnectionPool cp) {
+    private static void updateOrderCarport(Context ctx, ConnectionPool cp)
+    {
         String updateOrderCpPid = ctx.formParam("updateordercarportPID");
         String updateOrderCpOid = ctx.formParam("updateordercarportOID");
         if (ctx.sessionAttribute("admin") == null ||
-            updateOrderCpPid == null ||
-            updateOrderCpOid == null) {
+                updateOrderCpPid == null ||
+                updateOrderCpOid == null) {
             ctx.redirect("/");
             return;
         }
@@ -54,7 +46,8 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
         ctx.redirect("/customcarport");
     }
 
-    private static void approveOrder(Context ctx, ConnectionPool cp) {
+    private static void approveOrder(Context ctx, ConnectionPool cp)
+    {
         if (ctx.sessionAttribute("admin") == null) {
             ctx.redirect("/");
             return;
@@ -67,7 +60,8 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
         ctx.redirect("/showorders");
     }
 
-    private static void removeOrderProduct(Context ctx, ConnectionPool cp) {
+    private static void removeOrderProduct(Context ctx, ConnectionPool cp)
+    {
         if (ctx.sessionAttribute("admin") == null) {
             ctx.redirect("/");
             return;
@@ -83,7 +77,8 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
         ctx.redirect("/showorders");
     }
 
-    private static void removeOrder(Context ctx, ConnectionPool cp) {
+    private static void removeOrder(Context ctx, ConnectionPool cp)
+    {
         if (ctx.sessionAttribute("admin") == null) {
             ctx.redirect("/");
             return;
@@ -96,16 +91,17 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
         ctx.redirect("/showorders");
     }
 
-    private static void showOrders(Context ctx, ConnectionPool cp) {
+    private static void showOrders(Context ctx, ConnectionPool cp)
+    {
         if (ctx.sessionAttribute("admin") == null) {
             ctx.redirect("/");
             return;
         }
         try {
-            List<Order> pendingOrders = OrderMapper.SelectAllOrders(cp, -1,-1,4);
-            List<Order> validatedOrders = OrderMapper.SelectAllOrders(cp, -1,-1,3);
-            List<Order> confirmedOrders = OrderMapper.SelectAllOrders(cp, -1,-1,2);
-            List<Order> doneOrders = OrderMapper.SelectAllOrders(cp, -1,-1,1);
+            List<Order> pendingOrders = OrderMapper.SelectAllOrders(cp, -1, -1, 4);
+            List<Order> validatedOrders = OrderMapper.SelectAllOrders(cp, -1, -1, 3);
+            List<Order> confirmedOrders = OrderMapper.SelectAllOrders(cp, -1, -1, 2);
+            List<Order> doneOrders = OrderMapper.SelectAllOrders(cp, -1, -1, 1);
 
             Order.LoadList(cp, pendingOrders);
             Order.LoadList(cp, confirmedOrders);
@@ -124,7 +120,8 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
         ctx.render("orders/showallordersadmin.html");
     }
 
-    private static void deleteProduct(Context ctx, ConnectionPool cp) {
+    private static void deleteProduct(Context ctx, ConnectionPool cp)
+    {
         if (ctx.sessionAttribute("admin") == null)
             return;
         try {
@@ -139,7 +136,8 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
         }
     }
 
-    private static void renderNewProduct(Context ctx, ConnectionPool cp) {
+    private static void renderNewProduct(Context ctx, ConnectionPool cp)
+    {
         if (ctx.sessionAttribute("admin") == null)
             return;
         try {
@@ -151,13 +149,15 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
         ctx.render("products/createproduct.html");
     }
 
-    private static void renderUploadImage(Context ctx, ConnectionPool cp) {
+    private static void renderUploadImage(Context ctx, ConnectionPool cp)
+    {
         if (ctx.sessionAttribute("admin") == null)
             return;
         ctx.render("products/uploadimage.html");
     }
 
-    private static void storeImage(Context ctx, ConnectionPool cp) {
+    private static void storeImage(Context ctx, ConnectionPool cp)
+    {
         if (ctx.sessionAttribute("admin") == null)
             return;
         String imgUrl = ctx.formParam("imageURL");
@@ -179,7 +179,8 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
         renderUploadImage(ctx, cp);
     }
 
-    private static void createProductDetailsDone(Context ctx, ConnectionPool cp) {
+    private static void createProductDetailsDone(Context ctx, ConnectionPool cp)
+    {
         if (ctx.sessionAttribute("admin") == null)
             return;
         // TODO: Clean this stuff up LOL
@@ -242,7 +243,8 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
         ctx.render("products/createproductselectspecs.html");
     }
 
-    private static void createProductImagesDone(Context ctx, ConnectionPool cp) {
+    private static void createProductImagesDone(Context ctx, ConnectionPool cp)
+    {
         if (ctx.sessionAttribute("admin") == null)
             return;
         Product product = ctx.sessionAttribute("productinmaking");
@@ -268,7 +270,8 @@ public class AdminFunctionController // TODO: ADD ADMIN RESTRICTIONS FOR DEPLOYM
         ctx.result("success creating product " + product.Name);
     }
 
-    private static void createProductSpecsDone(Context ctx, ConnectionPool cp) {
+    private static void createProductSpecsDone(Context ctx, ConnectionPool cp)
+    {
         if (ctx.sessionAttribute("admin") == null)
             return;
         Product product = ctx.sessionAttribute("productinmaking");

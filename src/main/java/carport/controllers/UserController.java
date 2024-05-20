@@ -1,17 +1,23 @@
 package carport.controllers;
 
-import java.util.List;
-
-import carport.entities.*;
+import carport.entities.Address;
+import carport.entities.Order;
+import carport.entities.User;
 import carport.exceptions.DatabaseException;
-import carport.persistence.*;
+import carport.persistence.AddressMapper;
 import carport.persistence.ConnectionPool;
+import carport.persistence.OrderMapper;
+import carport.persistence.UserMapper;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
-public class UserController {
+import java.util.List;
 
-    public static void addRoutes(Javalin app, ConnectionPool cp) {
+public class UserController
+{
+
+    public static void addRoutes(Javalin app, ConnectionPool cp)
+    {
         /* GET */
         app.get("/login", ctx -> ctx.render("/user/logind.html"));
         app.get("/logout", ctx -> logout(ctx));
@@ -25,7 +31,8 @@ public class UserController {
         app.post("/customerremoveorder", ctx -> removeOrder(ctx, cp));
     }
 
-    private static void createUser(Context ctx, ConnectionPool cp) {
+    private static void createUser(Context ctx, ConnectionPool cp)
+    {
         String name = ctx.formParam("name");
         String surname = ctx.formParam("surname");
         String email = ctx.formParam("mail");
@@ -56,44 +63,46 @@ public class UserController {
         }
     }
 
-    private static void logout(Context ctx) {
+    private static void logout(Context ctx)
+    {
         ctx.req().getSession().invalidate();
         ctx.render("index.html");
     }
 
-    public static void login(Context ctx, ConnectionPool cp) {
+    public static void login(Context ctx, ConnectionPool cp)
+    {
         String email = ctx.formParam("email");
         String password = ctx.formParam("psw");
 
         try {
             User user = UserMapper.login(email, password, cp);
 
-            if (user == null){
+            if (user == null) {
                 ctx.render("user/logind.html");
                 return;
             }
             ctx.sessionAttribute("currentUser", user);
             if (user.getRole().equals("admin"))
                 ctx.sessionAttribute("admin", true);
-        }
-            catch (DatabaseException e) {
-                ctx.attribute("message", "Login fejlede, tjek din email og adgangskode og prøv igen:)");
-                ctx.render("index.html");
+        } catch (DatabaseException e) {
+            ctx.attribute("message", "Login fejlede, tjek din email og adgangskode og prøv igen:)");
+            ctx.render("index.html");
         }
         renderProfile(ctx, cp);
     }
 
-    private static void renderProfile(Context ctx, ConnectionPool cp){
+    private static void renderProfile(Context ctx, ConnectionPool cp)
+    {
         User user = ctx.sessionAttribute("currentUser");
-        if (user == null){
+        if (user == null) {
             ctx.render("user/logind.html");
             return;
         }
         try {
-            List<Order> pendingOrders = OrderMapper.SelectAllOrders(cp, user.getId(),-1, 4);
-            List<Order> validatedOrders = OrderMapper.SelectAllOrders(cp, user.getId(),-1,3);
-            List<Order> confirmedOrders = OrderMapper.SelectAllOrders(cp, user.getId(),-1,2);
-            List<Order> doneOrders = OrderMapper.SelectAllOrders(cp, user.getId(),-1,1);
+            List<Order> pendingOrders = OrderMapper.SelectAllOrders(cp, user.getId(), -1, 4);
+            List<Order> validatedOrders = OrderMapper.SelectAllOrders(cp, user.getId(), -1, 3);
+            List<Order> confirmedOrders = OrderMapper.SelectAllOrders(cp, user.getId(), -1, 2);
+            List<Order> doneOrders = OrderMapper.SelectAllOrders(cp, user.getId(), -1, 1);
 
             Order.LoadList(cp, pendingOrders);
             Order.LoadList(cp, confirmedOrders);
@@ -111,7 +120,8 @@ public class UserController {
         ctx.render("user/profile.html");
     }
 
-    private static void approveOrder(Context ctx, ConnectionPool cp) {
+    private static void approveOrder(Context ctx, ConnectionPool cp)
+    {
         if (ctx.sessionAttribute("currentUser") == null) {
             ctx.render("index.html");
             return;
@@ -124,7 +134,8 @@ public class UserController {
         renderProfile(ctx, cp);
     }
 
-    private static void removeOrderProduct(Context ctx, ConnectionPool cp) {
+    private static void removeOrderProduct(Context ctx, ConnectionPool cp)
+    {
         if (ctx.sessionAttribute("currentUser") == null) {
             ctx.render("index.html");
             return;
@@ -140,7 +151,8 @@ public class UserController {
         renderProfile(ctx, cp);
     }
 
-    private static void removeOrder(Context ctx, ConnectionPool cp) {
+    private static void removeOrder(Context ctx, ConnectionPool cp)
+    {
         if (ctx.sessionAttribute("currentUser") == null) {
             ctx.render("index.html");
             return;

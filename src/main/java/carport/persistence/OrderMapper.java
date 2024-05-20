@@ -1,29 +1,24 @@
 package carport.persistence;
 
-import java.math.BigDecimal;
-import java.sql.Array;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import carport.entities.Order;
 import carport.entities.Product;
 import carport.exceptions.DatabaseException;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static carport.persistence.CarportMapper.CloseResources;
 
 /**
  * OrderMapper
  */
-public class OrderMapper {
+public class OrderMapper
+{
 
     public static List<Order> SelectAllOrders(ConnectionPool cp, int customerId, int employeeId, int statusCode)
-            throws DatabaseException {
+            throws DatabaseException
+    {
         List<Order> orders = new ArrayList<>();
 
         String sql = """
@@ -46,7 +41,7 @@ public class OrderMapper {
 
         try (
                 Connection c = cp.getConnection();
-                PreparedStatement ps = c.prepareStatement(sql);) {
+                PreparedStatement ps = c.prepareStatement(sql)) {
             int argNum = 1;
             ps.setInt(argNum++, statusCode);
             if (customerId > 0)
@@ -73,7 +68,8 @@ public class OrderMapper {
         return orders;
     }
 
-    public static List<Integer[]> GetProductIdsWithQuants(ConnectionPool cp, int orderId) throws DatabaseException {
+    public static List<Integer[]> GetProductIdsWithQuants(ConnectionPool cp, int orderId) throws DatabaseException
+    {
         List<Integer[]> productIds = new ArrayList<>();
 
         String sql = """
@@ -95,7 +91,7 @@ public class OrderMapper {
 
         try (
                 Connection c = cp.getConnection();
-                PreparedStatement ps = c.prepareStatement(sql);) {
+                PreparedStatement ps = c.prepareStatement(sql)) {
             int argNum = 1;
             ps.setInt(argNum++, orderId);
             ResultSet rs = ps.executeQuery();
@@ -124,12 +120,13 @@ public class OrderMapper {
         return productIds;
     }
 
-    public static void DeleteOrder(ConnectionPool cp, int orderId) throws DatabaseException {
+    public static void DeleteOrder(ConnectionPool cp, int orderId) throws DatabaseException
+    {
         String sqlCascade = "DELETE FROM order_product WHERE order_id = ?";
         String sql = "DELETE FROM orders WHERE id = ?";
         try (
                 Connection c = cp.getConnection();
-                PreparedStatement ps = c.prepareStatement(sqlCascade);) {
+                PreparedStatement ps = c.prepareStatement(sqlCascade)) {
             int argNum = 1;
             ps.setInt(argNum++, orderId);
             ps.executeUpdate();
@@ -140,7 +137,7 @@ public class OrderMapper {
         }
         try (
                 Connection c = cp.getConnection();
-                PreparedStatement ps = c.prepareStatement(sql);) {
+                PreparedStatement ps = c.prepareStatement(sql)) {
             int argNum = 1;
             ps.setInt(argNum++, orderId);
             ps.executeUpdate();
@@ -151,11 +148,12 @@ public class OrderMapper {
         }
     }
 
-    public static void DeleteOrderProduct(ConnectionPool cp, int orderId, int productId) throws DatabaseException {
+    public static void DeleteOrderProduct(ConnectionPool cp, int orderId, int productId) throws DatabaseException
+    {
         String sql = "DELETE FROM order_product WHERE order_id = ? AND product_id = ?";
         try (
                 Connection c = cp.getConnection();
-                PreparedStatement ps = c.prepareStatement(sql);) {
+                PreparedStatement ps = c.prepareStatement(sql)) {
             int argNum = 1;
             ps.setInt(argNum++, orderId);
             ps.setInt(argNum++, productId);
@@ -167,11 +165,12 @@ public class OrderMapper {
         }
     }
 
-    public static void ApproveOrder(ConnectionPool cp, int orderId) throws DatabaseException {
+    public static void ApproveOrder(ConnectionPool cp, int orderId) throws DatabaseException
+    {
         String sql = "UPDATE public.orders SET status_code_id=status_code_id - 1 WHERE id = ? AND status_code_id > 1";
         try (
                 Connection c = cp.getConnection();
-                PreparedStatement ps = c.prepareStatement(sql);) {
+                PreparedStatement ps = c.prepareStatement(sql)) {
             int argNum = 1;
             ps.setInt(argNum++, orderId);
             ps.executeUpdate();
@@ -183,13 +182,14 @@ public class OrderMapper {
     }
 
     public static void ReplaceOrderProduct(ConnectionPool cp, // TODO: this needs a bit of thinking :)
-            int orderId,
-            int oldProductId,
-            int newProductId) throws DatabaseException {
+                                           int orderId,
+                                           int oldProductId,
+                                           int newProductId) throws DatabaseException
+    {
         String sql = "UPDATE order_product SET product_id = ? WHERE order_Id = ? AND product_id = ?";
         try (
                 Connection c = cp.getConnection();
-                PreparedStatement ps = c.prepareStatement(sql);) {
+                PreparedStatement ps = c.prepareStatement(sql)) {
             int argNum = 1;
             ps.setInt(argNum++, newProductId);
             ps.setInt(argNum++, orderId);
@@ -204,14 +204,15 @@ public class OrderMapper {
 
     public static void InsertOrderProduct(ConnectionPool cp,
                                           int orderId, int productId,
-                                          int quantity) throws DatabaseException {
+                                          int quantity) throws DatabaseException
+    {
         String sql = """
-            INSERT INTO public.order_product(
-                id, order_id, product_id, quantity)
-                VALUES (DEFAULT, ?, ?, ?)
-            """;
+                INSERT INTO public.order_product(
+                    id, order_id, product_id, quantity)
+                    VALUES (DEFAULT, ?, ?, ?)
+                """;
         try (Connection c = cp.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql);) {
+             PreparedStatement ps = c.prepareStatement(sql)) {
             int argNum = 1;
 
             ps.setInt(argNum++, orderId);
@@ -230,14 +231,15 @@ public class OrderMapper {
     public static void InsertOrder(ConnectionPool cp,
                                    Order order,
                                    int statusCode,
-                                   List<Product> products) throws DatabaseException {
+                                   List<Product> products) throws DatabaseException
+    {
         String sql = """
-            INSERT INTO public.orders(
-            id, customer_id, employee_id, status_code_id, time_of_order, shipment_id, price, note)
-            VALUES (DEFAULT, ?, 3, ?, ?, 1, ?, ?)
-            """;
+                INSERT INTO public.orders(
+                id, customer_id, employee_id, status_code_id, time_of_order, shipment_id, price, note)
+                VALUES (DEFAULT, ?, 3, ?, ?, 1, ?, ?)
+                """;
         try (Connection c = cp.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
+             PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             int argNum = 1;
 
             ps.setInt(argNum++, order.CustomerId);
