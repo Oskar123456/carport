@@ -109,6 +109,7 @@
     </header>
     <!-- END OF NAV BAR -->
 <div class="main" th:if="${session.currentUser != null}">
+                <div class="insidemain">
     <h2  th:text="${session.currentUser.getName()} + 's kurv:'" ></h2>
     <ul class="listofthings" th:if="${session.basket != null}">
         <li th:each="p : ${session.basket}" >
@@ -129,7 +130,7 @@
         <button class="good-button" name="order" th:value="confirm">Bestil</button>
     </form>
     </div>
-
+                </div>
 </div>
 
 <div class="admin-functions" >

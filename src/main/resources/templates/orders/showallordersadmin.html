@@ -109,6 +109,7 @@
     </header>
     <!-- END OF NAV BAR -->
 <div class="main" th:if="${session.currentUser != null && session.admin != null}">
+    <div class="insidemain">
     <h1>Alle bestillinger:</h1>
     <h2>Afventer svar fra sælger:</h2>
     <ul class="listofthings">
@@ -225,7 +226,7 @@
             </ul>
         </li>
     </ul>
-
+</div>
 </div>
 
 <div class="admin-functions" >

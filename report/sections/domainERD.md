@@ -1,10 +1,7 @@
 ### DOMÆNE ANALYSE
 
-- beskriv/forklar motivationen til en domæneanalyse (f.eks. at den muliggør database-design, som 
-i takt muliggør implementation af IT-løsningsprototype)
-
 På baggrund af det udleverede virksomhedsbesøg, samt en grundig gennemgang af online materialer, 
-er der foretaget en domæneanalyse af Johannes Fog byggemarked.
+er der foretaget en domæneanalyse af Johannes Fog byggemarked. 
 
 Overordnet set drejer forretningen om at sælge nogle varer (gennem en ansat f.eks. en sælger) 
 fra et lager, enten for sig selv, eller sammenstykket til et færdigt produkt, til kunder. 
@@ -41,83 +38,134 @@ Med domæneanalysen færdig er vi nu i stand til at skabe en model for IT-løsni
 
 ### DATABASE
 
-https://vertabelo.com/blog/er-diagram-for-online-shop/
-
-"As general conditions, the ER diagram for an online shopping system must be normalized up to the third normal form. The reason for this is that the online shopping system is purely transactional, so it must support constant and concurrent updates of the tables that make up the schema. And it must support those updates while strictly maintaining data integrity and consistency."
-
-
-
 For at omdanne domænemodellen til en model der kan bruges til at implementere en database for 
 en IT-løsning, kræves det, at mange-til-mange relationer omdannes til en-til-mange og mange-til-en 
 relationer. Derudover skal domænets data helst bringes på normalform (det er dog ikke altid 
 nødvendigt eller hensigtsmæssigt).
 
-Nedenfor ses en _ERD_ model for en mulig implementation af en database.
+Lad os gaa i dybden med kravene til en endelig database ud fra den udarbejdede domaeneanalyse:
+
+Varehus
+
+For at kunne saelge noget, skal der vaere nogle varehuse, og disse skal kunne indeholde 
+varer, samt have en adresse tilknyttet sig, for at understoette en leveringsfunktion 
+gennem hjemmesiden. Dvs. hvorfra kan en given vare sendes fra.
+
+Kunde & ansat/saelger
+
+For at have nogen at saelge til, og nogen at betjene disse, kraeves det at kunne 
+slaa kunder og ansatte/saelgere op i databasen. 
+Disse skal have kontaktinformation samt adresser tilknyttet sig, for f.eks. 
+at kunne understoette en leveringsfunktion som i ovenstaende afsnit.
+
+Produkt
+
+For at kunne vise varer frem paa hjemmesiden kraeves det, at it-loesning 
+kan slaa alle produkter op i en databasen. Ansatte skal ogsaa kunne opdatere 
+disse loebende.
+
+For at understoette sortering og soegning, skal produkter have en masse information 
+tilknyttet sig, som f.eks. kategori, specifikation (bredde: 40cm), pris mm. De skal 
+muligvis ogsaa have billeder og andet dokumentation, som kan vises paa hjemmesiden.
+
+Bestilling
+
+Til sidst skal der vaere lister over bestillinger, som henviser til tidspunkt, status, 
+kunde og saelger involveret osv. 
+
+-- ERD
+
+Nedenfor ses et ER-diagram over den endelige databaseloesning:
 
 - IMG : ERD
 
-#### DATABASE NOTER
+Forklaring:
 
-Forklar hvorfor vi går fra mangetilmange til entilmange med mellemledstabeller (navn?).
+product:
+Et produkt har navn, beskrivelse, pris og links, 
+derudover er det tilknyttet dets kategorier, specifikationer, 
+dokumenter og billeder gennem vha. fremmednoegler; dvs. foelgende 
+tabeller binder naevnte egenskaber til det enkelte produkt, for 
+at nedbryde mange-til-mange relation til en-til-mange:
 
-##### produkt
+	product_category
+	product_specification
+	product_documentation
+	product_image
+	product_component
 
-Et produkt skulle tilknyttes en række informationer, f.eks. et billede, pris, 
-noget dokumentation samt eventuelle eksterne links. Derudover skal det fremgå, 
-hvor produktet findes fysisk, dvs. på hvilke lagre, samt antal.
+Det var vigtigt i database designet, at et produkt kunne tilknyttes 
+vilkaarlige specifikationer, eftersom Fogs sortiment er saa diverst, og 
+samtidig understoetter en sorteret soegefunktion, hvor de enkelte 
+specifikationsvaerdier kan justeres i soegningen. Altsaa man skal 
+kunne udvaelge de varer fra en given soegning med f.eks. en hvis 
+bredde eller hoejde osv., hvilket kraever at it-loesningen skal 
+kunne finde faellesnaevnere blandt soegningens produkters' 
+specifikationer. Eksempelvis skal en soegning paa stolper og braedder 
+give mulighed for at filtere/sortere efter vilkaarlige laengder/bredder, 
+da alle produkter i de kategorier skal vaere tilknyttet de specifikationer.
 
-I domæneanalysen blev det tydeligt, at et produkt dels kan være en simpel 
-"atomisk" genstand som et brædde, men også en mængde af disse, f.eks. er en 
-carport først og fremmest en carport, men samtidig findes den ikke på lageret. 
-Den består derimod af dele, som faktisk findes på lageret. Med det sagt, 
-valgte vi, at et et produkt i databasen kan tilknyttes et vilkårligt antal 
-produkter i form relationen produkt <-- produktkomponent.
+Det er ogsaa vaerd at naevne, at et produkt kan tilknyttes 
+en vilkaarlig maengde af andre produkter (dog ikke det selv 
+af aabenlyse aarsager som cirkulaer afhaengighed). Det skylles at, 
+som naevnt i _forundersoegelsen_, produkter som f.eks. en carport 
+jo kan indeholde en liste over de dele det bestaar af, navnligt 
+en stykliste som:
+	Carport:
+	Stykliste:
+		3x stolper 2x tagplader
 
-##### specs
+category:
+En kategori er blot et navn som f.eks. "carport". Derudover er 
+kategorier tilknyttet deres egne specifikationer, og det er 
+gjort for at soerge for, at hver kategori kan have faellesnaevnere. 
+Dvs. en stolpe kunne vaere en kategori, der var tilknyttet laengde, 
+bredde og hoejde. Paa den maade kan it-systemet vide, hvilke 
+specifikationer der er kraevede for et givent produkt ved 
+indsaettelse i databasen.
 
-produktspecifikation: motiveret af høj diversitet blandt produkter, og derfor 
-deres fællesnænvnere. Dette er problem ifbm. søgning/sortering. Man skal kunne 
-sortere carporte efter længde, bredde, osv., men hvad med varer, der måske har 
-andre fællesnævnere (længde og bredde er universelle) som vægt, plads, type 
-af forskellige dele på produktet.
-Løsning: tabel over specifikationer, med navn og enhed. tabel til at 
-koble et produkt til en specifikation, sammen med detaljerne for denne, f.eks. 
+	category_specification
 
-- (produkt)carport <-- (detaljer)fladt --> (specifikationsnavn)tagtype
+specification:
+En specifikation har et navn og en enhed/'unit', 
+f.eks. ["stolpe" mm] osv.
 
-Problematik: datatype for detaljer er fastlåst, dvs. en målbar specifikation 
-som længde skulle måske gemmes som en varchar/streng. I vores forundersøgelse 
-af Fogs hjemmeside lader deres søgefunktion rent faktisk til at behandle dem 
-således, dvs., man sortere varer som en carport efter længde, ligesom man 
-ville sortere dem efter mærke; ved at vælge en eller flere fra en liste, og 
-ikke __min < x < max__, som nemt kunne implementeres med et prædikat; 
-__SELECT * FROM table WHERE length > min && length < max__. Den samme 
-forspørgsel ville formentlig være meget kompliceret og dyr (arbejdsmæssigt 
-for serveren), at implementere.
+image:
+Raa bytes, samt format-beskrivelse (meget vigtig ifbm. systemets 
+fortolkning af den raa data).
 
-Hvor om alting er, valgte vi ovenstående løsning, altså at alle 
-specifikationsdetaljer fik samme datatype.
+warehouse:
+Indeholder blot en adresse.
 
-##### bestilling
+users:
+Baade kunder og ansatte er brugere i systemet. Den eneste forskel 
+er i den rolle/'role' de har faaet tildelt i raekken.
 
-En bestilling skal tilknyttes et produkt, en ansat (user), en kunde (user), 
-nogle leveringsdetaljer. Derudover blev der lavet en tabel til statuskoder. 
-Dermed er det muligt at holde styr på, hvor i forløbet en bestilling er, 
-og derved f.eks. opfylde kravet om, at en stykliste på en skræddersyet 
-carport først må frigives til kunden, efter betaling.
+orders:
+En bestilling indeholder fremmednoegler til saelger, koeber, statuskode 
+og leveringsdetaljer. Derudover er hvert produkt som indgaar i en bestilling 
+tilknyttet denne gennem en en-til-en tabel, for at nedbryde mange-til-mange 
+relationen fra domaeneanalysen.
+	order_product
+	shipment
+	payment
+	status_code
 
-User-story # beskriver en indkøbskurv, som ikke indgår i database designet. 
-Grunden er, at der er tale om midlertidige valg, som højst sandsynligt 
-ændres undervejs, og derfor ville det ikke være hensynsmæssigt, at ligge 
-dem i- og opdatere databasen ved hver ændring.
 
-For at opfylde user-story #, skal en bestilling have sin egen uafhængige pris, 
-for at lade en sælger give en særtilbud til kunden.
 
-##### users/kunde/ansat
 
-##### kommunikation
 
-Indgår ikke i databasen, da korrespondence bliver eksternt i form af email.
 
-Eller... ?
+
+
+
+
+
+
+
+
+
+
+
+
+

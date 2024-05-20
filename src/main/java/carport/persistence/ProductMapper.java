@@ -479,9 +479,9 @@ public class ProductMapper {
 
     public static void DeleteProduct(ConnectionPool cp,
                                      int id) throws DatabaseException{
-        String[] sqls = new String[6];
-        String sqlPrecondition = """
-            SELECT * FROM order_product
+        String[] sqls = new String[7];
+        String sqlPOrder = """
+            DELETE FROM order_product
             WHERE product_id = ?
             """;
         String sqlPCat = """
@@ -508,32 +508,24 @@ public class ProductMapper {
             DELETE FROM product
             WHERE id = ?
             """;
-        sqls[0] = sqlPCat;
-        sqls[1] = sqlPSpec;
-        sqls[2] = sqlPDoc;
-        sqls[3] = sqlPImg;
-        sqls[4] = sqlPComp;
-        sqls[5] = sqlP;
-         try {
-             Connection c = cp.getConnection();
-             PreparedStatement ps = c.prepareStatement(sqlPrecondition);
-             int argNum = 1;
-             ps.setInt(argNum, id);
-             ResultSet rs = ps.executeQuery();
-             if (rs.next()){
-                 return;
+        sqls[0] = sqlPOrder;
+        sqls[1] = sqlPCat;
+        sqls[2] = sqlPSpec;
+        sqls[3] = sqlPDoc;
+        sqls[4] = sqlPImg;
+        sqls[5] = sqlPComp;
+        sqls[6] = sqlP;
+         for (String sql : sqls){
+             try (  Connection c = cp.getConnection();
+                    PreparedStatement ps = c.prepareStatement(sql);){
+                     ps.setInt(1, id);
+                     int success = ps.executeUpdate();
+                 } catch (SQLException e) {
+                 String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
+                 throw new DatabaseException(funcName + "::" + e.getMessage());
              }
-             for (String sql : sqls){
-                 ps = c.prepareStatement(sql);
-                 ps.setInt(argNum, id);
-                 int success = ps.executeUpdate();
-             }
-             CloseResources(ps, rs);
-         } catch (SQLException e) {
-             String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
-             throw new DatabaseException(funcName + "::" + e.getMessage());
-         }
-    }
+            }
+        }
 
     public static void ReplaceProduct(ConnectionPool cp,
                                       int old,

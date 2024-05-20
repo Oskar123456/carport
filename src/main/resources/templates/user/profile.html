@@ -109,6 +109,7 @@
     </header>
     <!-- END OF NAV BAR -->
 <div class="main" th:if="${session.currentUser != null}">
+    <div class="insidemain">
     <h1 th:text="'Velkommen tilbage ' + ${session.currentUser.Name}" ></h1>
     <a class="bad-button" th:href="@{/logout}">Log ud</a>
     <h1>Her er alle dine bestillinger:</h1>
@@ -231,6 +232,7 @@
         </li>
     </ul>
 
+</div>
 </div>
 
 <div class="admin-functions" >

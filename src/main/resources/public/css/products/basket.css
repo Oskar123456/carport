@@ -1,5 +1,13 @@
 .main {
+    .insidemain {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
 ul {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
     li {
         display: flex;
         justify-content: space-between;

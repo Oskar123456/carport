@@ -251,6 +251,7 @@ footer span {
     color: white;
     margin-right: 10px;
     text-decoration: none;
+    max-width: 200px;
 }
 .bad-button:hover {
     cursor: pointer;
