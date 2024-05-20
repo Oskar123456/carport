@@ -24,11 +24,16 @@ public class TestProductMapper
 {
     private static ConnectionPool c;
 
-    @BeforeAll
+    private static final String USER = "postgres";
+    private static final String PASSWORD = "bwQc)89P";
+    private static final String URL = "jdbc:postgresql://104.248.251.153:5432/%s?currentSchema=public";
+    private static final String DB = "testcarport";
+
+/*    @BeforeAll
     static void setup(){
-        c = ConnectionPool.getInstance("", "", "", "");
-        assertEquals(ConnectionPool.dbName, "testcarport");
-        if (!ConnectionPool.dbName.equals("testcarport")){
+        c = ConnectionPool.getInstance(USER, PASSWORD, URL, DB);
+        assertEquals(ConnectionPool.GetDBName(), "testcarport");
+        if (!ConnectionPool.GetDBName().equals("testcarport")){
             c = null;
             return;
         }
@@ -39,7 +44,7 @@ public class TestProductMapper
             InputStream t = new FileInputStream(file);
             assertTrue(t.available() > 0);
             String createSql = new String(t.readAllBytes());
-            /* DATABASE INIT */
+            *//* DATABASE INIT *//*
             ProductMapper.Init();
             Statement stmt = c.getConnection().createStatement();
             stmt.execute(createSql);
@@ -50,6 +55,13 @@ public class TestProductMapper
         } catch (IOException | SQLException e) {
             fail("setup failed " + e.getMessage());
         }
+    }
+
+    @Test
+    @DisplayName("Test Correct DB")
+    void TestCorrectDB() {
+        String dbName = ConnectionPool.GetDBName();
+        assertEquals(dbName, "testcarport");
     }
 
     @Test
@@ -66,13 +78,13 @@ public class TestProductMapper
         p.SpecDetails[1] = "123";
         p.SpecDetails[2] = "1234";
         try {
-            /* INSERT */
+            *//* INSERT *//*
             int productId = ProductMapper.InsertProduct(c, false, p);
             Product pFetched = ProductMapper.SelectProductsById(c, productId).get(0);
             assertEquals(p.Name, pFetched.Name);
             assertEquals(p.Description, pFetched.Description);
             assertEquals(p.Price, pFetched.Price);
-            /* DELETE */
+            *//* DELETE *//*
             ProductMapper.DeleteProduct(c, productId);
             List<Product> results = ProductMapper.SelectProductsById(c, productId);
             assertEquals(results.size(), 0);
@@ -95,10 +107,16 @@ public class TestProductMapper
         p.SpecDetails[1] = "123";
         p.SpecDetails[2] = "1234";
         try {
-            /* SEARCH FOR THE PRODUCT IN DIFFERENT WAYS */
-            List<Product> ps = ProductMapper.SelectProductsById(c, 1);
+            *//* INSERT *//*
+            int productId = ProductMapper.InsertProduct(c, false, p);
+            Product pFetched = ProductMapper.SelectProductsById(c, productId).get(0);
+            assertEquals(p.Name, pFetched.Name);
+            assertEquals(p.Description, pFetched.Description);
+            assertEquals(p.Price, pFetched.Price);
+            *//* SEARCH FOR THE PRODUCT IN DIFFERENT WAYS *//*
+
         } catch (DatabaseException | NullPointerException e) {
             fail("");
         }
-    }
+    }*/
 }

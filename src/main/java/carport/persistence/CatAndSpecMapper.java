@@ -15,6 +15,8 @@ import carport.entities.ProductCategory;
 import carport.entities.ProductSpecification;
 import carport.exceptions.DatabaseException;
 
+import static carport.persistence.CarportMapper.CloseResources;
+
 public class CatAndSpecMapper {
     /*
      * Category and Specification
@@ -30,6 +32,7 @@ public class CatAndSpecMapper {
             ResultSet rs = ps.executeQuery();
             while (rs.next())
                 cats.add(new ProductCategory(rs.getInt("id"), rs.getString("name"), null));
+            CloseResources(ps, rs);
         } catch (SQLException e) {
             String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException(thisMethodName + "::error (" + e.getMessage() + ")");
@@ -51,6 +54,7 @@ public class CatAndSpecMapper {
             ResultSet rs = ps.executeQuery();
             if (rs.next())
                 cat = new ProductCategory(rs.getInt("id"), rs.getString("name"), null);
+            CloseResources(ps, rs);
         } catch (SQLException e) {
             String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException(thisMethodName + "::error (" + e.getMessage() + ")");
@@ -105,15 +109,6 @@ public class CatAndSpecMapper {
             sql = sql.replace("predicate_position_category", sqlCatPredicate);
         }
 
-        /* DEBUG PRINTING */
-        // String thisMethodName =
-        // Thread.currentThread().getStackTrace()[1].getMethodName();
-        // System.err.printf("%s::%n\tsqlCatPredicate : %s%n\tFULL:%n%s%n%n",
-        // thisMethodName,
-        // sqlCatPredicate,
-        // sql);
-        /* DEBUG PRINTING */
-
         try (Connection c = cp.getConnection();
                 PreparedStatement ps = c.prepareStatement(sql);) {
             int argNum = 1;
@@ -123,6 +118,7 @@ public class CatAndSpecMapper {
             ResultSet rs = ps.executeQuery();
             while (rs.next())
                 ids.add(rs.getInt("id"));
+            CloseResources(ps, rs);
         } catch (SQLException e) {
             String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException(funcName + "::" + e.getMessage());
@@ -166,6 +162,7 @@ public class CatAndSpecMapper {
                         null,
                         rs.getString("unit")));
             }
+            CloseResources(ps, rs);
         } catch (SQLException e) {
             String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException("fejl ved søgning i databasen (" + thisMethodName + "):" + e.getMessage());
@@ -218,6 +215,7 @@ public class CatAndSpecMapper {
                     catIdsWithSpecIds.put(rs.getInt("id"), specIds);
                 }
             }
+            CloseResources(ps, rs);
         } catch (SQLException e) {
             String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException(funcName + "::" + e.getMessage());
@@ -303,6 +301,7 @@ public class CatAndSpecMapper {
                 }
 
             }
+            CloseResources(ps, rs);
         } catch (SQLException e) {
             String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException("fejl ved søgning i databasen (" + thisMethodName + ")");
@@ -371,6 +370,7 @@ public class CatAndSpecMapper {
                         specIdsList.add(RowCats[i].intValue());
                 }
             }
+            CloseResources(ps, rs);
         } catch (SQLException e) {
             String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException("fejl ved søgning i databasen (" + thisMethodName + ")");
@@ -408,6 +408,7 @@ public class CatAndSpecMapper {
                 for (Long l : cids)
                     cats.add(Integer.valueOf(l.intValue()));
             }
+            CloseResources(ps, rs);
         } catch (SQLException e) {
             String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException("fejl ved søgning i databasen (" + thisMethodName + ")");

@@ -17,6 +17,8 @@ import carport.entities.ProductImage;
 import carport.exceptions.DatabaseException;
 import carport.tools.ProductImageFactory;
 
+import static carport.persistence.CarportMapper.CloseResources;
+
 public class ProductMapper {
     static private String SQL_SELECT_PRODUCTS_BY_ID;
     static private final int PRODUCT_IMG_NOTFOUND_PLACEHOLDER = 46;
@@ -74,7 +76,9 @@ public class ProductMapper {
                     for (int i = 0; i < prod.CompIds.length; ++i)
                         InsertProductToComponentLink(cp, generatedKey, prod.CompIds[i].intValue(),
                                 prod.CompQuants[i].intValue());
+                CloseResources(null, generatedKeys);
             }
+            CloseResources(ps, null);
         } catch (SQLException e) {
             String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException(funcName + "::" + e.getMessage());
@@ -89,7 +93,7 @@ public class ProductMapper {
         String sql = """
                 INSERT INTO public.product_image(
                 id, product_id, image_id, image_downscaled_id)
-                VALUES (DEFAULT, ?, ?, ?); """;
+                VALUES (DEFAULT, ?, ?, ?)""";
 
         int generatedKey = -1;
         try (Connection c = cp.getConnection();
@@ -104,7 +108,9 @@ public class ProductMapper {
                 ResultSet generatedKeys = ps.getGeneratedKeys();
                 if (generatedKeys.next())
                     generatedKey = (int) generatedKeys.getLong(1);
+                CloseResources(ps, generatedKeys);
             }
+            CloseResources(ps, null);
         } catch (SQLException e) {
             String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException(funcName + "::" + e.getMessage());
@@ -118,7 +124,7 @@ public class ProductMapper {
         String sql = """
                 INSERT INTO product_category(
                 id, product_id, category_id)
-                VALUES (DEFAULT, ?, ?) """;
+                VALUES (DEFAULT, ?, ?)""";
 
         int generatedKey = -1;
         try (Connection c = cp.getConnection();
@@ -126,13 +132,14 @@ public class ProductMapper {
             int argNum = 1;
             ps.setInt(argNum++, prodId);
             ps.setInt(argNum++, categoryId);
-            // System.err.println(ps.toString());
             int success = ps.executeUpdate();
             if (success > 0) {
                 ResultSet generatedKeys = ps.getGeneratedKeys();
                 if (generatedKeys.next())
                     generatedKey = (int) generatedKeys.getLong(1);
+                CloseResources(ps, generatedKeys);
             }
+            CloseResources(ps, null);
         } catch (SQLException e) {
             String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException(funcName + "::" + e.getMessage());
@@ -147,7 +154,7 @@ public class ProductMapper {
         String sql = """
                 INSERT INTO public.product_specification(
                 id, product_id, specification_id, details)
-                VALUES (DEFAULT, ?, ?, ?); """;
+                VALUES (DEFAULT, ?, ?, ?)""";
 
         int generatedKey = -1;
         try (Connection c = cp.getConnection();
@@ -164,7 +171,9 @@ public class ProductMapper {
                 ResultSet generatedKeys = ps.getGeneratedKeys();
                 if (generatedKeys.next())
                     generatedKey = (int) generatedKeys.getLong(1);
+                CloseResources(ps, generatedKeys);
             }
+            CloseResources(ps, null);
         } catch (SQLException e) {
             String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException(funcName + "::" + e.getMessage());
@@ -177,7 +186,7 @@ public class ProductMapper {
         String sql = """
                 INSERT INTO public.product_documentation(
                 id, name, description, data, product_id, type, format)
-                VALUES (DEFAULT, ?, ?, ?, ?, ?, ?); """;
+                VALUES (DEFAULT, ?, ?, ?, ?, ?, ?)""";
 
         int generatedKey = -1;
         try (Connection c = cp.getConnection();
@@ -198,7 +207,9 @@ public class ProductMapper {
                 ResultSet generatedKeys = ps.getGeneratedKeys();
                 if (generatedKeys.next())
                     generatedKey = (int) generatedKeys.getLong(1);
+                CloseResources(ps, generatedKeys);
             }
+            CloseResources(ps, null);
         } catch (SQLException e) {
             String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException(funcName + "::" + e.getMessage());
@@ -213,7 +224,7 @@ public class ProductMapper {
         String sql = """
                 INSERT INTO public.product_component(
                 id, product_id, component_id, quantity)
-                VALUES (DEFAULT, ?, ?, ?) """;
+                VALUES (DEFAULT, ?, ?, ?)""";
 
         int generatedKey = -1;
         try (Connection c = cp.getConnection();
@@ -227,7 +238,9 @@ public class ProductMapper {
                 ResultSet generatedKeys = ps.getGeneratedKeys();
                 if (generatedKeys.next())
                     generatedKey = (int) generatedKeys.getLong(1);
+                CloseResources(ps, generatedKeys);
             }
+            CloseResources(ps, null);
         } catch (SQLException e) {
             String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException(funcName + "::" + e.getMessage());
@@ -304,14 +317,6 @@ public class ProductMapper {
         sql = sql.replace("predicate_position_product", sqlPredicate);
         sql = sql.replace("predicate_position_specification", sqlSpecPredicate);
 
-        /* DEBUG PRINTING */
-        // String thisMethodName =
-        // Thread.currentThread().getStackTrace()[1].getMethodName();
-        // System.err.printf("%s::%n%s%n%n%n%n%n%n",
-        // thisMethodName,
-        // sql);
-        /* DEBUG PRINTING */
-
         try (Connection c = cp.getConnection();
              PreparedStatement ps = c.prepareStatement(sql);) {
             int argNum = 1;
@@ -342,6 +347,7 @@ public class ProductMapper {
             ResultSet rs = ps.executeQuery();
             while (rs.next())
                 ids.add(rs.getInt("id"));
+            CloseResources(ps, rs);
         } catch (SQLException e) {
             String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException(funcName + "::" + e.getMessage());
@@ -381,9 +387,9 @@ public class ProductMapper {
                 for (int i = 0; i < ids.length; ++i)
                     ps.setInt(argNum++, ids[i]);
             ResultSet rs = ps.executeQuery();
-            // System.err.println("select products by id : \n" + ps.toString());
             while (rs.next())
                 productList.add(Product.ImportFromDB(rs));
+            CloseResources(ps, rs);
         } catch (SQLException e) {
             String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException(funcName + "::" + e.getMessage());
@@ -420,6 +426,7 @@ public class ProductMapper {
             ResultSet generatedId = ps.getGeneratedKeys();
             if (generatedId.next())
                 dbGeneratedImgId = (int) generatedId.getLong(1);
+            CloseResources(ps, generatedId);
         } catch (SQLException e) {
             String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException(thisMethodName + "::error (" + e.getMessage() + ")");
@@ -447,7 +454,6 @@ public class ProductMapper {
             ps.setArray(argNum++, null);
             ps.setBigDecimal(argNum++, new BigDecimal(0));
 
-            // System.err.println(ps.toString());
             int success = ps.executeUpdate();
             if (success > 0) {
                 ResultSet generatedKeys = ps.getGeneratedKeys();
@@ -462,6 +468,7 @@ public class ProductMapper {
                 ProductMapper.InsertProductToSpecificationLink(cp, generatedKey, 3, String.valueOf(height));
                 ProductMapper.InsertProductToImageLink(cp, generatedKey,
                         PRODUCT_IMG_NOTFOUND_PLACEHOLDER, PRODUCT_IMG_NOTFOUND_PLACEHOLDER_DOWNSCALED);
+                CloseResources(ps, generatedKeys);
             }
         } catch (SQLException e) {
             String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
@@ -521,6 +528,7 @@ public class ProductMapper {
                  ps.setInt(argNum, id);
                  int success = ps.executeUpdate();
              }
+             CloseResources(ps, rs);
          } catch (SQLException e) {
              String funcName = Thread.currentThread().getStackTrace()[1].getMethodName();
              throw new DatabaseException(funcName + "::" + e.getMessage());

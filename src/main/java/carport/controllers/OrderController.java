@@ -43,16 +43,6 @@ public class OrderController {
         int length = ctx.sessionAttribute("length");
 
         try {
-            // TODO: Der skal vel et user objekt eller user_id som argument i
-            // InsertCarportCustomBase ellers kan kunden ikke se sin ordre?
-            // TODO: Eller er det først når admin/sælger har godkendt forespørgslen at den
-            // gemmes på user_id og kunden kan se ordren?
-
-            /*
-             * User user = UserMapper.login(email, password, cp);
-             * ctx.sessionAttribute("currentUser", user);
-             */
-
             ProductMapper.InsertCarportCustomBase(connectionPool, length, width, 200);
 
             // TODO: Giv kunde besked om at forespørgslen er sendt
@@ -86,7 +76,7 @@ public class OrderController {
 
     private static void showResult(Context ctx, ConnectionPool cp) {
         if (ctx.sessionAttribute("currentUser") == null) {
-            ctx.redirect("login");
+            ctx.render("user/logind.html");
             return;
         }
 
@@ -119,7 +109,7 @@ public class OrderController {
             boolean made = cc.Make(w * 10, l * 10, 2800, shed, sw * 10, sl * 10);
 
             if (!made){
-                ctx.redirect("orderPage");
+                ctx.render("byg-carport.html");
                 return;
             }
 

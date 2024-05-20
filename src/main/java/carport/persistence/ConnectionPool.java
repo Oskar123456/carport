@@ -16,7 +16,8 @@ public class ConnectionPool
 
     public static ConnectionPool instance = null;
     public static HikariDataSource ds = null;
-    public static String dbName;
+
+    private static String dbName; // for testing
 
     /***
      * Empty and private constructor due to single pattern. Use getInstance methods to
@@ -93,6 +94,11 @@ public class ConnectionPool
         Logger.getLogger("web").log(Level.INFO,
                 String.format("Connection Pool created for: (%s, %s, %s, %s)", user, password, url, db));
         HikariConfig config = new HikariConfig();
+
+        // TODO : ADDED EXTRAS
+        config.setLeakDetectionThreshold(60 * 1000);
+        // TODO : ADDED EXTRAS
+
         config.setDriverClassName("org.postgresql.Driver");
         config.setJdbcUrl(String.format(url, db));
         config.setUsername(user);
@@ -103,5 +109,9 @@ public class ConnectionPool
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
         return new HikariDataSource(config);
+    }
+
+    public static String GetDBName(){
+        return dbName;
     }
 }

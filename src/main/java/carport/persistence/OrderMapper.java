@@ -15,6 +15,8 @@ import carport.entities.Order;
 import carport.entities.Product;
 import carport.exceptions.DatabaseException;
 
+import static carport.persistence.CarportMapper.CloseResources;
+
 /**
  * OrderMapper
  */
@@ -62,6 +64,7 @@ public class OrderMapper {
                         rs.getBigDecimal("price"),
                         rs.getString("time_of_order"),
                         rs.getString("note")));
+            CloseResources(ps, rs);
         } catch (SQLException e) {
             String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException(thisMethodName + "::error (" + e.getMessage() + ")");
@@ -112,6 +115,7 @@ public class OrderMapper {
                     productIds.add(pIdWithQuant);
                 }
             }
+            CloseResources(ps, rs);
         } catch (SQLException e) {
             String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException(thisMethodName + "::error (" + e.getMessage() + ")");
@@ -123,16 +127,24 @@ public class OrderMapper {
     public static void DeleteOrder(ConnectionPool cp, int orderId) throws DatabaseException {
         String sqlCascade = "DELETE FROM order_product WHERE order_id = ?";
         String sql = "DELETE FROM orders WHERE id = ?";
-        try {
-            Connection c = cp.getConnection();
-            PreparedStatement ps = c.prepareStatement(sqlCascade);
-
-            ps.setInt(1, orderId);
+        try (
+                Connection c = cp.getConnection();
+                PreparedStatement ps = c.prepareStatement(sqlCascade);) {
+            int argNum = 1;
+            ps.setInt(argNum++, orderId);
             ps.executeUpdate();
-
-            ps = c.prepareStatement(sql);
-            ps.setInt(1, orderId);
+            CloseResources(ps, null);
+        } catch (SQLException e) {
+            String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+            throw new DatabaseException(thisMethodName + "::error (" + e.getMessage() + ")");
+        }
+        try (
+                Connection c = cp.getConnection();
+                PreparedStatement ps = c.prepareStatement(sql);) {
+            int argNum = 1;
+            ps.setInt(argNum++, orderId);
             ps.executeUpdate();
+            CloseResources(ps, null);
         } catch (SQLException e) {
             String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException(thisMethodName + "::error (" + e.getMessage() + ")");
@@ -148,6 +160,7 @@ public class OrderMapper {
             ps.setInt(argNum++, orderId);
             ps.setInt(argNum++, productId);
             ps.executeUpdate();
+            CloseResources(ps, null);
         } catch (SQLException e) {
             String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException(thisMethodName + "::error (" + e.getMessage() + ")");
@@ -162,6 +175,7 @@ public class OrderMapper {
             int argNum = 1;
             ps.setInt(argNum++, orderId);
             ps.executeUpdate();
+            CloseResources(ps, null);
         } catch (SQLException e) {
             String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException(thisMethodName + "::error (" + e.getMessage() + ")");
@@ -181,6 +195,7 @@ public class OrderMapper {
             ps.setInt(argNum++, orderId);
             ps.setInt(argNum++, oldProductId);
             ps.executeUpdate();
+            CloseResources(ps, null);
         } catch (SQLException e) {
             String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException(thisMethodName + "::error (" + e.getMessage() + ")");
@@ -204,6 +219,7 @@ public class OrderMapper {
             ps.setInt(argNum++, quantity);
 
             ps.executeUpdate();
+            CloseResources(ps, null);
         } catch (SQLException e) {
             String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException(thisMethodName + "::error (" + e.getMessage() + ")");
@@ -240,7 +256,9 @@ public class OrderMapper {
                     return;
                 for (Product p : products)
                     InsertOrderProduct(cp, newId, p.Id, 1);
+                CloseResources(null, newIds);
             }
+            CloseResources(ps, null);
         } catch (SQLException e) {
             String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException(thisMethodName + "::error (" + e.getMessage() + ")");

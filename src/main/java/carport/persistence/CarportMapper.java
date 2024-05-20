@@ -22,7 +22,17 @@ public class CarportMapper {
         ProductMapper.Init();
     }
 
-
+    public static void CloseResources(PreparedStatement ps, ResultSet rs)
+    {
+        try {
+            if (ps != null)
+                ps.close();
+        } catch (SQLException ignored){}
+        try {
+            if (rs != null)
+                rs.close();
+        } catch (SQLException ignored){}
+    }
 
     /*
      * Images
@@ -39,6 +49,7 @@ public class CarportMapper {
             ResultSet rs = ps.executeQuery();
             while (rs.next())
                 ids.add(rs.getInt("id"));
+            CloseResources(ps, rs);
         } catch (SQLException e) {
             String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException("fejl ved søgning i databasen (" + thisMethodName + ")");
@@ -63,6 +74,7 @@ public class CarportMapper {
                         rs.getString("format"),
                         rs.getBoolean("downscaled"));
             }
+            CloseResources(ps, rs);
         } catch (SQLException e) {
             String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException("fejl ved søgning i databasen (" + thisMethodName + ")");
@@ -91,6 +103,7 @@ public class CarportMapper {
                         rs.getInt("product_id"),
                         rs.getString("type"),
                         rs.getString("format"));
+            CloseResources(ps, rs);
         } catch (SQLException e) {
             String thisMethodName = Thread.currentThread().getStackTrace()[1].getMethodName();
             throw new DatabaseException("fejl ved søgning i databasen (" + thisMethodName + ")");

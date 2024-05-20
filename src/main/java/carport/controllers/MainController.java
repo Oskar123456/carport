@@ -57,7 +57,7 @@ public class MainController {
         User user = ctx.sessionAttribute("currentUser");
         List<Product> basket = ctx.sessionAttribute("basket");
         if (user == null || basket == null || basket.size() < 1){
-            ctx.redirect("/");
+            ctx.render("index.html");
             return;
         }
         try {
@@ -92,7 +92,7 @@ public class MainController {
         User user = ctx.sessionAttribute("currentUser");
         List<Product> basket = ctx.sessionAttribute("basket");
         if (user == null) {
-            ctx.redirect("/login");
+            ctx.render("user/logind.html");
             return;
         }
         if (basket == null)
@@ -107,7 +107,7 @@ public class MainController {
             }
             ctx.sessionAttribute("basket", basket);
         } catch (DatabaseException e) {
-            ctx.redirect("/");
+            ctx.render("index.html");
             return;
         }
         renderBasket(ctx, cp);
@@ -117,7 +117,7 @@ public class MainController {
         User user = ctx.sessionAttribute("currentUser");
         List<Product> basket = ctx.sessionAttribute("basket");
         if (user == null) {
-            ctx.redirect("/login");
+            ctx.render("logind.html");
             return;
         }
         if (basket == null) {
@@ -146,7 +146,7 @@ public class MainController {
             } catch (NumberFormatException | DatabaseException ignored) {
             }
         }
-        ctx.redirect("/notfound");
+        ctx.result("not found");
     }
 
     private static void renderProduct(Context ctx, ConnectionPool cp) {

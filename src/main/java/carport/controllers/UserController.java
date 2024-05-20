@@ -58,7 +58,7 @@ public class UserController {
 
     private static void logout(Context ctx) {
         ctx.req().getSession().invalidate();
-        ctx.redirect("/");
+        ctx.render("index.html");
     }
 
     public static void login(Context ctx, ConnectionPool cp) {
@@ -69,7 +69,7 @@ public class UserController {
             User user = UserMapper.login(email, password, cp);
 
             if (user == null){
-                ctx.redirect("/login");
+                ctx.render("user/logind.html");
                 return;
             }
             ctx.sessionAttribute("currentUser", user);
@@ -86,7 +86,7 @@ public class UserController {
     private static void renderProfile(Context ctx, ConnectionPool cp){
         User user = ctx.sessionAttribute("currentUser");
         if (user == null){
-            ctx.redirect("login");
+            ctx.render("user/logind.html");
             return;
         }
         try {
@@ -105,7 +105,7 @@ public class UserController {
             ctx.attribute("validated", validatedOrders);
             ctx.attribute("done", doneOrders);
         } catch (NumberFormatException | DatabaseException e) {
-            ctx.redirect("/");
+            ctx.render("index.html");
             return;
         }
         ctx.render("user/profile.html");
@@ -113,7 +113,7 @@ public class UserController {
 
     private static void approveOrder(Context ctx, ConnectionPool cp) {
         if (ctx.sessionAttribute("currentUser") == null) {
-            ctx.redirect("/");
+            ctx.render("index.html");
             return;
         }
         String id = ctx.formParam("id");
@@ -126,7 +126,7 @@ public class UserController {
 
     private static void removeOrderProduct(Context ctx, ConnectionPool cp) {
         if (ctx.sessionAttribute("currentUser") == null) {
-            ctx.redirect("/");
+            ctx.render("index.html");
             return;
         }
         String oid = ctx.formParam("oid");
@@ -142,7 +142,7 @@ public class UserController {
 
     private static void removeOrder(Context ctx, ConnectionPool cp) {
         if (ctx.sessionAttribute("currentUser") == null) {
-            ctx.redirect("/");
+            ctx.render("index.html");
             return;
         }
         String oid = ctx.formParam("oid");

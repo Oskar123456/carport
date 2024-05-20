@@ -241,12 +241,10 @@ public class CustomCarport {
         if (shed != null)
             if (shedLenX > LenX - 2 * stolpeLenX || shedLenY > LenY - 2 * stolpeLenY) {
                 made = false;
-                System.err.printf("shed null %d, %d, %d%n", LenX, 2*stolpeLenX, shedLenX);
-                return made;
+                return false;
             }
         if (LenX < PARKING_WIDTH_MIN + 2 * stolpeLenX ||
                 LenY < PARKING_LENGTH_MIN + 2 * stolpeLenY) {
-            System.err.printf("lenth issue %d, %d, %d%n", STOLPE_DISTANCE_MAX, 2*stolpeLenY, LenX);
             made = false;
             return false;
         }
