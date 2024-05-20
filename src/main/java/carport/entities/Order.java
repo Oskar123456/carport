@@ -2,7 +2,6 @@ package carport.entities;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import carport.exceptions.DatabaseException;
@@ -29,10 +28,10 @@ public class Order {
     public List<Product> ProductList;
 
     public Order(int id, int employeeId,
-                 int customerId, int statusCode,
-                 String statusName, int shipmentId,
-                 BigDecimal price,
-                 String timeOfOrder, String note) {
+            int customerId, int statusCode,
+            String statusName, int shipmentId,
+            BigDecimal price,
+            String timeOfOrder, String note) {
         Id = id;
         EmployeeId = employeeId;
         CustomerId = customerId;
@@ -44,13 +43,13 @@ public class Order {
         Note = note;
     }
 
-    public void LoadProductIdsAndQuants(ConnectionPool cp) throws DatabaseException{
+    public void LoadProductIdsAndQuants(ConnectionPool cp) throws DatabaseException {
         List<Integer[]> prodIdsAndQuants = OrderMapper.GetProductIdsWithQuants(cp, this.Id);
         if (prodIdsAndQuants == null)
             return;
         ProductIds = new ArrayList<>();
         ProductQuants = new ArrayList<>();
-        for (Integer[] iq : prodIdsAndQuants){
+        for (Integer[] iq : prodIdsAndQuants) {
             ProductIds.add(iq[0]);
             ProductQuants.add(iq[1]);
         }
@@ -58,7 +57,7 @@ public class Order {
 
     public void LoadProductList(ConnectionPool cp) throws DatabaseException {
         ProductList = new ArrayList<>();
-        for (Integer i : ProductIds){
+        for (Integer i : ProductIds) {
             Product p = ProductMapper.SelectProductsById(cp, i).get(0);
             p.GetCategories(cp);
             p.GetFullSpecs(cp);
@@ -66,16 +65,16 @@ public class Order {
         }
     }
 
-    public void Load(ConnectionPool cp) throws DatabaseException{
+    public void Load(ConnectionPool cp) throws DatabaseException {
         LoadProductIdsAndQuants(cp);
         LoadProductList(cp);
     }
 
-    public BigDecimal GetBasePrice(){
+    public BigDecimal GetBasePrice() {
         return Product.GetSumOfProductPrices(ProductList);
     }
 
-    public static void LoadList(ConnectionPool cp, List<Order> orders) throws DatabaseException{
+    public static void LoadList(ConnectionPool cp, List<Order> orders) throws DatabaseException {
         for (Order o : orders)
             o.Load(cp);
     }
@@ -84,9 +83,9 @@ public class Order {
     public String toString() {
         return "Order [Id=" + Id + ", EmployeeId=" + EmployeeId + ", CustomerId=" + CustomerId + ", StatusCode="
                 + StatusCode + ", StatusName=" + StatusName + ", TimeOfOrder=" + TimeOfOrder + ", ShipmentId="
-                + ShipmentId + ", Price=" + Price + ", Note=" + Note + ", ProductIds=" + ProductIds.toString() + ", ProductQuants="
+                + ShipmentId + ", Price=" + Price + ", Note=" + Note + ", ProductIds=" + ProductIds.toString()
+                + ", ProductQuants="
                 + ProductQuants.toString() + ", ProductList=" + ProductList.toString() + "]";
     }
-
 
 }
