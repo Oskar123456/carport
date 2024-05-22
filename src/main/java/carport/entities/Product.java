@@ -5,11 +5,9 @@ import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import carport.exceptions.DatabaseException;
-import carport.persistence.CarportMapper;
 import carport.persistence.CatAndSpecMapper;
 import carport.persistence.ConnectionPool;
 import carport.persistence.ProductMapper;
@@ -178,7 +176,7 @@ public class Product {
         return false;
     }
 
-    public boolean IsCarport(){
+    public boolean IsCarport() {
         return IsType("carport");
     }
 

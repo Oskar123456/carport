@@ -1,32 +1,43 @@
 package unit;
 
-import carport.entities.Product;
-import carport.entities.ProductCategory;
-import carport.exceptions.DatabaseException;
-import carport.persistence.CatAndSpecMapper;
-import carport.persistence.ConnectionPool;
-import carport.persistence.ProductMapper;
-import org.junit.jupiter.api.BeforeAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.awt.dnd.DropTarget;
-import java.io.*;
-import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
+import carport.entities.CustomCarport;
 
-import static org.junit.jupiter.api.Assertions.*;
+public class TestCustomCarport {
+    private static CustomCarport cc;
 
+    @BeforeEach
+    void setup() {
+        cc = new CustomCarport();
+    }
 
-
-public class TestCustomCarport
-{
     @Test
-    @DisplayName("LOL") 
-    void TestTest() {
-        assertEquals(1,1);
+    @DisplayName("LOL")
+    void TestValid() {
+        boolean shouldNot = cc.Make(5000, 5000, 5000, true, 5000, 5000);
+        boolean should = cc.Make(5000, 5000, 5000, true, 2000, 2000);
+        boolean shouldNot1 = cc.Make(1000, 1000, 1000, false, 2000, 2000);
+        boolean should1 = cc.Make(5000, 5000, 5000, false, 2000, 2000);
+        assertEquals(false, shouldNot);
+        assertEquals(true, should);
+        assertEquals(false, shouldNot1);
+        assertEquals(true, should1);
+    }
+
+    @Test
+    @DisplayName("LOL")
+    void TestN() {
+        boolean should = cc.Make(5000, 5000, 5000, true, 2000, 2000);
+        assertEquals(true, should);
+        assertEquals(6, cc.GetNRemProd());
+        assertEquals(24, cc.GetNStolpeProd());
+        assertEquals(20, cc.GetNSpaerProd());
+        assertEquals(128, cc.GetNSternProd());
+        assertEquals(42, cc.GetNTagpladeProd());
     }
 }
