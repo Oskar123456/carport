@@ -15,14 +15,12 @@ import java.util.List;
 
 import static carport.persistence.CarportMapper.CloseResources;
 
-public class ProductMapper
-{
+public class ProductMapper {
     static private String SQL_SELECT_PRODUCTS_BY_ID;
     static private final int PRODUCT_IMG_NOTFOUND_PLACEHOLDER = 46;
     static private final int PRODUCT_IMG_NOTFOUND_PLACEHOLDER_DOWNSCALED = 47;
 
-    public static void Init()
-    {
+    public static void Init() {
         InputStream sqlSelProdsStream = CarportMapper.class.getResourceAsStream("/sql/select-products-by-id.sql");
         try {
             assert sqlSelProdsStream != null;
@@ -34,9 +32,8 @@ public class ProductMapper
     }
 
     public static int InsertProduct(ConnectionPool cp,
-                                    boolean internal,
-                                    Product prod) throws DatabaseException
-    {
+            boolean internal,
+            Product prod) throws DatabaseException {
         String sql = """
                 INSERT INTO public.product(
                 id, name, description, links, price, internal)
@@ -44,7 +41,7 @@ public class ProductMapper
 
         int generatedKey = -1;
         try (Connection c = cp.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             int argNum = 1;
             ps.setString(argNum++, prod.Name);
             ps.setString(argNum++, prod.Description);
@@ -83,10 +80,9 @@ public class ProductMapper
     }
 
     public static int InsertProductToImageLink(ConnectionPool cp,
-                                               int prodId,
-                                               int imageId,
-                                               int imageDownscaledId) throws DatabaseException
-    {
+            int prodId,
+            int imageId,
+            int imageDownscaledId) throws DatabaseException {
         String sql = """
                 INSERT INTO public.product_image(
                 id, product_id, image_id, image_downscaled_id)
@@ -94,7 +90,7 @@ public class ProductMapper
 
         int generatedKey = -1;
         try (Connection c = cp.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             int argNum = 1;
             ps.setInt(argNum++, prodId);
             ps.setInt(argNum++, imageId);
@@ -115,9 +111,8 @@ public class ProductMapper
     }
 
     public static int InsertProductToCategoryLink(ConnectionPool cp,
-                                                  int prodId,
-                                                  int categoryId) throws DatabaseException
-    {
+            int prodId,
+            int categoryId) throws DatabaseException {
         String sql = """
                 INSERT INTO product_category(
                 id, product_id, category_id)
@@ -125,7 +120,7 @@ public class ProductMapper
 
         int generatedKey = -1;
         try (Connection c = cp.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             int argNum = 1;
             ps.setInt(argNum++, prodId);
             ps.setInt(argNum++, categoryId);
@@ -145,10 +140,9 @@ public class ProductMapper
     }
 
     public static int InsertProductToSpecificationLink(ConnectionPool cp,
-                                                       int prodId,
-                                                       int specificationId,
-                                                       String details) throws DatabaseException
-    {
+            int prodId,
+            int specificationId,
+            String details) throws DatabaseException {
         String sql = """
                 INSERT INTO public.product_specification(
                 id, product_id, specification_id, details)
@@ -156,7 +150,7 @@ public class ProductMapper
 
         int generatedKey = -1;
         try (Connection c = cp.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             int argNum = 1;
             ps.setInt(argNum++, prodId);
             ps.setInt(argNum++, specificationId);
@@ -178,8 +172,7 @@ public class ProductMapper
     }
 
     public static int InsertProductToDocumentationLink(ConnectionPool cp,
-                                                       ProductDocumentation doc) throws DatabaseException
-    {
+            ProductDocumentation doc) throws DatabaseException {
         String sql = """
                 INSERT INTO public.product_documentation(
                 id, name, description, data, product_id, type, format)
@@ -187,7 +180,7 @@ public class ProductMapper
 
         int generatedKey = -1;
         try (Connection c = cp.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             int argNum = 1;
             ps.setString(argNum++, doc.Name());
             ps.setString(argNum++, doc.Description());
@@ -212,10 +205,9 @@ public class ProductMapper
     }
 
     public static int InsertProductToComponentLink(ConnectionPool cp,
-                                                   int prodId,
-                                                   int componentId,
-                                                   int quantity) throws DatabaseException
-    {
+            int prodId,
+            int componentId,
+            int quantity) throws DatabaseException {
         String sql = """
                 INSERT INTO public.product_component(
                 id, product_id, component_id, quantity)
@@ -223,7 +215,7 @@ public class ProductMapper
 
         int generatedKey = -1;
         try (Connection c = cp.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             int argNum = 1;
             ps.setInt(argNum++, prodId);
             ps.setInt(argNum++, componentId);
@@ -249,15 +241,14 @@ public class ProductMapper
      * based on specid-specdetails.
      */
     public static List<Integer> SearchProducts(ConnectionPool cp,
-                                               int pageNum,
-                                               int pageSize,
-                                               List<String> nameNeedles,
-                                               List<String> descriptionNeedles,
-                                               List<Integer> categoryIds,
-                                               boolean shouldFilter,
-                                               List<Integer> specIds,
-                                               List<List<String>> specDetails) throws DatabaseException
-    {
+            int pageNum,
+            int pageSize,
+            List<String> nameNeedles,
+            List<String> descriptionNeedles,
+            List<Integer> categoryIds,
+            boolean shouldFilter,
+            List<Integer> specIds,
+            List<List<String>> specDetails) throws DatabaseException {
         List<Integer> ids = new ArrayList<>();
 
         String sql = """
@@ -313,7 +304,7 @@ public class ProductMapper
         sql = sql.replace("predicate_position_specification", sqlSpecPredicate);
 
         try (Connection c = cp.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
+                PreparedStatement ps = c.prepareStatement(sql)) {
             int argNum = 1;
             if (shouldFilter)
                 for (int i = 0; i < specIds.size(); ++i) {
@@ -351,8 +342,7 @@ public class ProductMapper
     }
 
     public static List<Product> SelectProductsById(ConnectionPool cp,
-                                                   List<Integer> ids) throws DatabaseException
-    {
+            List<Integer> ids) throws DatabaseException {
         if (ids == null || ids.size() < 1)
             return null;
         int[] idsArray = new int[ids.size()];
@@ -362,8 +352,7 @@ public class ProductMapper
     }
 
     public static List<Product> SelectProductsById(ConnectionPool cp,
-                                                   int... ids) throws DatabaseException
-    {
+            int... ids) throws DatabaseException {
         List<Product> productList = new ArrayList<>();
 
         String sql = SQL_SELECT_PRODUCTS_BY_ID;
@@ -378,7 +367,7 @@ public class ProductMapper
         sql = sql.replace("predicate_position_product", sqlPredicate);
 
         try (Connection c = cp.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
+                PreparedStatement ps = c.prepareStatement(sql)) {
             int argNum = 1;
             if (ids != null)
                 for (int i = 0; i < ids.length; ++i)
@@ -398,10 +387,9 @@ public class ProductMapper
      * ProductImage
      */
     public static int InsertProductImage(ConnectionPool cp,
-                                         ProductImage img,
-                                         boolean downscaled,
-                                         int newWidth) throws DatabaseException
-    {
+            ProductImage img,
+            boolean downscaled,
+            int newWidth) throws DatabaseException {
         int dbGeneratedImgId = 0;
 
         String sql = "INSERT INTO image (id, data, source, name, format, downscaled) VALUES (DEFAULT, ?, ?, ?, ?, ?)";
@@ -433,8 +421,7 @@ public class ProductMapper
     }
 
     public static int InsertCarportCustomBase(ConnectionPool cp,
-                                              int length, int width, int height) throws DatabaseException
-    {
+            int length, int width, int height) throws DatabaseException {
         String sql = """
                 INSERT INTO product(
                 	id, name, description, links, price, internal)
@@ -443,7 +430,7 @@ public class ProductMapper
 
         int generatedKey = -1;
         try (Connection c = cp.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             int argNum = 1;
 
             ps.setString(argNum++, "customcarport");
@@ -475,8 +462,7 @@ public class ProductMapper
     }
 
     public static void DeleteProduct(ConnectionPool cp,
-                                     int id) throws DatabaseException
-    {
+            int id) throws DatabaseException {
         String[] sqls = new String[7];
         String sqlPOrder = """
                 DELETE FROM order_product
@@ -515,7 +501,7 @@ public class ProductMapper
         sqls[6] = sqlP;
         for (String sql : sqls) {
             try (Connection c = cp.getConnection();
-                 PreparedStatement ps = c.prepareStatement(sql)) {
+                    PreparedStatement ps = c.prepareStatement(sql)) {
                 ps.setInt(1, id);
                 ps.executeUpdate();
             } catch (SQLException e) {
@@ -526,9 +512,8 @@ public class ProductMapper
     }
 
     public static void ReplaceProduct(ConnectionPool cp,
-                                      int old,
-                                      Product product)
-    {
+            int old,
+            Product product) {
 
     }
 
