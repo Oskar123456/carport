@@ -1,12 +1,10 @@
 ### CPHBUSINESS DATAMATIKER 2. SEMESTER PROJEKT - "CARPORT"
 
-#### Gruppe
+#### Gruppemedlemmer
 Fatima Majid Shamcizadh
 
 Ali Ahmed El-Seelawi					
 
 Oskar Bahner Hansen					
 
-Juvena Akua Walters Hviid				
-
-#### Links
+Juvena Akua Walters Hviid	
