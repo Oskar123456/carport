@@ -86,7 +86,7 @@ public class BasketController
         User user = ctx.sessionAttribute("currentUser");
         List<Product> basket = ctx.sessionAttribute("basket");
         if (user == null) {
-            ctx.render("logind.html");
+            ctx.render("user/logind.html");
             return;
         }
         if (basket == null) {
